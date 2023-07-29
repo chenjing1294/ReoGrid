@@ -23,15 +23,12 @@ using System.Diagnostics;
 #if WINFORM || ANDROID
 using RGFloat = System.Single;
 using RGIntDouble = System.Int32;
-
 #elif WPF
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 #elif iOS
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 #endif
 
 using unvell.ReoGrid.Graphics;
@@ -41,9 +38,8 @@ using unvell.ReoGrid.Main;
 
 namespace unvell.ReoGrid.Views
 {
-	internal interface IScalableViewportController
-	{
-		RGFloat ScaleFactor { get; set; }
-	}
+    internal interface IScalableViewportController
+    {
+        RGFloat ScaleFactor { get; set; }
+    }
 }
-

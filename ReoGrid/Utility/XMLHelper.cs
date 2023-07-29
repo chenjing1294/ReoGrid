@@ -28,13 +28,13 @@ using unvell.Common;
 
 namespace unvell.ReoGrid.Utility
 {
-	internal static class XMLHelper
-	{
-		private static Dictionary<Type, XmlSerializer> xmlSerializers;
+    internal static class XMLHelper
+    {
+        private static Dictionary<Type, XmlSerializer> xmlSerializers;
 
-		public static T LoadXML<T>(Stream s) where T : class
-		{
-			Type type = typeof(T);
+        public static T LoadXML<T>(Stream s) where T : class
+        {
+            Type type = typeof(T);
 
 #if DEBUG
 			Stopwatch sw = Stopwatch.StartNew();
@@ -42,19 +42,19 @@ namespace unvell.ReoGrid.Utility
 			{
 #endif
 
-				XmlSerializer serializer = null;
+            XmlSerializer serializer = null;
 
-				if (xmlSerializers == null)
-				{
-					xmlSerializers = new Dictionary<Type, XmlSerializer>();
-				}
+            if (xmlSerializers == null)
+            {
+                xmlSerializers = new Dictionary<Type, XmlSerializer>();
+            }
 
-				if (!xmlSerializers.TryGetValue(type, out serializer))
-				{
-					xmlSerializers[type] = serializer = new XmlSerializer(type);
-				}
+            if (!xmlSerializers.TryGetValue(type, out serializer))
+            {
+                xmlSerializers[type] = serializer = new XmlSerializer(type);
+            }
 
-				return serializer.Deserialize(s) as T;
+            return serializer.Deserialize(s) as T;
 
 #if DEBUG
 			}
@@ -64,11 +64,11 @@ namespace unvell.ReoGrid.Utility
 				Logger.Log("xml utility", "type loaded: {0}, {1} ms.", type.Name, sw.ElapsedMilliseconds);
 			}
 #endif
-		}
+        }
 
-		public static void SaveXML<T>(Stream s, T obj)
-		{
-			Type type = typeof(T);
+        public static void SaveXML<T>(Stream s, T obj)
+        {
+            Type type = typeof(T);
 
 #if DEBUG
 			Stopwatch sw = Stopwatch.StartNew();
@@ -76,38 +76,38 @@ namespace unvell.ReoGrid.Utility
 			{
 #endif
 
-				XmlSerializer serializer = null;
+            XmlSerializer serializer = null;
 
-				if (xmlSerializers == null)
-				{
-					xmlSerializers = new Dictionary<Type, XmlSerializer>();
-				}
+            if (xmlSerializers == null)
+            {
+                xmlSerializers = new Dictionary<Type, XmlSerializer>();
+            }
 
-				if (!xmlSerializers.TryGetValue(type, out serializer))
-				{
-					xmlSerializers[type] = serializer = new XmlSerializer(type);
-				}
+            if (!xmlSerializers.TryGetValue(type, out serializer))
+            {
+                xmlSerializers[type] = serializer = new XmlSerializer(type);
+            }
 
-				XmlSerializerNamespaces namespaces = null;
+            XmlSerializerNamespaces namespaces = null;
 
-				var xmlnsProp = obj.GetType().GetField("xmlns", System.Reflection.BindingFlags.Instance
-					| System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+            var xmlnsProp = obj.GetType().GetField("xmlns", System.Reflection.BindingFlags.Instance
+                                                            | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
 
-				if (xmlnsProp != null)
-				{
-					namespaces = xmlnsProp.GetValue(obj) as XmlSerializerNamespaces;
-				}
+            if (xmlnsProp != null)
+            {
+                namespaces = xmlnsProp.GetValue(obj) as XmlSerializerNamespaces;
+            }
 
-				var settings = new XmlWriterSettings
-				{
-					Encoding = Encoding.UTF8,
-				};
+            var settings = new XmlWriterSettings
+            {
+                Encoding = Encoding.UTF8,
+            };
 
-				using (var writer = XmlWriter.Create(s, settings))
-				{
-					serializer.Serialize(writer, obj, namespaces);
-				}
-			
+            using (var writer = XmlWriter.Create(s, settings))
+            {
+                serializer.Serialize(writer, obj, namespaces);
+            }
+
 #if DEBUG
 			}
 			finally
@@ -116,6 +116,6 @@ namespace unvell.ReoGrid.Utility
 				Logger.Log("xml utility", "type saved: {0}, {1} ms.", type.Name, sw.ElapsedMilliseconds);
 			}
 #endif
-		}
-	}
+        }
+    }
 }

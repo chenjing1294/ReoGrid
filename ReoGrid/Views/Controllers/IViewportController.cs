@@ -23,15 +23,12 @@ using System.Diagnostics;
 #if WINFORM || ANDROID
 using RGFloat = System.Single;
 using RGIntDouble = System.Int32;
-
 #elif WPF
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 #elif iOS
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 #endif
 
 using unvell.ReoGrid.Graphics;
@@ -41,21 +38,20 @@ using unvell.ReoGrid.Main;
 
 namespace unvell.ReoGrid.Views
 {
-	internal interface IViewportController : IUserVisual, IVisualController
-	{
-		Worksheet Worksheet { get; }
+    internal interface IViewportController : IUserVisual, IVisualController
+    {
+        Worksheet Worksheet { get; }
 
-		Rectangle Bounds { get; set; }
+        Rectangle Bounds { get; set; }
 
-		IView View { get; }
-		IView FocusView { get; set; }
+        IView View { get; }
+        IView FocusView { get; set; }
 
-		void Draw(CellDrawingContext dc);
+        void Draw(CellDrawingContext dc);
 
-		void UpdateController();
-		void Reset();
+        void UpdateController();
+        void Reset();
 
-		void SetViewVisible(ViewTypes view, bool visible);
-	}
+        void SetViewVisible(ViewTypes view, bool visible);
+    }
 }
-

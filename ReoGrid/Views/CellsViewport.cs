@@ -1047,7 +1047,7 @@ namespace unvell.ReoGrid.Views
 #elif WPF
                         g.FillRectangle(scaledSelectionRect, selectionFillColor);
 #endif // WPF
-                        
+
                         if (selectionBorderColor.A > 0)
                         {
                             g.DrawRectangle(scaledSelectionRect, selectionBorderColor, selectionBorderWidth, LineStyles.Solid);
@@ -2144,19 +2144,19 @@ namespace unvell.ReoGrid.Views
             try
             {
 #endif
-                // binary search to find the row which contains the give position
-                return ArrayHelper.QuickFind((visibleRegion.endRow - visibleRegion.startRow + 1) / 2,
-                    0, sheet.rows.Count - 1, i =>
-                    {
-                        var rowHeader = sheet.rows[i];
+            // binary search to find the row which contains the give position
+            return ArrayHelper.QuickFind((visibleRegion.endRow - visibleRegion.startRow + 1) / 2,
+                0, sheet.rows.Count - 1, i =>
+                {
+                    var rowHeader = sheet.rows[i];
 
-                        if (rowHeader.Bottom < y)
-                            return 1;
-                        else if (rowHeader.Top > y)
-                            return -1;
-                        else
-                            return 0;
-                    });
+                    if (rowHeader.Bottom < y)
+                        return 1;
+                    else if (rowHeader.Top > y)
+                        return -1;
+                    else
+                        return 0;
+                });
 
 #if DEBUG
             }

@@ -35,56 +35,58 @@ using unvell.ReoGrid.Rendering;
 
 namespace unvell.ReoGrid.Drawing
 {
-	/// <summary>
-	/// Represents interface of drawing objects.
-	/// </summary>
-	public interface IDrawingObject : IFloatingObject, IUserVisual
-	{
-		#region Attitudes
-		/// <summary>
-		/// Get or set the client bounds of drawing object.
-		/// </summary>
-		Rectangle ClientBounds { get; }
+    /// <summary>
+    /// Represents interface of drawing objects.
+    /// </summary>
+    public interface IDrawingObject : IFloatingObject, IUserVisual
+    {
+        #region Attitudes
 
-		/// <summary>
-		/// Get or set horizontal scaling of drawing object.
-		/// </summary>
-		RGFloat ScaleX { get; set; }
+        /// <summary>
+        /// Get or set the client bounds of drawing object.
+        /// </summary>
+        Rectangle ClientBounds { get; }
 
-		/// <summary>
-		/// Get or set vertical scaling of drawing object.
-		/// </summary>
-		RGFloat ScaleY { get; set; }
+        /// <summary>
+        /// Get or set horizontal scaling of drawing object.
+        /// </summary>
+        RGFloat ScaleX { get; set; }
 
-		/// <summary>
-		/// Get or set the rotation angle of drawing object.
-		/// </summary>
-		RGFloat RotateAngle { get; set; }
-		#endregion // Attitudes
+        /// <summary>
+        /// Get or set vertical scaling of drawing object.
+        /// </summary>
+        RGFloat ScaleY { get; set; }
 
-		/// <summary>
-		/// Get or set the container of drawing object.
-		/// </summary>
-		IDrawingContainer Container { get; set; }
+        /// <summary>
+        /// Get or set the rotation angle of drawing object.
+        /// </summary>
+        RGFloat RotateAngle { get; set; }
 
-		/// <summary>
-		/// Access the style set of drawing object.
-		/// </summary>
-		IDrawingObjectStyle Style { get; }
+        #endregion // Attitudes
 
-		/// <summary>
-		/// Render this drawing object.
-		/// </summary>
-		/// <param name="dc">Platform no-associated drawing context instance.</param>
-		void Draw(DrawingContext dc);
-	}
+        /// <summary>
+        /// Get or set the container of drawing object.
+        /// </summary>
+        IDrawingContainer Container { get; set; }
 
-	/// <summary>
-	/// Represents collection of drawing object.
-	/// </summary>
-	public interface IDrawingObjectCollection : IFloatingObjectCollection<IDrawingObject>
-	{
-	}
+        /// <summary>
+        /// Access the style set of drawing object.
+        /// </summary>
+        IDrawingObjectStyle Style { get; }
+
+        /// <summary>
+        /// Render this drawing object.
+        /// </summary>
+        /// <param name="dc">Platform no-associated drawing context instance.</param>
+        void Draw(DrawingContext dc);
+    }
+
+    /// <summary>
+    /// Represents collection of drawing object.
+    /// </summary>
+    public interface IDrawingObjectCollection : IFloatingObjectCollection<IDrawingObject>
+    {
+    }
 }
 
 #endif // DRAWING

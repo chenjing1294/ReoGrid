@@ -20,27 +20,26 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using unvell.ReoGrid.Core;
 using unvell.ReoGrid.DataFormat;
 
 namespace unvell.ReoGrid.DataFormat
 {
-	internal class TextDataFormatter : IDataFormatter
-	{
-		public string FormatCell(Cell cell)
-		{
-			if (cell.InnerStyle.HAlign == ReoGridHorAlign.General)
-			{
-				cell.RenderHorAlign = ReoGridRenderHorAlign.Left;
-			}
+    internal class TextDataFormatter : IDataFormatter
+    {
+        public string FormatCell(Cell cell)
+        {
+            if (cell.InnerStyle.HAlign == ReoGridHorAlign.General)
+            {
+                cell.RenderHorAlign = ReoGridRenderHorAlign.Left;
+            }
 
-			return Convert.ToString(cell.InnerData);
-		}
+            return Convert.ToString(cell.InnerData);
+        }
 
-		public bool PerformTestFormat()
-		{
-			return false;
-		}
-	}
+        public bool PerformTestFormat()
+        {
+            return false;
+        }
+    }
 }

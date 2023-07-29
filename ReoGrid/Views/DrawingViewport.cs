@@ -23,78 +23,81 @@ using unvell.ReoGrid.Rendering;
 
 namespace unvell.ReoGrid.Views
 {
-	internal class DrawingViewport : Viewport
-	{
-		public DrawingViewport(IViewportController vc)
-			: base(vc)
-		{
-		}
-		
-		public override void DrawView(CellDrawingContext dc)
-		{
-			this.sheet.drawingCanvas.ClipBounds = this.ViewBounds;
-			this.sheet.drawingCanvas.Draw(dc);
-		}
+    internal class DrawingViewport : Viewport
+    {
+        public DrawingViewport(IViewportController vc)
+            : base(vc)
+        {
+        }
 
-		public override void UpdateView()
-		{
-			base.UpdateView();
+        public override void DrawView(CellDrawingContext dc)
+        {
+            this.sheet.drawingCanvas.ClipBounds = this.ViewBounds;
+            this.sheet.drawingCanvas.Draw(dc);
+        }
 
-			this.sheet.drawingCanvas.ScaleX = this.scaleFactor;
-			this.sheet.drawingCanvas.ScaleY = this.scaleFactor;
-		}
+        public override void UpdateView()
+        {
+            base.UpdateView();
 
-		#region Find View
-		public override IView GetViewByPoint(Point p)
-		{
-			var drawingCanvas = this.sheet.drawingCanvas;
+            this.sheet.drawingCanvas.ScaleX = this.scaleFactor;
+            this.sheet.drawingCanvas.ScaleY = this.scaleFactor;
+        }
 
-			if (drawingCanvas == null
-				|| drawingCanvas.Children == null
-				|| drawingCanvas.Children.Count <= 0)
-			{
-				return null;
-			}
+        #region Find View
 
-			var vp = this.PointToView(p);
+        public override IView GetViewByPoint(Point p)
+        {
+            var drawingCanvas = this.sheet.drawingCanvas;
 
-			for (int i = drawingCanvas.Children.Count - 1; i >= 0; i--)
-			{
-				var obj = drawingCanvas.Children[i];
+            if (drawingCanvas == null
+                || drawingCanvas.Children == null
+                || drawingCanvas.Children.Count <= 0)
+            {
+                return null;
+            }
 
-				if (obj.Bounds.Contains(vp))
-				{
-					return this;
-				}
-			}
+            var vp = this.PointToView(p);
 
-			return null;
-		}
-		#endregion // Find View
+            for (int i = drawingCanvas.Children.Count - 1; i >= 0; i--)
+            {
+                var obj = drawingCanvas.Children[i];
 
-		#region UI Hanlders
-		public override bool OnMouseDown(Point location, MouseButtons buttons)
-		{
-			return this.sheet.drawingCanvas.OnMouseDown(location, buttons);
-		}
+                if (obj.Bounds.Contains(vp))
+                {
+                    return this;
+                }
+            }
 
-		public override bool OnMouseMove(Point location, MouseButtons buttons)
-		{
-			return this.sheet.drawingCanvas.OnMouseMove(location, buttons);
-		}
+            return null;
+        }
 
-		public override bool OnMouseUp(Point location, MouseButtons buttons)
-		{
-			return this.sheet.drawingCanvas.OnMouseUp(location, buttons);
-		}
+        #endregion // Find View
 
-		public override bool OnMouseDoubleClick(Point location, MouseButtons buttons)
-		{
-			return this.sheet.drawingCanvas.OnMouseDoubleClick(location, buttons);
-		}
-		#endregion // UI Handlers
-	}
+        #region UI Hanlders
 
+        public override bool OnMouseDown(Point location, MouseButtons buttons)
+        {
+            return this.sheet.drawingCanvas.OnMouseDown(location, buttons);
+        }
+
+        public override bool OnMouseMove(Point location, MouseButtons buttons)
+        {
+            return this.sheet.drawingCanvas.OnMouseMove(location, buttons);
+        }
+
+        public override bool OnMouseUp(Point location, MouseButtons buttons)
+        {
+            return this.sheet.drawingCanvas.OnMouseUp(location, buttons);
+        }
+
+        public override bool OnMouseDoubleClick(Point location, MouseButtons buttons)
+        {
+            return this.sheet.drawingCanvas.OnMouseDoubleClick(location, buttons);
+        }
+
+        #endregion // UI Handlers
+    }
 }
 
 #endif // DRAWING

@@ -24,7 +24,6 @@ using RGFloat = System.Double;
 #endif
 
 using unvell.Common;
-
 using unvell.ReoGrid.Actions;
 using unvell.ReoGrid.Events;
 using unvell.ReoGrid.Graphics;
@@ -34,366 +33,374 @@ using unvell.ReoGrid.Main;
 
 namespace unvell.ReoGrid.Views
 {
+    #region ColumnHeadPart
 
-	#region ColumnHeadPart
-	class ColumnHeaderView : HeaderView
-	{
-		public ColumnHeaderView(IViewportController vc)
-			: base(vc)
-		{
-			this.ScrollableDirections = ScrollDirection.Horizontal;
-		}
+    class ColumnHeaderView : HeaderView
+    {
+        public ColumnHeaderView(IViewportController vc)
+            : base(vc)
+        {
+            this.ScrollableDirections = ScrollDirection.Horizontal;
+        }
 
-		#region Draw
-		public override void DrawView(CellDrawingContext dc)
-		{
-			var r = dc.Renderer;
-			var g = dc.Graphics;
+        #region Draw
 
-			if (bounds.Height <= 0 || sheet.controlAdapter == null)
-			{
-				return;
-			}
+        public override void DrawView(CellDrawingContext dc)
+        {
+            var r = dc.Renderer;
+            var g = dc.Graphics;
 
-			var controlStyle = sheet.workbook.controlAdapter.ControlStyle;
+            if (bounds.Height <= 0 || sheet.controlAdapter == null)
+            {
+                return;
+            }
 
-			r.BeginDrawHeaderText(this.scaleFactor);
+            var controlStyle = sheet.workbook.controlAdapter.ControlStyle;
 
-			var splitterLinePen = r.GetPen(controlStyle.Colors[ControlAppearanceColors.RowHeadSplitter]);
-			var headerTextBrush = r.GetBrush(controlStyle.Colors[ControlAppearanceColors.ColHeadText]);
+            r.BeginDrawHeaderText(this.scaleFactor);
 
-			bool isFullColSelected = sheet.SelectionRange.Rows == sheet.RowCount;
+            var splitterLinePen = r.GetPen(controlStyle.Colors[ControlAppearanceColors.RowHeadSplitter]);
+            var headerTextBrush = r.GetBrush(controlStyle.Colors[ControlAppearanceColors.ColHeadText]);
 
-			for (int i = visibleRegion.startCol; i <= visibleRegion.endCol; i++)
-			{
-				bool isSelected = i >= sheet.SelectionRange.Col && i <= sheet.SelectionRange.EndCol;
+            bool isFullColSelected = sheet.SelectionRange.Rows == sheet.RowCount;
 
-				ColumnHeader header = sheet.cols[i];
+            for (int i = visibleRegion.startCol; i <= visibleRegion.endCol; i++)
+            {
+                bool isSelected = i >= sheet.SelectionRange.Col && i <= sheet.SelectionRange.EndCol;
 
-				RGFloat x = header.Left * this.scaleFactor;
-				RGFloat width = header.InnerWidth * this.scaleFactor;
+                ColumnHeader header = sheet.cols[i];
 
-				if (!header.IsVisible)
-				{
-					g.DrawLine(splitterLinePen, x - 1, 0, x - 1, bounds.Bottom);
-				}
-				else
-				{
-					Rectangle rect = new Rectangle(x, 0, width, bounds.Height);
+                RGFloat x = header.Left * this.scaleFactor;
+                RGFloat width = header.InnerWidth * this.scaleFactor;
+
+                if (!header.IsVisible)
+                {
+                    g.DrawLine(splitterLinePen, x - 1, 0, x - 1, bounds.Bottom);
+                }
+                else
+                {
+                    Rectangle rect = new Rectangle(x, 0, width, bounds.Height);
 
 #if WINFORM || WPF
-					g.FillRectangleLinear(controlStyle.GetColHeadStartColor(false, isSelected, isSelected && isFullColSelected, false),
-						controlStyle.GetColHeadEndColor(false, isSelected, isSelected && isFullColSelected, false), 90f, rect);
+                    g.FillRectangleLinear(controlStyle.GetColHeadStartColor(false, isSelected, isSelected && isFullColSelected, false),
+                        controlStyle.GetColHeadEndColor(false, isSelected, isSelected && isFullColSelected, false), 90f, rect);
 #elif ANDROID
 					g.FillRectangle(rect, controlStyle.GetRowHeadEndColor(false, isSelected, isSelected && isFullColSelected, false));
 #endif // ANDROID
 
-					g.DrawLine(splitterLinePen, x, 0, x, bounds.Height);
+                    g.DrawLine(splitterLinePen, x, 0, x, bounds.Height);
 
-					var textBrush = header.TextColor != null ? dc.Renderer.GetBrush((SolidColor)header.TextColor) : headerTextBrush;
+                    var textBrush = header.TextColor != null ? dc.Renderer.GetBrush((SolidColor) header.TextColor) : headerTextBrush;
 
-					if (textBrush == null)
-					{
-						textBrush = headerTextBrush;
-					}
+                    if (textBrush == null)
+                    {
+                        textBrush = headerTextBrush;
+                    }
 
-					r.DrawHeaderText(header.RenderText, textBrush, rect);
+                    r.DrawHeaderText(header.RenderText, textBrush, rect);
 
-					if (header.Body != null)
-					{
-						g.PushTransform();
-						g.TranslateTransform(rect.X, rect.Y);
-						header.Body.OnPaint(dc, rect.Size);
-						g.PopTransform();
-					}
-				}
-			}
+                    if (header.Body != null)
+                    {
+                        g.PushTransform();
+                        g.TranslateTransform(rect.X, rect.Y);
+                        header.Body.OnPaint(dc, rect.Size);
+                        g.PopTransform();
+                    }
+                }
+            }
 
-			RGFloat lx = sheet.cols[visibleRegion.endCol].Right * this.scaleFactor;
-			g.DrawLine(splitterLinePen, lx, 0, lx, bounds.Height);
+            RGFloat lx = sheet.cols[visibleRegion.endCol].Right * this.scaleFactor;
+            g.DrawLine(splitterLinePen, lx, 0, lx, bounds.Height);
 
-			//g.DrawLine(splitterLinePen, this.ViewLeft, bounds.Height, this.ViewLeft + bounds.Width, bounds.Height);
+            //g.DrawLine(splitterLinePen, this.ViewLeft, bounds.Height, this.ViewLeft + bounds.Width, bounds.Height);
 
-			// bottom line
-			//if (!sheet.HasSettings(WorksheetSettings.View_ShowGuideLine))
-			//{
-			//	g.DrawLine(ViewLeft, bounds.Bottom,
-			//		Math.Min((sheet.cols[sheet.cols.Count - 1].Right - ViewLeft) * this.scaleFactor + bounds.Left, bounds.Width),
-			//		//ViewLeft+ bounds.Width,
-			//		bounds.Bottom, controlStyle.Colors[ControlAppearanceColors.ColHeadSplitter]);
-			//}
-		}
+            // bottom line
+            //if (!sheet.HasSettings(WorksheetSettings.View_ShowGuideLine))
+            //{
+            //	g.DrawLine(ViewLeft, bounds.Bottom,
+            //		Math.Min((sheet.cols[sheet.cols.Count - 1].Right - ViewLeft) * this.scaleFactor + bounds.Left, bounds.Width),
+            //		//ViewLeft+ bounds.Width,
+            //		bounds.Bottom, controlStyle.Colors[ControlAppearanceColors.ColHeadSplitter]);
+            //}
+        }
 
-		#endregion // Draw
+        #endregion // Draw
 
-		#region Mouse
-		public override bool OnMouseDown(Point location, MouseButtons buttons)
-		{
-			bool isProcessed = false;
+        #region Mouse
 
-			switch (sheet.operationStatus)
-			{
-				case OperationStatus.Default:
-					int col = -1;
-					bool inSeparator = sheet.FindColumnByPosition(location.X, out col);
+        public override bool OnMouseDown(Point location, MouseButtons buttons)
+        {
+            bool isProcessed = false;
 
-					if (col >= 0)
-					{
-						// adjust columns width
-						if (inSeparator
-							&& buttons == MouseButtons.Left
-							&& sheet.HasSettings(WorksheetSettings.Edit_AllowAdjustColumnWidth))
-						{
-							sheet.currentColWidthChanging = col;
-							sheet.operationStatus = OperationStatus.AdjustColumnWidth;
-							sheet.controlAdapter.ChangeCursor(CursorStyle.ChangeColumnWidth);
-							sheet.RequestInvalidate();
+            switch (sheet.operationStatus)
+            {
+                case OperationStatus.Default:
+                    int col = -1;
+                    bool inSeparator = sheet.FindColumnByPosition(location.X, out col);
 
-							this.headerAdjustBackup = sheet.headerAdjustNewValue = sheet.cols[sheet.currentColWidthChanging].InnerWidth;
-							this.SetFocus();
+                    if (col >= 0)
+                    {
+                        // adjust columns width
+                        if (inSeparator
+                            && buttons == MouseButtons.Left
+                            && sheet.HasSettings(WorksheetSettings.Edit_AllowAdjustColumnWidth))
+                        {
+                            sheet.currentColWidthChanging = col;
+                            sheet.operationStatus = OperationStatus.AdjustColumnWidth;
+                            sheet.controlAdapter.ChangeCursor(CursorStyle.ChangeColumnWidth);
+                            sheet.RequestInvalidate();
 
-							isProcessed = true;
-						}
+                            this.headerAdjustBackup = sheet.headerAdjustNewValue = sheet.cols[sheet.currentColWidthChanging].InnerWidth;
+                            this.SetFocus();
 
-						if (!isProcessed)
-						{
-							var header = sheet.cols[col];
+                            isProcessed = true;
+                        }
 
-							if (header.Body != null)
-							{
-								// let body to decide the mouse behavior
-								var arg = new WorksheetMouseEventArgs(sheet, new Point(
-									((location.X - header.Left) * this.scaleFactor),
-									(location.Y / this.scaleFactor)),
-									new Point((location.X - header.Left) * this.scaleFactor + this.Left,
-										location.Y / this.scaleFactor), buttons, 1);
+                        if (!isProcessed)
+                        {
+                            var header = sheet.cols[col];
 
-								isProcessed = header.Body.OnMouseDown(
-									new Size(header.InnerWidth * this.scaleFactor, sheet.colHeaderHeight), arg);
-							}
-						}
+                            if (header.Body != null)
+                            {
+                                // let body to decide the mouse behavior
+                                var arg = new WorksheetMouseEventArgs(sheet, new Point(
+                                        ((location.X - header.Left) * this.scaleFactor),
+                                        (location.Y / this.scaleFactor)),
+                                    new Point((location.X - header.Left) * this.scaleFactor + this.Left,
+                                        location.Y / this.scaleFactor), buttons, 1);
 
-						if (!isProcessed
-							// do not allow to select column if selection mode is null
-							&& sheet.selectionMode != WorksheetSelectionMode.None)
-						{
-							bool isFullColSelected =
-								(sheet.selectionMode == WorksheetSelectionMode.Range
-								&& sheet.selectionRange.Rows == sheet.rows.Count
-								&& sheet.selectionRange.ContainsColumn(col));
+                                isProcessed = header.Body.OnMouseDown(
+                                    new Size(header.InnerWidth * this.scaleFactor, sheet.colHeaderHeight), arg);
+                            }
+                        }
 
-							// select whole column
-							if ((!isFullColSelected || buttons == MouseButtons.Left))
-							{
-								sheet.operationStatus = OperationStatus.FullColumnSelect;
-								sheet.controlAdapter.ChangeCursor(CursorStyle.FullColumnSelect);
+                        if (!isProcessed
+                            // do not allow to select column if selection mode is null
+                            && sheet.selectionMode != WorksheetSelectionMode.None)
+                        {
+                            bool isFullColSelected =
+                                (sheet.selectionMode == WorksheetSelectionMode.Range
+                                 && sheet.selectionRange.Rows == sheet.rows.Count
+                                 && sheet.selectionRange.ContainsColumn(col));
 
-								SetFocus();
+                            // select whole column
+                            if ((!isFullColSelected || buttons == MouseButtons.Left))
+                            {
+                                sheet.operationStatus = OperationStatus.FullColumnSelect;
+                                sheet.controlAdapter.ChangeCursor(CursorStyle.FullColumnSelect);
 
-								sheet.SelectRangeStartByMouse(this.PointToController(location));
+                                SetFocus();
 
-								isProcessed = true;
-							}
-						}
+                                sheet.SelectRangeStartByMouse(this.PointToController(location));
 
-						// show context menu
-						if (buttons == MouseButtons.Right)
-						{
-							sheet.ControlAdapter.ShowContextMenuStrip(ViewTypes.ColumnHeader, this.PointToController(location));
-						}
-					}
-					break;
-			}
+                                isProcessed = true;
+                            }
+                        }
 
-			return isProcessed;
-		}
+                        // show context menu
+                        if (buttons == MouseButtons.Right)
+                        {
+                            sheet.ControlAdapter.ShowContextMenuStrip(ViewTypes.ColumnHeader, this.PointToController(location));
+                        }
+                    }
 
-		public override bool OnMouseMove(Point location, MouseButtons buttons)
-		{
-			bool isProcessed = false;
+                    break;
+            }
 
-			switch (sheet.operationStatus)
-			{
-				case OperationStatus.AdjustColumnWidth:
-					if (sheet.currentColWidthChanging >= 0
-					&& buttons == MouseButtons.Left)
-					{
-						ColumnHeader colHeader = sheet.cols[sheet.currentColWidthChanging];
-						sheet.headerAdjustNewValue = location.X - colHeader.Left;
-						if (sheet.headerAdjustNewValue < 0) sheet.headerAdjustNewValue = 0;
+            return isProcessed;
+        }
 
-						this.sheet.controlAdapter.ChangeCursor(CursorStyle.ChangeColumnWidth);
-						this.sheet.RequestInvalidate();
-						isProcessed = true;
-					}
-					break;
+        public override bool OnMouseMove(Point location, MouseButtons buttons)
+        {
+            bool isProcessed = false;
 
-				case OperationStatus.Default:
-					{
-						if (sheet.currentColWidthChanging == -1 && sheet.currentRowHeightChanging == -1)
-						{
-							int col = -1;
+            switch (sheet.operationStatus)
+            {
+                case OperationStatus.AdjustColumnWidth:
+                    if (sheet.currentColWidthChanging >= 0
+                        && buttons == MouseButtons.Left)
+                    {
+                        ColumnHeader colHeader = sheet.cols[sheet.currentColWidthChanging];
+                        sheet.headerAdjustNewValue = location.X - colHeader.Left;
+                        if (sheet.headerAdjustNewValue < 0) sheet.headerAdjustNewValue = 0;
 
-							// find the column index
-							bool inline = sheet.FindColumnByPosition(location.X, out col)
-									&& sheet.HasSettings(WorksheetSettings.Edit_AllowAdjustColumnWidth);
+                        this.sheet.controlAdapter.ChangeCursor(CursorStyle.ChangeColumnWidth);
+                        this.sheet.RequestInvalidate();
+                        isProcessed = true;
+                    }
 
-							if (col >= 0)
-							{
-								CursorStyle curStyle = inline ? CursorStyle.ChangeColumnWidth :
-									(sheet.selectionMode == WorksheetSelectionMode.None ? CursorStyle.Selection : CursorStyle.FullColumnSelect);
+                    break;
 
-								var header = sheet.cols[col];
+                case OperationStatus.Default:
+                {
+                    if (sheet.currentColWidthChanging == -1 && sheet.currentRowHeightChanging == -1)
+                    {
+                        int col = -1;
 
-								// check if header body exists
-								if (header.Body != null)
-								{
-									// let cell's body decide the mouse behavior
-									var arg = new WorksheetMouseEventArgs(sheet, new Point(
-										((location.X - header.Left) * this.scaleFactor),
-										(location.Y / this.scaleFactor)), location, buttons, 1)
-									{
-										CursorStyle = curStyle
-									};
+                        // find the column index
+                        bool inline = sheet.FindColumnByPosition(location.X, out col)
+                                      && sheet.HasSettings(WorksheetSettings.Edit_AllowAdjustColumnWidth);
 
-									isProcessed = header.Body.OnMouseMove(
-										new Size(header.InnerWidth * this.scaleFactor, sheet.colHeaderHeight), arg);
+                        if (col >= 0)
+                        {
+                            CursorStyle curStyle = inline
+                                ? CursorStyle.ChangeColumnWidth
+                                : (sheet.selectionMode == WorksheetSelectionMode.None ? CursorStyle.Selection : CursorStyle.FullColumnSelect);
 
-									curStyle = arg.CursorStyle;
-								}
+                            var header = sheet.cols[col];
 
-								sheet.controlAdapter.ChangeCursor(curStyle);
-							}
-						}
-					}
-					break;
+                            // check if header body exists
+                            if (header.Body != null)
+                            {
+                                // let cell's body decide the mouse behavior
+                                var arg = new WorksheetMouseEventArgs(sheet, new Point(
+                                    ((location.X - header.Left) * this.scaleFactor),
+                                    (location.Y / this.scaleFactor)), location, buttons, 1)
+                                {
+                                    CursorStyle = curStyle
+                                };
 
-				case OperationStatus.FullColumnSelect:
-				case OperationStatus.FullSingleColumnSelect:
-					if (buttons == MouseButtons.Left)
-					{
-						sheet.controlAdapter.ChangeCursor(CursorStyle.FullColumnSelect);
-						sheet.SelectRangeEndByMouse(this.PointToController(location));
+                                isProcessed = header.Body.OnMouseMove(
+                                    new Size(header.InnerWidth * this.scaleFactor, sheet.colHeaderHeight), arg);
 
-						isProcessed = true;
-					}
-					break;
-			}
+                                curStyle = arg.CursorStyle;
+                            }
 
-			return isProcessed;
-		}
+                            sheet.controlAdapter.ChangeCursor(curStyle);
+                        }
+                    }
+                }
+                    break;
 
-		public override bool OnMouseUp(Point location, MouseButtons buttons)
-		{
-			switch (sheet.operationStatus)
-			{
-				case OperationStatus.AdjustColumnWidth:
-					if (sheet.currentColWidthChanging > -1)
-					{
-						SetColumnsWidthAction setColsWidthAction;
+                case OperationStatus.FullColumnSelect:
+                case OperationStatus.FullSingleColumnSelect:
+                    if (buttons == MouseButtons.Left)
+                    {
+                        sheet.controlAdapter.ChangeCursor(CursorStyle.FullColumnSelect);
+                        sheet.SelectRangeEndByMouse(this.PointToController(location));
 
-						bool isFullColSelected = (sheet.selectionMode == WorksheetSelectionMode.Range
-							&& sheet.selectionRange.Rows == sheet.rows.Count
-							&& sheet.selectionRange.ContainsColumn(sheet.currentColWidthChanging));
+                        isProcessed = true;
+                    }
 
-						ushort targetWidth = (ushort)sheet.headerAdjustNewValue;
+                    break;
+            }
 
-						if (targetWidth != this.headerAdjustBackup)
-						{
-							if (isFullColSelected)
-							{
-								setColsWidthAction = new SetColumnsWidthAction(sheet.selectionRange.Col, sheet.selectionRange.Cols, targetWidth);
-							}
-							else
-							{
-								setColsWidthAction = new SetColumnsWidthAction(sheet.currentColWidthChanging, 1, targetWidth);
-							}
+            return isProcessed;
+        }
 
-							sheet.DoAction(setColsWidthAction);
-						}
-					}
+        public override bool OnMouseUp(Point location, MouseButtons buttons)
+        {
+            switch (sheet.operationStatus)
+            {
+                case OperationStatus.AdjustColumnWidth:
+                    if (sheet.currentColWidthChanging > -1)
+                    {
+                        SetColumnsWidthAction setColsWidthAction;
 
-					sheet.currentColWidthChanging = -1;
-					sheet.operationStatus = OperationStatus.Default;
-					sheet.RequestInvalidate();
+                        bool isFullColSelected = (sheet.selectionMode == WorksheetSelectionMode.Range
+                                                  && sheet.selectionRange.Rows == sheet.rows.Count
+                                                  && sheet.selectionRange.ContainsColumn(sheet.currentColWidthChanging));
 
-					this.headerAdjustBackup = sheet.headerAdjustNewValue = 0;
-					this.FreeFocus();
+                        ushort targetWidth = (ushort) sheet.headerAdjustNewValue;
 
-					return true;
+                        if (targetWidth != this.headerAdjustBackup)
+                        {
+                            if (isFullColSelected)
+                            {
+                                setColsWidthAction = new SetColumnsWidthAction(sheet.selectionRange.Col, sheet.selectionRange.Cols, targetWidth);
+                            }
+                            else
+                            {
+                                setColsWidthAction = new SetColumnsWidthAction(sheet.currentColWidthChanging, 1, targetWidth);
+                            }
 
-				case OperationStatus.FullColumnSelect:
-					sheet.operationStatus = OperationStatus.Default;
-					sheet.ControlAdapter.ChangeCursor(CursorStyle.Selection);
-					this.FreeFocus();
-					return true;
-			}
+                            sheet.DoAction(setColsWidthAction);
+                        }
+                    }
 
-			return false;
-		}
+                    sheet.currentColWidthChanging = -1;
+                    sheet.operationStatus = OperationStatus.Default;
+                    sheet.RequestInvalidate();
 
-		public override bool OnMouseDoubleClick(Point location, MouseButtons buttons)
-		{
-			int col = -1;
-			bool inSeparator = sheet.FindColumnByPosition(location.X, out col);
+                    this.headerAdjustBackup = sheet.headerAdjustNewValue = 0;
+                    this.FreeFocus();
 
-			if (col >= 0)
-			{
-				// adjust columns width
-				if (inSeparator
-					&& buttons == MouseButtons.Left
-					&& this.sheet.HasSettings(WorksheetSettings.Edit_AllowAdjustColumnWidth))
-				{
-					this.sheet.AutoFitColumnWidth(col, byAction: true);
+                    return true;
 
-					return true;
-				}
-			}
+                case OperationStatus.FullColumnSelect:
+                    sheet.operationStatus = OperationStatus.Default;
+                    sheet.ControlAdapter.ChangeCursor(CursorStyle.Selection);
+                    this.FreeFocus();
+                    return true;
+            }
 
-			return false;
-		}
-		#endregion // Mouse
+            return false;
+        }
 
-		#region Utility
-		public static Rectangle GetColHeaderBounds(Worksheet sheet, int col, Point position)
-		{
-			if (sheet == null) throw new ArgumentNullException("sheet");
+        public override bool OnMouseDoubleClick(Point location, MouseButtons buttons)
+        {
+            int col = -1;
+            bool inSeparator = sheet.FindColumnByPosition(location.X, out col);
 
-			var viewportController = sheet.ViewportController;
+            if (col >= 0)
+            {
+                // adjust columns width
+                if (inSeparator
+                    && buttons == MouseButtons.Left
+                    && this.sheet.HasSettings(WorksheetSettings.Edit_AllowAdjustColumnWidth))
+                {
+                    this.sheet.AutoFitColumnWidth(col, byAction: true);
 
-			if (viewportController == null || viewportController.View == null)
-			{
-				throw new ArgumentNullException("viewportController");
-			}
+                    return true;
+                }
+            }
 
-			//viewportController.Bounds
+            return false;
+        }
 
-			IViewport view = viewportController.View.GetViewByPoint(position) as ColumnHeaderView;
+        #endregion // Mouse
 
-			if (view == null)
-			{
-				throw new ArgumentNullException("Cannot found column header view from specified position");
-			}
+        #region Utility
 
-			if (view is ColumnHeaderView)
-			{
-				var header = sheet.RetrieveColumnHeader(col);
+        public static Rectangle GetColHeaderBounds(Worksheet sheet, int col, Point position)
+        {
+            if (sheet == null) throw new ArgumentNullException("sheet");
 
-				RGFloat scaleFactor = sheet.renderScaleFactor;
+            var viewportController = sheet.ViewportController;
 
-				return new Rectangle(header.Left * scaleFactor + view.Left - view.ScrollViewLeft,
-					view.Top - view.ScrollViewTop,
-					header.InnerWidth * scaleFactor,
-					sheet.colHeaderHeight * scaleFactor);
-			}
-			else
-			{
-				return new Rectangle();
-			}
-		}
-		#endregion // Utility
-	}
-	#endregion // ColumnHeadPart
+            if (viewportController == null || viewportController.View == null)
+            {
+                throw new ArgumentNullException("viewportController");
+            }
 
+            //viewportController.Bounds
 
+            IViewport view = viewportController.View.GetViewByPoint(position) as ColumnHeaderView;
+
+            if (view == null)
+            {
+                throw new ArgumentNullException("Cannot found column header view from specified position");
+            }
+
+            if (view is ColumnHeaderView)
+            {
+                var header = sheet.RetrieveColumnHeader(col);
+
+                RGFloat scaleFactor = sheet.renderScaleFactor;
+
+                return new Rectangle(header.Left * scaleFactor + view.Left - view.ScrollViewLeft,
+                    view.Top - view.ScrollViewTop,
+                    header.InnerWidth * scaleFactor,
+                    sheet.colHeaderHeight * scaleFactor);
+            }
+            else
+            {
+                return new Rectangle();
+            }
+        }
+
+        #endregion // Utility
+    }
+
+    #endregion // ColumnHeadPart
 }

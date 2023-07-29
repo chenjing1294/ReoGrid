@@ -37,338 +37,341 @@ using unvell.ReoGrid.Rendering;
 
 namespace unvell.ReoGrid.Print
 {
-	/// <summary>
-	/// Represents a print session to print worksheets.
-	/// </summary>
-	public partial class PrintSession : IDisposable
-	{
-		internal List<Worksheet> worksheets = new List<Worksheet>();
+    /// <summary>
+    /// Represents a print session to print worksheets.
+    /// </summary>
+    public partial class PrintSession : IDisposable
+    {
+        internal List<Worksheet> worksheets = new List<Worksheet>();
 
-		private PrintSessionWorksheetCollection worksheetCollection = null;
+        private PrintSessionWorksheetCollection worksheetCollection = null;
 
-		/// <summary>
-		/// Get the collection of worksheet that will be printed out.
-		/// </summary>
-		public ICollection<Worksheet> Worksheets
-		{
-			get
-			{
-				if (this.worksheetCollection == null)
-				{
-					this.worksheetCollection = new PrintSessionWorksheetCollection(this);
-				}
+        /// <summary>
+        /// Get the collection of worksheet that will be printed out.
+        /// </summary>
+        public ICollection<Worksheet> Worksheets
+        {
+            get
+            {
+                if (this.worksheetCollection == null)
+                {
+                    this.worksheetCollection = new PrintSessionWorksheetCollection(this);
+                }
 
-				return this.worksheetCollection;
-			}
-		}
+                return this.worksheetCollection;
+            }
+        }
 
-		/// <summary>
-		/// Get or set the zero-based index of current worksheet.
-		/// </summary>
-		internal int CurrentWorksheetIndex { get; set; }
+        /// <summary>
+        /// Get or set the zero-based index of current worksheet.
+        /// </summary>
+        internal int CurrentWorksheetIndex { get; set; }
 
-		/// <summary>
-		/// Get current worksheet instance.
-		/// </summary>
-		internal Worksheet CurrentWorksheet { get; set; }
+        /// <summary>
+        /// Get current worksheet instance.
+        /// </summary>
+        internal Worksheet CurrentWorksheet { get; set; }
 
-		internal int CurrentRowIndex { get; set; }
-		internal int CurrentColIndex { get; set; }
+        internal int CurrentRowIndex { get; set; }
+        internal int CurrentColIndex { get; set; }
 
-		internal Rectangle CurrentPaperBounds { get; set; }
-		internal PrintSettings CurrentPrintSettings { get; set; }
+        internal Rectangle CurrentPaperBounds { get; set; }
+        internal PrintSettings CurrentPrintSettings { get; set; }
 
-		internal PrintSession()
-		{
-			this.CurrentWorksheetIndex = -1;
-		}
+        internal PrintSession()
+        {
+            this.CurrentWorksheetIndex = -1;
+        }
 
-		/// <summary>
-		/// Get whether current is in the operation of print or preview
-		/// </summary>
-		public bool IsPrinting { get; internal set; }
+        /// <summary>
+        /// Get whether current is in the operation of print or preview
+        /// </summary>
+        public bool IsPrinting { get; internal set; }
 
-		internal CellDrawingContext DrawingContext { get; set; }
-		internal SheetViewport PrintViewport { get; set; }
+        internal CellDrawingContext DrawingContext { get; set; }
+        internal SheetViewport PrintViewport { get; set; }
 
-		private ViewportController printViewportController;
+        private ViewportController printViewportController;
 
-		#region NextWorksheet
-		internal void NextWorksheet()
-		{
-			this.CurrentWorksheetIndex++;
+        #region NextWorksheet
 
-			if (this.CurrentWorksheetIndex < 0 || this.CurrentWorksheetIndex >= this.worksheets.Count)
-			{
-				// no more worksheets to print
-				this.CurrentWorksheet = null;
-				return;
-			}
+        internal void NextWorksheet()
+        {
+            this.CurrentWorksheetIndex++;
 
-			this.CurrentWorksheet = this.worksheets[this.CurrentWorksheetIndex];
+            if (this.CurrentWorksheetIndex < 0 || this.CurrentWorksheetIndex >= this.worksheets.Count)
+            {
+                // no more worksheets to print
+                this.CurrentWorksheet = null;
+                return;
+            }
 
-			if (this.CurrentWorksheet == null) return;
+            this.CurrentWorksheet = this.worksheets[this.CurrentWorksheetIndex];
 
-			var sheet = this.CurrentWorksheet;
+            if (this.CurrentWorksheet == null) return;
 
-			if (sheet.pageBreakRows == null || sheet.pageBreakCols == null
-				|| sheet.pageBreakRows.Count == 0 || sheet.pageBreakCols.Count == 0)
-			{
-				sheet.AutoSplitPage();
-			}
+            var sheet = this.CurrentWorksheet;
 
-			if (sheet.pageBreakRows == null || sheet.pageBreakRows == null
-				|| sheet.pageBreakRows.Count == 0 || sheet.pageBreakRows.Count == 0)
-			{
-				// no content found on this worksheet, skip to next
-				NextWorksheet();
-				return;
-			}
+            if (sheet.pageBreakRows == null || sheet.pageBreakCols == null
+                                            || sheet.pageBreakRows.Count == 0 || sheet.pageBreakCols.Count == 0)
+            {
+                sheet.AutoSplitPage();
+            }
 
-			this.DrawingContext = new CellDrawingContext(sheet, DrawMode.Print);
-			this.DrawingContext.FullCellClip = true;
+            if (sheet.pageBreakRows == null || sheet.pageBreakRows == null
+                                            || sheet.pageBreakRows.Count == 0 || sheet.pageBreakRows.Count == 0)
+            {
+                // no content found on this worksheet, skip to next
+                NextWorksheet();
+                return;
+            }
 
-			this.CurrentPrintSettings = sheet.PrintSettings;
+            this.DrawingContext = new CellDrawingContext(sheet, DrawMode.Print);
+            this.DrawingContext.FullCellClip = true;
 
-			if (this.CurrentPrintSettings == null)
-			{
-				this.CurrentPrintSettings = new PrintSettings();
-			}
+            this.CurrentPrintSettings = sheet.PrintSettings;
 
-			this.CurrentColIndex = 0;
-			this.CurrentRowIndex = 0;
+            if (this.CurrentPrintSettings == null)
+            {
+                this.CurrentPrintSettings = new PrintSettings();
+            }
 
-			this.CurrentPaperBounds = sheet.GetPaperPrintBounds();
+            this.CurrentColIndex = 0;
+            this.CurrentRowIndex = 0;
 
-			var currentPS = sheet.PrintSettings;
+            this.CurrentPaperBounds = sheet.GetPaperPrintBounds();
+
+            var currentPS = sheet.PrintSettings;
 
 #if WINFORM
 			this.currentGDIPageSettings = sheet.CreateGDIPageSettings();
 #endif // WINFORM
+        }
 
-		}
-		#endregion // NextWorksheet
+        #endregion // NextWorksheet
 
-		#region NextPage
-		internal bool hasMorePages = false;
+        #region NextPage
 
-		internal void NextPage(PlatformGraphics pg)
-		{
-			this.hasMorePages = false;
+        internal bool hasMorePages = false;
 
-			var sheet = this.CurrentWorksheet;
-			if (sheet == null) return;
+        internal void NextPage(PlatformGraphics pg)
+        {
+            this.hasMorePages = false;
 
-			// out of print areas
-			if (this.CurrentRowIndex >= sheet.pageBreakRows.Count
-				&& this.CurrentColIndex >= sheet.pageBreakCols.Count)
-			{
-				return;
-			}
+            var sheet = this.CurrentWorksheet;
+            if (sheet == null) return;
 
-			int row = sheet.pageBreakRows[this.CurrentRowIndex];
-			int col = sheet.pageBreakCols[this.CurrentColIndex];
+            // out of print areas
+            if (this.CurrentRowIndex >= sheet.pageBreakRows.Count
+                && this.CurrentColIndex >= sheet.pageBreakCols.Count)
+            {
+                return;
+            }
 
-			int endRow = sheet.pageBreakRows[this.CurrentRowIndex + 1];
-			int endCol = sheet.pageBreakCols[this.CurrentColIndex + 1];
+            int row = sheet.pageBreakRows[this.CurrentRowIndex];
+            int col = sheet.pageBreakCols[this.CurrentColIndex];
 
-			switch (this.CurrentPrintSettings.PageOrder)
-			{
-				default:
-				case PrintPageOrder.DownThenOver:
-					{
-						if (this.CurrentRowIndex < sheet.pageBreakRows.Count - 2)
-						{
-							this.CurrentRowIndex++;
+            int endRow = sheet.pageBreakRows[this.CurrentRowIndex + 1];
+            int endCol = sheet.pageBreakCols[this.CurrentColIndex + 1];
 
-							this.hasMorePages = true;
-						}
-						else
-						{
-							if (this.CurrentColIndex < sheet.pageBreakCols.Count - 2)
-							{
-								this.CurrentRowIndex = 0;
-								this.CurrentColIndex++;
+            switch (this.CurrentPrintSettings.PageOrder)
+            {
+                default:
+                case PrintPageOrder.DownThenOver:
+                {
+                    if (this.CurrentRowIndex < sheet.pageBreakRows.Count - 2)
+                    {
+                        this.CurrentRowIndex++;
 
-								this.hasMorePages = true;
-							}
-							else
-							{
-								this.hasMorePages = false;
-							}
-						}
-					}
-					break;
+                        this.hasMorePages = true;
+                    }
+                    else
+                    {
+                        if (this.CurrentColIndex < sheet.pageBreakCols.Count - 2)
+                        {
+                            this.CurrentRowIndex = 0;
+                            this.CurrentColIndex++;
 
-				case PrintPageOrder.OverThenDown:
-					{
-						if (this.CurrentColIndex < sheet.pageBreakCols.Count - 2)
-						{
-							this.CurrentColIndex++;
+                            this.hasMorePages = true;
+                        }
+                        else
+                        {
+                            this.hasMorePages = false;
+                        }
+                    }
+                }
+                    break;
 
-							this.hasMorePages = true;
-						}
-						else
-						{
-							if (this.CurrentRowIndex < sheet.pageBreakRows.Count - 2)
-							{
-								this.CurrentColIndex = 0;
-								this.CurrentRowIndex++;
+                case PrintPageOrder.OverThenDown:
+                {
+                    if (this.CurrentColIndex < sheet.pageBreakCols.Count - 2)
+                    {
+                        this.CurrentColIndex++;
 
-								this.hasMorePages = true;
-							}
-							else
-							{
-								this.hasMorePages = false;
-							}
-						}
-					}
-					break;
-			}
+                        this.hasMorePages = true;
+                    }
+                    else
+                    {
+                        if (this.CurrentRowIndex < sheet.pageBreakRows.Count - 2)
+                        {
+                            this.CurrentColIndex = 0;
+                            this.CurrentRowIndex++;
 
-			if (this.DrawingContext.Graphics == null)
-			{
+                            this.hasMorePages = true;
+                        }
+                        else
+                        {
+                            this.hasMorePages = false;
+                        }
+                    }
+                }
+                    break;
+            }
+
+            if (this.DrawingContext.Graphics == null)
+            {
 #if WINFORM
 				this.DrawingContext.Graphics = new unvell.ReoGrid.WinForm.GDIRenderer(pg);
 #endif // WINFORM
-			}
-			else
-			{
-				this.DrawingContext.Graphics.Reset();
-			}
+            }
+            else
+            {
+                this.DrawingContext.Graphics.Reset();
+            }
 
-			var ig = this.DrawingContext.Renderer;
-			ig.PlatformGraphics = pg;
+            var ig = this.DrawingContext.Renderer;
+            ig.PlatformGraphics = pg;
 
 #if DEBUG
 			Debug.WriteLine(string.Format("print page {0,3},{1,3} - {2,3},{3,3}", row, col, endRow, endCol));
 #endif // DEBUG
 
-			GridRegion gr = new GridRegion(row, col, endRow, endCol);
+            GridRegion gr = new GridRegion(row, col, endRow, endCol);
 
-			if (this.printViewportController == null)
-			{
-				this.printViewportController = new ViewportController(sheet);
-			}
-			else
-			{
-				this.printViewportController.worksheet = sheet;
-			}
+            if (this.printViewportController == null)
+            {
+                this.printViewportController = new ViewportController(sheet);
+            }
+            else
+            {
+                this.printViewportController.worksheet = sheet;
+            }
 
-			this.PrintViewport = new SheetViewport(this.printViewportController);
-			this.PrintViewport.Bounds = this.CurrentPaperBounds;
+            this.PrintViewport = new SheetViewport(this.printViewportController);
+            this.PrintViewport.Bounds = this.CurrentPaperBounds;
 
-			// refresh cells text boundary
-			sheet.IterateCells(gr.ToRange(), (_unused_r, _unused_c, cell) =>
-			{
-				sheet.UpdateCellTextBounds(ig, cell, DrawMode.Print, this.CurrentPrintSettings.PageScaling, Core.UpdateFontReason.ScaleChanged);
-				return true;
-			});
+            // refresh cells text boundary
+            sheet.IterateCells(gr.ToRange(), (_unused_r, _unused_c, cell) =>
+            {
+                sheet.UpdateCellTextBounds(ig, cell, DrawMode.Print, this.CurrentPrintSettings.PageScaling, Core.UpdateFontReason.ScaleChanged);
+                return true;
+            });
 
-			this.PrintViewport.VisibleRegion = gr;
-			this.PrintViewport.ScaleFactor = this.CurrentPrintSettings.PageScaling;
-			this.PrintViewport.ViewStart = new Point(sheet.cols[col].Left, sheet.rows[row].Top);
-			this.PrintViewport.UpdateView();
+            this.PrintViewport.VisibleRegion = gr;
+            this.PrintViewport.ScaleFactor = this.CurrentPrintSettings.PageScaling;
+            this.PrintViewport.ViewStart = new Point(sheet.cols[col].Left, sheet.rows[row].Top);
+            this.PrintViewport.UpdateView();
 
-			this.PrintViewport.Draw(this.DrawingContext);
+            this.PrintViewport.Draw(this.DrawingContext);
 
-			if (this.CurrentPrintSettings.ShowMargins)
-			{
-				var m = this.CurrentPaperBounds;
+            if (this.CurrentPrintSettings.ShowMargins)
+            {
+                var m = this.CurrentPaperBounds;
 
-				var p = this.DrawingContext.Renderer.GetPen(SolidColor.Gray);
+                var p = this.DrawingContext.Renderer.GetPen(SolidColor.Gray);
 
-				lock (p)
-				{
-					ig.DrawLine(p, m.X - 50, m.Y, m.X, m.Y);
-					ig.DrawLine(p, m.Right + 50, m.Y, m.Right, m.Y);
+                lock (p)
+                {
+                    ig.DrawLine(p, m.X - 50, m.Y, m.X, m.Y);
+                    ig.DrawLine(p, m.Right + 50, m.Y, m.Right, m.Y);
 
-					ig.DrawLine(p, m.X - 50, m.Bottom, m.X, m.Bottom);
-					ig.DrawLine(p, m.Right + 50, m.Bottom, m.Right, m.Bottom);
+                    ig.DrawLine(p, m.X - 50, m.Bottom, m.X, m.Bottom);
+                    ig.DrawLine(p, m.Right + 50, m.Bottom, m.Right, m.Bottom);
 
-					ig.DrawLine(p, m.X, m.Y - 50, m.X, m.Y);
-					ig.DrawLine(p, m.X, m.Bottom + 50, m.X, m.Bottom);
+                    ig.DrawLine(p, m.X, m.Y - 50, m.X, m.Y);
+                    ig.DrawLine(p, m.X, m.Bottom + 50, m.X, m.Bottom);
 
-					ig.DrawLine(p, m.Right, m.Y - 50, m.Right, m.Y);
-					ig.DrawLine(p, m.Right, m.Bottom + 50, m.Right, m.Bottom);
-				}
-			}
+                    ig.DrawLine(p, m.Right, m.Y - 50, m.Right, m.Y);
+                    ig.DrawLine(p, m.Right, m.Bottom + 50, m.Right, m.Bottom);
+                }
+            }
 
-			if (!this.hasMorePages)
-			{
-				this.NextWorksheet();
+            if (!this.hasMorePages)
+            {
+                this.NextWorksheet();
 
-				this.hasMorePages = this.CurrentWorksheet != null;
-			}
-		}
-		#endregion // NextPage
-	}
+                this.hasMorePages = this.CurrentWorksheet != null;
+            }
+        }
 
-	internal class PrintSessionWorksheetCollection : ICollection<Worksheet>
-	{
-		private PrintSession session;
+        #endregion // NextPage
+    }
 
-		internal PrintSessionWorksheetCollection(PrintSession session)
-		{
-			this.session = session;
-		}
+    internal class PrintSessionWorksheetCollection : ICollection<Worksheet>
+    {
+        private PrintSession session;
 
-		public void Add(Worksheet worksheet)
-		{
-			CheckInPrinting();
-			session.worksheets.Add(worksheet);
-		}
+        internal PrintSessionWorksheetCollection(PrintSession session)
+        {
+            this.session = session;
+        }
 
-		public void Clear()
-		{
-			CheckInPrinting();
-		}
+        public void Add(Worksheet worksheet)
+        {
+            CheckInPrinting();
+            session.worksheets.Add(worksheet);
+        }
 
-		public bool Contains(Worksheet worksheet)
-		{
-			return this.session.worksheets.Contains(worksheet);
-		}
+        public void Clear()
+        {
+            CheckInPrinting();
+        }
 
-		public void CopyTo(Worksheet[] array, int arrayIndex)
-		{
-			this.session.worksheets.CopyTo(array, arrayIndex);
-		}
+        public bool Contains(Worksheet worksheet)
+        {
+            return this.session.worksheets.Contains(worksheet);
+        }
 
-		public int Count
-		{
-			get { return this.session.worksheets.Count; }
-		}
+        public void CopyTo(Worksheet[] array, int arrayIndex)
+        {
+            this.session.worksheets.CopyTo(array, arrayIndex);
+        }
 
-		public bool IsReadOnly
-		{
-			get { return this.session.IsPrinting; }
-		}
+        public int Count
+        {
+            get { return this.session.worksheets.Count; }
+        }
 
-		public bool Remove(Worksheet worksheet)
-		{
-			CheckInPrinting();
+        public bool IsReadOnly
+        {
+            get { return this.session.IsPrinting; }
+        }
 
-			return this.session.worksheets.Remove(worksheet);
-		}
+        public bool Remove(Worksheet worksheet)
+        {
+            CheckInPrinting();
 
-		private void CheckInPrinting()
-		{
-			if (session.IsPrinting)
-			{
-				throw new InvalidOperationException("Cannot modify worksheet collection during printing.");
-			}
-		}
+            return this.session.worksheets.Remove(worksheet);
+        }
 
-		public IEnumerator<Worksheet> GetEnumerator()
-		{
-			return session.worksheets.GetEnumerator();
-		}
+        private void CheckInPrinting()
+        {
+            if (session.IsPrinting)
+            {
+                throw new InvalidOperationException("Cannot modify worksheet collection during printing.");
+            }
+        }
 
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-		{
-			return session.worksheets.GetEnumerator();
-		}
-	}
+        public IEnumerator<Worksheet> GetEnumerator()
+        {
+            return session.worksheets.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return session.worksheets.GetEnumerator();
+        }
+    }
 }
 
 #endif // PRINT

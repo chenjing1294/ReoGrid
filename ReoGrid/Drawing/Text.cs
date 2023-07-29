@@ -45,11 +45,11 @@ using System.Collections;
 
 namespace unvell.ReoGrid.Drawing
 {
-	/// <summary>
-	/// Represents a rich format text object that could be displayed inside cell or drawing objects.
-	/// </summary>
-	public sealed class RichText
-	{
+    /// <summary>
+    /// Represents a rich format text object that could be displayed inside cell or drawing objects.
+    /// </summary>
+    public sealed class RichText
+    {
 #if WINFORM
 		internal System.Drawing.StringFormat sf = new System.Drawing.StringFormat(System.Drawing.StringFormat.GenericTypographic)
 		{
@@ -57,162 +57,169 @@ namespace unvell.ReoGrid.Drawing
 		};
 #endif // WINFORM
 
-		private bool suspendUpdateText = false;
+        private bool suspendUpdateText = false;
 
-		/// <summary>
-		/// Suspend update text when size, wrap-mode etc. properties changed.
-		/// </summary>
-		public void SuspendUpdateText()
-		{
-			this.suspendUpdateText = true;
-		}
+        /// <summary>
+        /// Suspend update text when size, wrap-mode etc. properties changed.
+        /// </summary>
+        public void SuspendUpdateText()
+        {
+            this.suspendUpdateText = true;
+        }
 
-		/// <summary>
-		/// Resume update text when size, wrap-mode etc. properties changed.
-		/// </summary>
-		public void ResumeUpdateText()
-		{
-			this.suspendUpdateText = false;
-		}
+        /// <summary>
+        /// Resume update text when size, wrap-mode etc. properties changed.
+        /// </summary>
+        public void ResumeUpdateText()
+        {
+            this.suspendUpdateText = false;
+        }
 
-		#region Constants
-		internal const string BuiltInDefaultFontName = "Calibri";
-		internal const RGFloat BuiltInDefaultFontSize = 10.25f;
-		#endregion // Constants
+        #region Constants
 
-		#region Size
-		private Size size;
+        internal const string BuiltInDefaultFontName = "Calibri";
+        internal const RGFloat BuiltInDefaultFontSize = 10.25f;
 
-		/// <summary>
-		/// Get or set the display area size. (in pixel)
-		/// </summary>
-		internal Size Size
-		{
-			get { return this.size; }
-			set
-			{
-				if (this.size != value)
-				{
-					this.size = value;
+        #endregion // Constants
 
-					if (!this.suspendUpdateText)
-					{
-						this.UpdateText();
-					}
-				}
-			}
-		}
-		#endregion // Size
+        #region Size
 
-		#region Measured Size
-		internal Size measuredSize = new Size(0, 0);
+        private Size size;
 
-		/// <summary>
-		/// Get the actual size to display text.
-		/// </summary>
-		public Size TextSize
-		{
-			get
-			{
-				return this.measuredSize;
-				//var p = this.paragraphs.Count <= 0 ? null : this.paragraphs[this.paragraphs.Count - 1];
-				//return p = null ? new Size(0,0) : new Size(textMaxWidth, p.TextSize.
-				//var lastLine = p.lines.Count <= 0 ? null : p.lines[p.lines.Count - 1];
-				//return lastLine == null ? new Size(0, 0) : new Size(this.textMaxWidth, lastLine.Bottom);
-			}
-		}
-		#endregion // Measured Text Size
+        /// <summary>
+        /// Get or set the display area size. (in pixel)
+        /// </summary>
+        internal Size Size
+        {
+            get { return this.size; }
+            set
+            {
+                if (this.size != value)
+                {
+                    this.size = value;
 
-		#region Default Values
-		public string DefaultFontName { get; set; }
+                    if (!this.suspendUpdateText)
+                    {
+                        this.UpdateText();
+                    }
+                }
+            }
+        }
 
-		public RGFloat DefaultFontSize { get; set; }
+        #endregion // Size
 
-		public FontStyles DefaultFontStyles { get; set; }
+        #region Measured Size
 
-		/// <summary>
-		/// Get or set the default background color of text.
-		/// </summary>
-		public SolidColor DefaultBackColor { get; set; }
+        internal Size measuredSize = new Size(0, 0);
 
-		/// <summary>
-		/// Get or set the default text color.
-		/// </summary>
-		public SolidColor DefaultTextColor { get; set; }
+        /// <summary>
+        /// Get the actual size to display text.
+        /// </summary>
+        public Size TextSize
+        {
+            get
+            {
+                return this.measuredSize;
+                //var p = this.paragraphs.Count <= 0 ? null : this.paragraphs[this.paragraphs.Count - 1];
+                //return p = null ? new Size(0,0) : new Size(textMaxWidth, p.TextSize.
+                //var lastLine = p.lines.Count <= 0 ? null : p.lines[p.lines.Count - 1];
+                //return lastLine == null ? new Size(0, 0) : new Size(this.textMaxWidth, lastLine.Bottom);
+            }
+        }
 
-		/// <summary>
-		/// Get or set the default line height scale for every lines.
-		/// </summary>
-		public RGFloat DefaultLineHeight { get; set; }
+        #endregion // Measured Text Size
 
-		/// <summary>
-		/// Determines the default horizontal alignment for paragraphs.
-		/// This option may overwritten by settings from each paragraph.
-		/// </summary>
-		public ReoGridHorAlign DefaultHorizontalAlignment { get; set; }
+        #region Default Values
 
-		#endregion // Default Values
+        public string DefaultFontName { get; set; }
 
-		/// <summary>
-		/// Determines whether or not allow text displayed out of specified size.
-		/// </summary>
-		public bool Overflow { get; set; }
+        public RGFloat DefaultFontSize { get; set; }
 
-		private TextWrapMode textWrap = TextWrapMode.NoWrap;
+        public FontStyles DefaultFontStyles { get; set; }
 
-		/// <summary>
-		/// Determines the text wrap mode.
-		/// </summary>
-		public TextWrapMode TextWrap
-		{
-			get { return textWrap; }
-			set
-			{
-				if (this.textWrap != value)
-				{
-					this.textWrap = value;
+        /// <summary>
+        /// Get or set the default background color of text.
+        /// </summary>
+        public SolidColor DefaultBackColor { get; set; }
 
-					if (!this.suspendUpdateText)
-					{
-						this.UpdateText();
-					}
-				}
-			}
-		}
+        /// <summary>
+        /// Get or set the default text color.
+        /// </summary>
+        public SolidColor DefaultTextColor { get; set; }
 
-		/// <summary>
-		/// Get or set the vertical alignment mode.
-		/// </summary>
-		public ReoGridVerAlign VerticalAlignment { get; set; }
+        /// <summary>
+        /// Get or set the default line height scale for every lines.
+        /// </summary>
+        public RGFloat DefaultLineHeight { get; set; }
 
-		/// <summary>
-		/// Get or set the default paragraph spacing.
-		/// </summary>
-		public RGFloat DefaultParagraphSpacing { get; set; }
+        /// <summary>
+        /// Determines the default horizontal alignment for paragraphs.
+        /// This option may overwritten by settings from each paragraph.
+        /// </summary>
+        public ReoGridHorAlign DefaultHorizontalAlignment { get; set; }
 
-		/// <summary>
-		/// Get or set the rotation angle. (-90° ~ 90°)
-		/// </summary>
-		internal float RotationAngle { get; set; }
+        #endregion // Default Values
 
-		#region Constructors
+        /// <summary>
+        /// Determines whether or not allow text displayed out of specified size.
+        /// </summary>
+        public bool Overflow { get; set; }
 
-		/// <summary>
-		/// Create an instance of rich format text.
-		/// </summary>
-		public RichText()
-		{
-			this.DefaultFontName = RichText.BuiltInDefaultFontName;
-			this.DefaultFontSize = RichText.BuiltInDefaultFontSize;
-			this.DefaultFontStyles = FontStyles.Regular;
-			this.DefaultTextColor = SolidColor.Black;
-			this.DefaultBackColor = SolidColor.Transparent;
-			this.DefaultLineHeight = 1.2f;
-			this.DefaultHorizontalAlignment = ReoGridHorAlign.Left;
-			this.DefaultParagraphSpacing = 1.5f;
+        private TextWrapMode textWrap = TextWrapMode.NoWrap;
 
-			this.Overflow = false;
-		}
+        /// <summary>
+        /// Determines the text wrap mode.
+        /// </summary>
+        public TextWrapMode TextWrap
+        {
+            get { return textWrap; }
+            set
+            {
+                if (this.textWrap != value)
+                {
+                    this.textWrap = value;
+
+                    if (!this.suspendUpdateText)
+                    {
+                        this.UpdateText();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get or set the vertical alignment mode.
+        /// </summary>
+        public ReoGridVerAlign VerticalAlignment { get; set; }
+
+        /// <summary>
+        /// Get or set the default paragraph spacing.
+        /// </summary>
+        public RGFloat DefaultParagraphSpacing { get; set; }
+
+        /// <summary>
+        /// Get or set the rotation angle. (-90° ~ 90°)
+        /// </summary>
+        internal float RotationAngle { get; set; }
+
+        #region Constructors
+
+        /// <summary>
+        /// Create an instance of rich format text.
+        /// </summary>
+        public RichText()
+        {
+            this.DefaultFontName = RichText.BuiltInDefaultFontName;
+            this.DefaultFontSize = RichText.BuiltInDefaultFontSize;
+            this.DefaultFontStyles = FontStyles.Regular;
+            this.DefaultTextColor = SolidColor.Black;
+            this.DefaultBackColor = SolidColor.Transparent;
+            this.DefaultLineHeight = 1.2f;
+            this.DefaultHorizontalAlignment = ReoGridHorAlign.Left;
+            this.DefaultParagraphSpacing = 1.5f;
+
+            this.Overflow = false;
+        }
 
 #if WINFORM
 		/// <summary>
@@ -224,326 +231,334 @@ namespace unvell.ReoGrid.Drawing
 		}
 #endif // WINFORM
 
-		/// <summary>
-		/// Create an instance of rich format text with an specified initial display area size.
-		/// </summary>
-		/// <param name="size"></param>
-		internal RichText(Size size)
-		{
-			this.size = size;
-		}
+        /// <summary>
+        /// Create an instance of rich format text with an specified initial display area size.
+        /// </summary>
+        /// <param name="size"></param>
+        internal RichText(Size size)
+        {
+            this.size = size;
+        }
 
-		#endregion // Constructors
+        #endregion // Constructors
 
-		#region Lines & Paragraphs
-		private List<Paragraph> paragraphs = new List<Paragraph>();
+        #region Lines & Paragraphs
 
-		internal IEnumerable<Paragraph> Paragraphcs { get { return this.paragraphs; } }
+        private List<Paragraph> paragraphs = new List<Paragraph>();
 
-		/// <summary>
-		/// Append a new empty paragraph.
-		/// </summary>
-		/// <returns>The paragraph instance to be added.</returns>
-		/// <param name="p">Paragraph to be added. Null to create a new empty paragraph.</param>
-		internal void AddParagraph(Paragraph p = null)
-		{
-			if (p == null) p = new Paragraph(this);
-			this.paragraphs.Add(p);
-		}
-		#endregion // Lines & Paragraphs
+        internal IEnumerable<Paragraph> Paragraphcs
+        {
+            get { return this.paragraphs; }
+        }
 
-		#region Add Text
-		/// <summary>
-		/// Add text at end of current paragraph with specified styles.
-		/// </summary>
-		/// <param name="text">Text to be appended.</param>
-		/// <param name="fontName">Font name of the text to be appended. Null to use last font name or default font name.</param>
-		/// <param name="fontSize">Font size of the text to be appended. Null to use last font size or default font size.</param>
-		/// <param name="fontStyles">Style of the text to be appended. Null to use last font style or default font style.</param>
-		/// <param name="textColor">Color of the text to be appended. Null to use last text color or default text color.</param>
-		/// <param name="backColor">Background color of text to be appended. Null to use last background color or default background color.</param>
-		public void AddText(string text, string fontName = null, RGFloat? fontSize = null, FontStyles? fontStyles = null,
-			SolidColor? textColor = null, SolidColor? backColor = null)
-		{
-			var lastPara = this.GetOrCreateLastParagraph();
-			lastPara.AddText(text, fontName, fontSize, fontStyles, textColor, backColor);
-		}
+        /// <summary>
+        /// Append a new empty paragraph.
+        /// </summary>
+        /// <returns>The paragraph instance to be added.</returns>
+        /// <param name="p">Paragraph to be added. Null to create a new empty paragraph.</param>
+        internal void AddParagraph(Paragraph p = null)
+        {
+            if (p == null) p = new Paragraph(this);
+            this.paragraphs.Add(p);
+        }
 
-		/// <summary>
-		/// End current paragraph, put following text into a new paragraph.
-		/// </summary>
-		/// <returns>Rich format text instance.</returns>
-		public RichText NewLine()
-		{
-			var p = new Paragraph(this);
-			this.AddParagraph(p);
-			return this;
-		}
+        #endregion // Lines & Paragraphs
 
-		/// <summary>
-		/// Append a text span with specified display format.
-		/// </summary>
-		/// <param name="text">Text to be appended.</param>
-		/// <param name="fontName">Font name of the text to be appended. Null to use last font name or default font name.</param>
-		/// <param name="fontSize">Font size of the text to be appended. Null to use last font size or default font size.</param>
-		/// <param name="fontStyles">Style of the text to be appended. Null to use last font style or default font style.</param>
-		/// <param name="textColor">Color of the text to be appended. Null to use last text color or default text color.</param>
-		/// <param name="backColor">Background color of text to be appended. Null to use last background color or default background color.</param>
-		/// <returns>Rich format text instance.</returns>
-		public RichText Span(string text, string fontName = null, RGFloat? fontSize = null, FontStyles? fontStyles = null,
-			SolidColor? textColor = null, SolidColor? backColor = null)
-		{
-			this.AddText(text, fontName, fontSize, fontStyles, textColor, backColor);
-			return this;
-		}
+        #region Add Text
 
-		public RichText Bold(string text, string fontName = null, RGFloat? fontSize = null,
-			SolidColor? textColor = null, SolidColor? backColor = null)
-		{
-			var lastRun = this.GetOrCreateLastParagraph().GetOrCreateLastRun(fontName, fontSize, FontStyles.Bold, textColor, backColor);
-			lastRun.AppendText(text);
-			return this;
-		}
+        /// <summary>
+        /// Add text at end of current paragraph with specified styles.
+        /// </summary>
+        /// <param name="text">Text to be appended.</param>
+        /// <param name="fontName">Font name of the text to be appended. Null to use last font name or default font name.</param>
+        /// <param name="fontSize">Font size of the text to be appended. Null to use last font size or default font size.</param>
+        /// <param name="fontStyles">Style of the text to be appended. Null to use last font style or default font style.</param>
+        /// <param name="textColor">Color of the text to be appended. Null to use last text color or default text color.</param>
+        /// <param name="backColor">Background color of text to be appended. Null to use last background color or default background color.</param>
+        public void AddText(string text, string fontName = null, RGFloat? fontSize = null, FontStyles? fontStyles = null,
+            SolidColor? textColor = null, SolidColor? backColor = null)
+        {
+            var lastPara = this.GetOrCreateLastParagraph();
+            lastPara.AddText(text, fontName, fontSize, fontStyles, textColor, backColor);
+        }
 
-		public RichText Italic(string text, string fontName = null, RGFloat? fontSize = null,
-			SolidColor? textColor = null, SolidColor? backColor = null)
-		{
-			var lastRun = this.GetOrCreateLastParagraph().GetOrCreateLastRun(fontName, fontSize, FontStyles.Italic, textColor, backColor);
-			lastRun.AppendText(text);
-			return this;
-		}
+        /// <summary>
+        /// End current paragraph, put following text into a new paragraph.
+        /// </summary>
+        /// <returns>Rich format text instance.</returns>
+        public RichText NewLine()
+        {
+            var p = new Paragraph(this);
+            this.AddParagraph(p);
+            return this;
+        }
 
-		public RichText Underline(string text, string fontName = null, RGFloat? fontSize = null,
-			SolidColor? textColor = null, SolidColor? backColor = null)
-		{
-			var lastRun = this.GetOrCreateLastParagraph().GetOrCreateLastRun(fontName, fontSize, FontStyles.Underline, textColor, backColor);
-			lastRun.AppendText(text);
-			return this;
-		}
+        /// <summary>
+        /// Append a text span with specified display format.
+        /// </summary>
+        /// <param name="text">Text to be appended.</param>
+        /// <param name="fontName">Font name of the text to be appended. Null to use last font name or default font name.</param>
+        /// <param name="fontSize">Font size of the text to be appended. Null to use last font size or default font size.</param>
+        /// <param name="fontStyles">Style of the text to be appended. Null to use last font style or default font style.</param>
+        /// <param name="textColor">Color of the text to be appended. Null to use last text color or default text color.</param>
+        /// <param name="backColor">Background color of text to be appended. Null to use last background color or default background color.</param>
+        /// <returns>Rich format text instance.</returns>
+        public RichText Span(string text, string fontName = null, RGFloat? fontSize = null, FontStyles? fontStyles = null,
+            SolidColor? textColor = null, SolidColor? backColor = null)
+        {
+            this.AddText(text, fontName, fontSize, fontStyles, textColor, backColor);
+            return this;
+        }
 
-		public RichText Regular(string text, string fontName = null, RGFloat? fontSize = null,
-			SolidColor? textColor = null, SolidColor? backColor = null)
-		{
-			var lastRun = this.GetOrCreateLastParagraph().GetOrCreateLastRun(fontName, fontSize, FontStyles.Regular, textColor, backColor);
-			lastRun.AppendText(text);
-			return this;
-		}
+        public RichText Bold(string text, string fontName = null, RGFloat? fontSize = null,
+            SolidColor? textColor = null, SolidColor? backColor = null)
+        {
+            var lastRun = this.GetOrCreateLastParagraph().GetOrCreateLastRun(fontName, fontSize, FontStyles.Bold, textColor, backColor);
+            lastRun.AppendText(text);
+            return this;
+        }
 
-		public RichText Superscript(string text, string fontName = null, RGFloat? fontSize = null,
-			SolidColor? textColor = null, SolidColor? backColor = null)
-		{
-			var lastRun = this.GetOrCreateLastParagraph().GetOrCreateLastRun(fontName, fontSize, FontStyles.Superscrit, textColor, backColor);
-			lastRun.AppendText(text);
-			return this;
-		}
+        public RichText Italic(string text, string fontName = null, RGFloat? fontSize = null,
+            SolidColor? textColor = null, SolidColor? backColor = null)
+        {
+            var lastRun = this.GetOrCreateLastParagraph().GetOrCreateLastRun(fontName, fontSize, FontStyles.Italic, textColor, backColor);
+            lastRun.AppendText(text);
+            return this;
+        }
 
-		public RichText Subscript(string text, string fontName = null, RGFloat? fontSize = null,
-			SolidColor? textColor = null, SolidColor? backColor = null)
-		{
-			var lastRun = this.GetOrCreateLastParagraph().GetOrCreateLastRun(fontName, fontSize, FontStyles.Subscript, textColor, backColor);
-			lastRun.AppendText(text);
-			return this;
-		}
+        public RichText Underline(string text, string fontName = null, RGFloat? fontSize = null,
+            SolidColor? textColor = null, SolidColor? backColor = null)
+        {
+            var lastRun = this.GetOrCreateLastParagraph().GetOrCreateLastRun(fontName, fontSize, FontStyles.Underline, textColor, backColor);
+            lastRun.AppendText(text);
+            return this;
+        }
 
-		public RichText SetStyles(RGFloat? paragraphSpacing = null, RGFloat? lineHeight = null,
-			ReoGridHorAlign? halign = null, string fontName = null, RGFloat? fontSize = null,
-			FontStyles? fontStyles = null, SolidColor? textColor = null, SolidColor? backColor = null)
-		{
-			var p = GetOrCreateLastParagraph();
+        public RichText Regular(string text, string fontName = null, RGFloat? fontSize = null,
+            SolidColor? textColor = null, SolidColor? backColor = null)
+        {
+            var lastRun = this.GetOrCreateLastParagraph().GetOrCreateLastRun(fontName, fontSize, FontStyles.Regular, textColor, backColor);
+            lastRun.AppendText(text);
+            return this;
+        }
 
-			p.ParagraphEndSpacing = paragraphSpacing ?? this.DefaultParagraphSpacing;
-			p.LineHeight = lineHeight ?? this.DefaultLineHeight;
-			p.HorizontalAlign = halign ?? this.DefaultHorizontalAlignment;
+        public RichText Superscript(string text, string fontName = null, RGFloat? fontSize = null,
+            SolidColor? textColor = null, SolidColor? backColor = null)
+        {
+            var lastRun = this.GetOrCreateLastParagraph().GetOrCreateLastRun(fontName, fontSize, FontStyles.Superscrit, textColor, backColor);
+            lastRun.AppendText(text);
+            return this;
+        }
 
-			var r = p.GetOrCreateLastRun(fontName, fontSize, fontStyles, textColor, backColor);
+        public RichText Subscript(string text, string fontName = null, RGFloat? fontSize = null,
+            SolidColor? textColor = null, SolidColor? backColor = null)
+        {
+            var lastRun = this.GetOrCreateLastParagraph().GetOrCreateLastRun(fontName, fontSize, FontStyles.Subscript, textColor, backColor);
+            lastRun.AppendText(text);
+            return this;
+        }
 
-			return this;
-		}
+        public RichText SetStyles(RGFloat? paragraphSpacing = null, RGFloat? lineHeight = null,
+            ReoGridHorAlign? halign = null, string fontName = null, RGFloat? fontSize = null,
+            FontStyles? fontStyles = null, SolidColor? textColor = null, SolidColor? backColor = null)
+        {
+            var p = GetOrCreateLastParagraph();
 
-		private Paragraph GetOrCreateLastParagraph()
-		{
-			Paragraph lastPara = null;
+            p.ParagraphEndSpacing = paragraphSpacing ?? this.DefaultParagraphSpacing;
+            p.LineHeight = lineHeight ?? this.DefaultLineHeight;
+            p.HorizontalAlign = halign ?? this.DefaultHorizontalAlignment;
 
-			if (this.paragraphs.Count > 0)
-			{
-				lastPara = this.paragraphs[this.paragraphs.Count - 1];
-			}
-			else
-			{
-				lastPara = new Paragraph(this);
-				this.AddParagraph(lastPara);
-			}
+            var r = p.GetOrCreateLastRun(fontName, fontSize, fontStyles, textColor, backColor);
 
-			return lastPara;
-		}
+            return this;
+        }
 
-		#endregion // Add Text
+        private Paragraph GetOrCreateLastParagraph()
+        {
+            Paragraph lastPara = null;
 
-		#region Draw
-		/// <summary>
-		/// Draw rich text at specified area.
-		/// </summary>
-		/// <param name="g">Graphics context.</param>
-		/// <param name="bounds">Target area to draw rich text.</param>
-		internal void Draw(IGraphics g, Rectangle bounds)
-		{
-			RGFloat x = bounds.Left + 2;
-			RGFloat y = bounds.Top + 2;
+            if (this.paragraphs.Count > 0)
+            {
+                lastPara = this.paragraphs[this.paragraphs.Count - 1];
+            }
+            else
+            {
+                lastPara = new Paragraph(this);
+                this.AddParagraph(lastPara);
+            }
 
-			if (!this.Overflow)
-			{
-				g.PushClip(bounds);
-			}
+            return lastPara;
+        }
 
-			switch (this.VerticalAlignment)
-			{
-				default:
-				case ReoGridVerAlign.General:
-				case ReoGridVerAlign.Bottom:
-					y += (bounds.Height - this.measuredSize.Height) - 6;
-					break;
+        #endregion // Add Text
 
-				case ReoGridVerAlign.Middle:
-					y += (bounds.Height - this.measuredSize.Height) / 2 - 2;
-					break;
+        #region Draw
 
-				case ReoGridVerAlign.Top:
-					y++;
-					break;
-			}
+        /// <summary>
+        /// Draw rich text at specified area.
+        /// </summary>
+        /// <param name="g">Graphics context.</param>
+        /// <param name="bounds">Target area to draw rich text.</param>
+        internal void Draw(IGraphics g, Rectangle bounds)
+        {
+            RGFloat x = bounds.Left + 2;
+            RGFloat y = bounds.Top + 2;
 
-			Run lastRun = null;
+            if (!this.Overflow)
+            {
+                g.PushClip(bounds);
+            }
 
-			RGBrush lastBrush = null;
-			SolidColor lastColor = SolidColor.Transparent;
+            switch (this.VerticalAlignment)
+            {
+                default:
+                case ReoGridVerAlign.General:
+                case ReoGridVerAlign.Bottom:
+                    y += (bounds.Height - this.measuredSize.Height) - 6;
+                    break;
+
+                case ReoGridVerAlign.Middle:
+                    y += (bounds.Height - this.measuredSize.Height) / 2 - 2;
+                    break;
+
+                case ReoGridVerAlign.Top:
+                    y++;
+                    break;
+            }
+
+            Run lastRun = null;
+
+            RGBrush lastBrush = null;
+            SolidColor lastColor = SolidColor.Transparent;
 
 #if DEBUG1
 			g.DrawRectangle(System.Drawing.Pens.DarkRed, x, y, x + measuredSize.Width, y + measuredSize.Height);
 #endif // DEBUG
 
-			foreach (var p in this.paragraphs)
-			{
-				foreach (var l in p.lines)
-				{
+            foreach (var p in this.paragraphs)
+            {
+                foreach (var l in p.lines)
+                {
 #if DEBUG
 					//g.DrawRectangle(System.Drawing.Pens.Blue, x, y + l.leftTop.Y, l.Width, l.Height);
 #endif // DEBUG
 
-					foreach (var b in l.boxes)
-					{
-						var r = b.Run;
+                    foreach (var b in l.boxes)
+                    {
+                        var r = b.Run;
 
-						if (lastRun != r)
-						{
-							SolidColor textColor = r.TextColor;
+                        if (lastRun != r)
+                        {
+                            SolidColor textColor = r.TextColor;
 
-							if (textColor.IsTransparent)
-							{
-								textColor = this.DefaultTextColor;
-							}
+                            if (textColor.IsTransparent)
+                            {
+                                textColor = this.DefaultTextColor;
+                            }
 
-							if (textColor != lastColor || lastBrush == null)
-							{
-								lastColor = textColor;
+                            if (textColor != lastColor || lastBrush == null)
+                            {
+                                lastColor = textColor;
 
 #if WINFORM || ANDROID
 								if (lastBrush != null) lastBrush.Dispose();
 #endif // WINFORM
-								lastBrush = new RGBrush(lastColor);
-							}
+                                lastBrush = new RGBrush(lastColor);
+                            }
 
-							lastRun = r;
-						}
+                            lastRun = r;
+                        }
 
 #if DEBUG
 						//RGFloat baseLine = l.Top + l.Ascent;
 						//g.DrawLine(System.Drawing.Pens.Blue, b.Left + 1, baseLine, b.Right - 1, baseLine);
 #endif // DEBUG
 
-						if ((r.FontStyles & FontStyles.Underline) == FontStyles.Underline)
-						{
+                        if ((r.FontStyles & FontStyles.Underline) == FontStyles.Underline)
+                        {
 #if WINFORM
 							using (var underlinePen = new RGPen(lastBrush.Color))
 #elif WPF
-							var underlinePen = new RGPen(new RGBrush(lastBrush.Color), 1);
+                            var underlinePen = new RGPen(new RGBrush(lastBrush.Color), 1);
 #endif // WPF
-							{
-								RGFloat underlineY = l.Height + y + 1;
-								g.PlatformGraphics.DrawLine(underlinePen, new Point(b.leftTop.X + x, underlineY), new Point(b.rightTop.X + x, underlineY));
-							}
-						}
+                            {
+                                RGFloat underlineY = l.Height + y + 1;
+                                g.PlatformGraphics.DrawLine(underlinePen, new Point(b.leftTop.X + x, underlineY), new Point(b.rightTop.X + x, underlineY));
+                            }
+                        }
 
-						var tx = b.leftTop.X + x;
-						var ty = b.leftTop.Y + y;
+                        var tx = b.leftTop.X + x;
+                        var ty = b.leftTop.Y + y;
 
 #if WINFORM || ANDROID
 						g.PlatformGraphics.DrawString(b.Str, b.FontInfo.Font, lastBrush, tx, ty, this.sf);
 #elif WPF
-						var gr = new System.Windows.Media.GlyphRun(b.FontInfo.GlyphTypeface, 0, false, r.FontSize * 1.33d,
-							new ushort[] { b.GlyphIndex },
-							new System.Windows.Point(tx, ty),
-							new double[] { b.Width }, null, null, null, null,
-							null, null);
+                        var gr = new System.Windows.Media.GlyphRun(b.FontInfo.GlyphTypeface, 0, false, r.FontSize * 1.33d,
+                            new ushort[] {b.GlyphIndex},
+                            new System.Windows.Point(tx, ty),
+                            new double[] {b.Width}, null, null, null, null,
+                            null, null);
 
-						g.PlatformGraphics.DrawGlyphRun(lastBrush, gr);
+                        g.PlatformGraphics.DrawGlyphRun(lastBrush, gr);
 #endif // WPF
-					}
-				}
+                    }
+                }
 
-				//y += p.TextSize.Height + this.paragraphSpacing;
-			}
+                //y += p.TextSize.Height + this.paragraphSpacing;
+            }
 
-			if (!this.Overflow)
-			{
-				g.PopClip();
-			}
-		}
-		#endregion // Draw
+            if (!this.Overflow)
+            {
+                g.PopClip();
+            }
+        }
 
-		#region Update
+        #endregion // Draw
+
+        #region Update
 
 #if DEBUG
 		public long lastUpdateMS;
 #endif // DEBUG
 
-		internal void UpdateText()
-		{
+        internal void UpdateText()
+        {
 #if DEBUG
 			var sw = System.Diagnostics.Stopwatch.StartNew();
 #endif // DEBUG
 
-			this.measuredSize = new Size(0, 0);
+            this.measuredSize = new Size(0, 0);
 
-			Paragraph lastP = null;
+            Paragraph lastP = null;
 
-			if (this.size.Width > 0 && this.size.Height > 0)
-			{
-				// RGFloat y = 0;
-				var rs = new RelayoutSession(this.size);
+            if (this.size.Width > 0 && this.size.Height > 0)
+            {
+                // RGFloat y = 0;
+                var rs = new RelayoutSession(this.size);
 
-				if (this.RotationAngle > 0)
-				{
-					rs.d = this.RotationAngle * 3.1415926f / 180f;
-					rs.s = (float)Math.Sin(rs.d);
-					rs.c = (float)Math.Cos(rs.d);
-				}
+                if (this.RotationAngle > 0)
+                {
+                    rs.d = this.RotationAngle * 3.1415926f / 180f;
+                    rs.s = (float) Math.Sin(rs.d);
+                    rs.c = (float) Math.Cos(rs.d);
+                }
 
-				foreach (var p in this.paragraphs)
-				{
-					p.UpdateText(rs);
+                foreach (var p in this.paragraphs)
+                {
+                    p.UpdateText(rs);
 
-					if (p.lastLine != null)
-					{
-						var paraSpacing = p.lastLine.Height * (p.ParagraphEndSpacing - 1.0f);
+                    if (p.lastLine != null)
+                    {
+                        var paraSpacing = p.lastLine.Height * (p.ParagraphEndSpacing - 1.0f);
 
-						rs.startLoc.Y += paraSpacing;
-					}
+                        rs.startLoc.Y += paraSpacing;
+                    }
 
-					lastP = p;
-				}
+                    lastP = p;
+                }
 
-				this.measuredSize = rs.measuredSize;
-			}
+                this.measuredSize = rs.measuredSize;
+            }
 
 #if DEBUG
 			sw.Stop();
@@ -553,538 +568,563 @@ namespace unvell.ReoGrid.Drawing
 				Logger.Log("richtext", "update all text takes " + this.lastUpdateMS + " ms.");
 			}
 #endif // DEBUG
-		}
+        }
 
-		private string textBuffer = string.Empty;
-		#endregion // Update
+        private string textBuffer = string.Empty;
 
-		#region ToString
-		internal bool sbDirty = true;
+        #endregion // Update
 
-		private StringBuilder sb = null;
+        #region ToString
 
-		/// <summary>
-		/// Convert rich format text to plain text.
-		/// </summary>
-		/// <returns>Plain text converted from this rich format text.</returns>
-		public override string ToString()
-		{
-			if (this.sbDirty)
-			{
-				if (this.sb == null)
-				{
-					this.sb = new StringBuilder(256);
-				}
-				else
-				{
-					this.sb.Remove(0, this.sb.Length);
-				}
+        internal bool sbDirty = true;
 
-				foreach (var p in this.paragraphs)
-				{
-					if (sb.Length > 0)
-					{
-						sb.Append(Environment.NewLine);
-					}
+        private StringBuilder sb = null;
 
-					foreach (var r in p.Runs)
-					{
-						sb.Append(r.Text);
-					}
-				}
+        /// <summary>
+        /// Convert rich format text to plain text.
+        /// </summary>
+        /// <returns>Plain text converted from this rich format text.</returns>
+        public override string ToString()
+        {
+            if (this.sbDirty)
+            {
+                if (this.sb == null)
+                {
+                    this.sb = new StringBuilder(256);
+                }
+                else
+                {
+                    this.sb.Remove(0, this.sb.Length);
+                }
 
-				this.textBuffer = sb.ToString();
-				this.sbDirty = false;
-			}
+                foreach (var p in this.paragraphs)
+                {
+                    if (sb.Length > 0)
+                    {
+                        sb.Append(Environment.NewLine);
+                    }
 
-			return this.textBuffer;
-		}
+                    foreach (var r in p.Runs)
+                    {
+                        sb.Append(r.Text);
+                    }
+                }
 
-		/// <summary>
-		/// Convert rich format text to plain text.
-		/// </summary>
-		/// <returns>Plain text converted from this rich format text.</returns>
-		public string ToPlainText()
-		{
-			return this.ToString();
-		}
-		#endregion // ToString
-	}
+                this.textBuffer = sb.ToString();
+                this.sbDirty = false;
+            }
+
+            return this.textBuffer;
+        }
+
+        /// <summary>
+        /// Convert rich format text to plain text.
+        /// </summary>
+        /// <returns>Plain text converted from this rich format text.</returns>
+        public string ToPlainText()
+        {
+            return this.ToString();
+        }
+
+        #endregion // ToString
+    }
 }
 
 namespace unvell.ReoGrid.Drawing.Text
 {
-	#region Paragraph
-	/// <summary>
-	/// Repersents a paragraph that is a part of rich format text.
-	/// </summary>
-	internal class Paragraph
-	{
-		#region Attributes
-		private RichText rt;
+    #region Paragraph
 
-		private List<Run> runs = new List<Run>();
+    /// <summary>
+    /// Repersents a paragraph that is a part of rich format text.
+    /// </summary>
+    internal class Paragraph
+    {
+        #region Attributes
 
-		internal List<Run> Runs { get { return this.runs; } }
+        private RichText rt;
 
-		public RGFloat ParagraphStartSpacing { get; set; }
+        private List<Run> runs = new List<Run>();
 
-		public RGFloat ParagraphEndSpacing { get; set; }
+        internal List<Run> Runs
+        {
+            get { return this.runs; }
+        }
 
-		#endregion // Attributes
+        public RGFloat ParagraphStartSpacing { get; set; }
 
-		#region Alignments
-		/// <summary>
-		/// Get or set the horizontal alignment for this paragraph.
-		/// </summary>
-		public ReoGridHorAlign HorizontalAlign { get; set; }
+        public RGFloat ParagraphEndSpacing { get; set; }
 
-		/// <summary>
-		/// Get or set the vertical alignment for this paragraph.
-		/// </summary>
-		public ReoGridVerAlign VerticalAlign { get; set; }
-		#endregion // Alignments
+        #endregion // Attributes
 
-		#region Line Height
-		/// <summary>
-		/// Get or set the line height scale of this paragraph.
-		/// </summary>
-		public RGFloat LineHeight { get; set; }
-		#endregion // Line Height
+        #region Alignments
 
-		#region Constructors
-		/// <summary>
-		/// Create new paragraph with initiali text.
-		/// </summary>
-		/// <param name="text">Text to be the content of paragraph created.</param>
-		internal Paragraph(RichText rt, string text = null)
-		{
-			this.rt = rt;
-			this.LineHeight = rt.DefaultLineHeight;
-			this.ParagraphStartSpacing = 0;// reserved: rt.ParagraphSpacing;
-			this.ParagraphEndSpacing = rt.DefaultParagraphSpacing;
+        /// <summary>
+        /// Get or set the horizontal alignment for this paragraph.
+        /// </summary>
+        public ReoGridHorAlign HorizontalAlign { get; set; }
 
-			if (!string.IsNullOrEmpty(text))
-			{
-				this.AddText(text);
-			}
-		}
-		#endregion // Constructors
+        /// <summary>
+        /// Get or set the vertical alignment for this paragraph.
+        /// </summary>
+        public ReoGridVerAlign VerticalAlign { get; set; }
 
-		#region Add Text
-		/// <summary>
-		/// Append text at end of line in current paragraph.
-		/// </summary>
-		/// <param name="text">Text to be appended.</param>
-		/// <param name="fontName">Font name of the text to be appended. Null to use last font name or default font name.</param>
-		/// <param name="fontSize">Font size of the text to be appended. Null to use last font size or default font size.</param>
-		/// <param name="fontStyles">Style of the text to be appended. Null to use last font style or default font style.</param>
-		/// <param name="textColor">Color of the text to be appended. Null to use last text color or default text color.</param>
-		/// <param name="backColor">Background color of text to be appended. Null to use last background color or default background color.</param>
-		public void AddText(string text, string fontName = null, RGFloat? fontSize = null, FontStyles? fontStyles = null,
-			SolidColor? textColor = null, SolidColor? backColor = null)
-		{
-			Run lastRun = this.GetOrCreateLastRun(fontName, fontSize, fontStyles, textColor, backColor);
+        #endregion // Alignments
 
-			lastRun.Text += text;
+        #region Line Height
 
-			this.rt.sbDirty = true;
-		}
+        /// <summary>
+        /// Get or set the line height scale of this paragraph.
+        /// </summary>
+        public RGFloat LineHeight { get; set; }
 
-		internal Run GetOrCreateLastRun(string fontName = null, RGFloat? fontSize = null, FontStyles? fontStyles = null,
-			SolidColor? textColor = null, SolidColor? backColor = null)
-		{
-			Run newRun = null, lastRun = null;
+        #endregion // Line Height
 
-			if (this.runs.Count > 0)
-			{
-				lastRun = this.runs[this.runs.Count - 1];
+        #region Constructors
 
-				if ((fontName == null || (lastRun.FontName == fontName))
-					&& (fontSize == null || (lastRun.FontSize == fontSize))
-					&& (fontStyles == null || (lastRun.FontStyles == fontStyles))
-					&& (textColor == null || (lastRun.TextColor == textColor))
-					&& (backColor == null || (lastRun.BackColor == backColor)))
-				{
-					newRun = lastRun;
-				}
-			}
+        /// <summary>
+        /// Create new paragraph with initiali text.
+        /// </summary>
+        /// <param name="text">Text to be the content of paragraph created.</param>
+        internal Paragraph(RichText rt, string text = null)
+        {
+            this.rt = rt;
+            this.LineHeight = rt.DefaultLineHeight;
+            this.ParagraphStartSpacing = 0; // reserved: rt.ParagraphSpacing;
+            this.ParagraphEndSpacing = rt.DefaultParagraphSpacing;
 
-			if (newRun == null)
-			{
-				newRun = new Run(this.rt,
-					fontName == null ? (lastRun == null ? rt.DefaultFontName : lastRun.FontName) : fontName,
-					fontSize == null ? (lastRun == null ? rt.DefaultFontSize : lastRun.FontSize) : (RGFloat)fontSize,
-					fontStyles == null ? (lastRun == null ? rt.DefaultFontStyles : lastRun.FontStyles) : (FontStyles)fontStyles,
-					textColor == null ? (lastRun == null ? rt.DefaultTextColor : lastRun.TextColor) : (SolidColor)textColor,
-					backColor == null ? (lastRun == null ? rt.DefaultBackColor : lastRun.BackColor) : (SolidColor)backColor);
+            if (!string.IsNullOrEmpty(text))
+            {
+                this.AddText(text);
+            }
+        }
 
-				this.runs.Add(newRun);
-			}
+        #endregion // Constructors
 
-			return newRun;
-		}
-		#endregion // Add Text
+        #region Add Text
 
-		#region Update
-		internal List<Line> lines = new List<Line>();
+        /// <summary>
+        /// Append text at end of line in current paragraph.
+        /// </summary>
+        /// <param name="text">Text to be appended.</param>
+        /// <param name="fontName">Font name of the text to be appended. Null to use last font name or default font name.</param>
+        /// <param name="fontSize">Font size of the text to be appended. Null to use last font size or default font size.</param>
+        /// <param name="fontStyles">Style of the text to be appended. Null to use last font style or default font style.</param>
+        /// <param name="textColor">Color of the text to be appended. Null to use last text color or default text color.</param>
+        /// <param name="backColor">Background color of text to be appended. Null to use last background color or default background color.</param>
+        public void AddText(string text, string fontName = null, RGFloat? fontSize = null, FontStyles? fontStyles = null,
+            SolidColor? textColor = null, SolidColor? backColor = null)
+        {
+            Run lastRun = this.GetOrCreateLastRun(fontName, fontSize, fontStyles, textColor, backColor);
 
-		internal void UpdateText(RelayoutSession rs)
-		{
-			this.lines.Clear();
+            lastRun.Text += text;
 
-			this.lastLine = null;
+            this.rt.sbDirty = true;
+        }
 
-			if (this.Runs != null && this.Runs.Count > 0 && rs.bounds.Width > 0)
-			{
-				rs.ParagraphReset();
+        internal Run GetOrCreateLastRun(string fontName = null, RGFloat? fontSize = null, FontStyles? fontStyles = null,
+            SolidColor? textColor = null, SolidColor? backColor = null)
+        {
+            Run newRun = null, lastRun = null;
 
-				var line = new Line(rs.currentLoc.Y);
-				//line.Top = rs.currentLoc.Y;
+            if (this.runs.Count > 0)
+            {
+                lastRun = this.runs[this.runs.Count - 1];
 
-				Run prevRun = null, nextRun = null;
-				BoxFontInfo curFontInfo = null;
+                if ((fontName == null || (lastRun.FontName == fontName))
+                    && (fontSize == null || (lastRun.FontSize == fontSize))
+                    && (fontStyles == null || (lastRun.FontStyles == fontStyles))
+                    && (textColor == null || (lastRun.TextColor == textColor))
+                    && (backColor == null || (lastRun.BackColor == backColor)))
+                {
+                    newRun = lastRun;
+                }
+            }
 
-				for (int ri = 0; ri < this.Runs.Count; ri++)
-				{
-					var r = this.Runs[ri];
+            if (newRun == null)
+            {
+                newRun = new Run(this.rt,
+                    fontName == null ? (lastRun == null ? rt.DefaultFontName : lastRun.FontName) : fontName,
+                    fontSize == null ? (lastRun == null ? rt.DefaultFontSize : lastRun.FontSize) : (RGFloat) fontSize,
+                    fontStyles == null ? (lastRun == null ? rt.DefaultFontStyles : lastRun.FontStyles) : (FontStyles) fontStyles,
+                    textColor == null ? (lastRun == null ? rt.DefaultTextColor : lastRun.TextColor) : (SolidColor) textColor,
+                    backColor == null ? (lastRun == null ? rt.DefaultBackColor : lastRun.BackColor) : (SolidColor) backColor);
 
-					if (curFontInfo != r.FontInfo)
-					{
-						curFontInfo = r.FontInfo;
+                this.runs.Add(newRun);
+            }
 
-						if (rs.maxBaseline < curFontInfo.Ascent) rs.maxBaseline = curFontInfo.Ascent;
-						if (rs.maxHeight < curFontInfo.LineHeight) rs.maxHeight = curFontInfo.LineHeight;
-					}
+            return newRun;
+        }
 
-					//prevRun = ri > 0 ? p.Runs[ri - 1] : null;
-					nextRun = ri < this.Runs.Count - 1 ? this.Runs[ri + 1] : null;
+        #endregion // Add Text
 
-					if (!string.IsNullOrEmpty(r.Text))
-					{
-						for (int i = 0; i < r.Text.Length; i++)
-						{
-							char c = r.Text[i];//.ToString();
+        #region Update
+
+        internal List<Line> lines = new List<Line>();
+
+        internal void UpdateText(RelayoutSession rs)
+        {
+            this.lines.Clear();
+
+            this.lastLine = null;
+
+            if (this.Runs != null && this.Runs.Count > 0 && rs.bounds.Width > 0)
+            {
+                rs.ParagraphReset();
+
+                var line = new Line(rs.currentLoc.Y);
+                //line.Top = rs.currentLoc.Y;
+
+                Run prevRun = null, nextRun = null;
+                BoxFontInfo curFontInfo = null;
+
+                for (int ri = 0; ri < this.Runs.Count; ri++)
+                {
+                    var r = this.Runs[ri];
+
+                    if (curFontInfo != r.FontInfo)
+                    {
+                        curFontInfo = r.FontInfo;
+
+                        if (rs.maxBaseline < curFontInfo.Ascent) rs.maxBaseline = curFontInfo.Ascent;
+                        if (rs.maxHeight < curFontInfo.LineHeight) rs.maxHeight = curFontInfo.LineHeight;
+                    }
+
+                    //prevRun = ri > 0 ? p.Runs[ri - 1] : null;
+                    nextRun = ri < this.Runs.Count - 1 ? this.Runs[ri + 1] : null;
+
+                    if (!string.IsNullOrEmpty(r.Text))
+                    {
+                        for (int i = 0; i < r.Text.Length; i++)
+                        {
+                            char c = r.Text[i]; //.ToString();
 
 #if WINFORM || ANDROID
 							var b = new Box(r, c.ToString(), curFontInfo, r.TextSizes[i], r.FontInfo.LineHeight);
 #elif WPF
-							var b = new Box(r, c.ToString(), curFontInfo, r.GlyphIndexes[i], r.TextSizes[i]);
+                            var b = new Box(r, c.ToString(), curFontInfo, r.GlyphIndexes[i], r.TextSizes[i]);
 #endif // WPF
 
-							rs.AddCachedBox(b);
+                            rs.AddCachedBox(b);
 
-							if (CJKHelper.IsBreakable(this, prevRun, nextRun, r, i))
-							{
-								this.CommitWord(ref line, rs, ref curFontInfo);
-							}
-						}
-					}
+                            if (CJKHelper.IsBreakable(this, prevRun, nextRun, r, i))
+                            {
+                                this.CommitWord(ref line, rs, ref curFontInfo);
+                            }
+                        }
+                    }
 
-					prevRun = r;
-				}
+                    prevRun = r;
+                }
 
-				if (rs.cacheBoxesWidth > 0)
-				{
-					this.CommitWord(ref line, rs, ref curFontInfo);
-				}
+                if (rs.cacheBoxesWidth > 0)
+                {
+                    this.CommitWord(ref line, rs, ref curFontInfo);
+                }
 
-				if (line.boxes.Count > 0)
-				{
-					this.CommitLine(rs, line);
-				}
-			}
-		}
+                if (line.boxes.Count > 0)
+                {
+                    this.CommitLine(rs, line);
+                }
+            }
+        }
 
-		private void CommitWord(ref Line line, /*BoxGroup cachedBoxes, List<Box> wordBoxes, ref RGFloat cachedBoxesSize,*/
-			RelayoutSession rs, ref BoxFontInfo fontInfo)
-		{
-			bool newline = false;
+        private void CommitWord(ref Line line, /*BoxGroup cachedBoxes, List<Box> wordBoxes, ref RGFloat cachedBoxesSize,*/
+            RelayoutSession rs, ref BoxFontInfo fontInfo)
+        {
+            bool newline = false;
 
-			if (this.rt.TextWrap != TextWrapMode.NoWrap)
-			{
-				var angle = this.rt.RotationAngle;
+            if (this.rt.TextWrap != TextWrapMode.NoWrap)
+            {
+                var angle = this.rt.RotationAngle;
 
-				if (angle == 0)
-				{
-					newline = rs.currentLoc.X + rs.cacheBoxesWidth > rs.bounds.Width;
-				}
-				else
-				{
-					var w = rs.cacheBoxesWidth;
-					var h = rs.cacheBoxesMaxHeight;
+                if (angle == 0)
+                {
+                    newline = rs.currentLoc.X + rs.cacheBoxesWidth > rs.bounds.Width;
+                }
+                else
+                {
+                    var w = rs.cacheBoxesWidth;
+                    var h = rs.cacheBoxesMaxHeight;
 
-					var s = rs.s;
-					var c = rs.c;
+                    var s = rs.s;
+                    var c = rs.c;
 
-					var leftTop = rs.currentLoc;
-					var rightTop = new Point(leftTop.X + w * c, leftTop.Y + w * s);
-					var leftBottom = new Point(leftTop.X - h * s, leftTop.Y + h * c);
-					var rightBottom = new Point(rightTop.X - h * s, rightTop.Y + h * c);
+                    var leftTop = rs.currentLoc;
+                    var rightTop = new Point(leftTop.X + w * c, leftTop.Y + w * s);
+                    var leftBottom = new Point(leftTop.X - h * s, leftTop.Y + h * c);
+                    var rightBottom = new Point(rightTop.X - h * s, rightTop.Y + h * c);
 
-					if (angle > 0)
-					{
-						var maxY = Math.Max(leftTop.Y, Math.Max(rightTop.Y, Math.Max(leftBottom.Y, rightBottom.Y)));
-						var maxX = Math.Max(leftTop.X, Math.Max(rightTop.X, Math.Max(leftBottom.X, rightBottom.X)));
+                    if (angle > 0)
+                    {
+                        var maxY = Math.Max(leftTop.Y, Math.Max(rightTop.Y, Math.Max(leftBottom.Y, rightBottom.Y)));
+                        var maxX = Math.Max(leftTop.X, Math.Max(rightTop.X, Math.Max(leftBottom.X, rightBottom.X)));
 
-						newline = (maxX >= rs.bounds.Width || maxY > rs.bounds.Height);
-					}
-					else // angle < 0
-					{
-						var minY = Math.Min(leftTop.Y, Math.Min(rightTop.Y, Math.Min(leftBottom.Y, rightBottom.Y)));
-						var maxX = Math.Max(leftTop.X, Math.Max(rightTop.X, Math.Max(leftBottom.X, rightBottom.X)));
+                        newline = (maxX >= rs.bounds.Width || maxY > rs.bounds.Height);
+                    }
+                    else // angle < 0
+                    {
+                        var minY = Math.Min(leftTop.Y, Math.Min(rightTop.Y, Math.Min(leftBottom.Y, rightBottom.Y)));
+                        var maxX = Math.Max(leftTop.X, Math.Max(rightTop.X, Math.Max(leftBottom.X, rightBottom.X)));
 
-						newline = (maxX > rs.bounds.Width || minY < -rs.bounds.Height);
-					}
-				}
-			}
+                        newline = (maxX > rs.bounds.Width || minY < -rs.bounds.Height);
+                    }
+                }
+            }
 
-			if (newline)
-			{
-				CommitLine(rs, line);
-				line = new Line(rs.currentLoc.Y);
-			}
+            if (newline)
+            {
+                CommitLine(rs, line);
+                line = new Line(rs.currentLoc.Y);
+            }
 
-			if (line.Ascent < rs.maxBaseline) line.Ascent = rs.maxBaseline;
-			if (line.Height < rs.maxHeight) line.Height = rs.maxHeight;
+            if (line.Ascent < rs.maxBaseline) line.Ascent = rs.maxBaseline;
+            if (line.Height < rs.maxHeight) line.Height = rs.maxHeight;
 
-			foreach (var cb in rs.cacheBoxes)
-			{
-				if (rt.RotationAngle == 0)
-				{
-					cb.leftTop.X = rs.currentLoc.X;
-					cb.rightTop.X = cb.leftTop.X + cb.Width;
-					rs.currentLoc.X += cb.Width;
-				}
-				else
-				{
-					cb.leftTop = rs.currentLoc;
-					rs.currentLoc.X += (float)(cb.Width * rs.c);
-					rs.currentLoc.Y += (float)(cb.Width * rs.s);
-				}
+            foreach (var cb in rs.cacheBoxes)
+            {
+                if (rt.RotationAngle == 0)
+                {
+                    cb.leftTop.X = rs.currentLoc.X;
+                    cb.rightTop.X = cb.leftTop.X + cb.Width;
+                    rs.currentLoc.X += cb.Width;
+                }
+                else
+                {
+                    cb.leftTop = rs.currentLoc;
+                    rs.currentLoc.X += (float) (cb.Width * rs.c);
+                    rs.currentLoc.Y += (float) (cb.Width * rs.s);
+                }
 
-				line.boxes.Add(cb);
-			}
+                line.boxes.Add(cb);
+            }
 
-			if (newline)
-			{
-				rs.maxBaseline = fontInfo.Ascent;
-				rs.maxHeight = fontInfo.LineHeight;
-			}
+            if (newline)
+            {
+                rs.maxBaseline = fontInfo.Ascent;
+                rs.maxHeight = fontInfo.LineHeight;
+            }
 
-			rs.CacheBoxesReset();
-		}
+            rs.CacheBoxesReset();
+        }
 
-		internal Line lastLine = null;
+        internal Line lastLine = null;
 
-		private void CommitLine(RelayoutSession rs, Line line)
-		{
-			var angle = this.rt.RotationAngle;
+        private void CommitLine(RelayoutSession rs, Line line)
+        {
+            var angle = this.rt.RotationAngle;
 
-			#region Last Line Spacing
-			// if there is last line, plus the line spacing height
-			if (lastLine != null)
-			{
-				RGFloat lineSpacing = lastLine.Height * (this.LineHeight - 1);
+            #region Last Line Spacing
 
-				if (angle == 0)
-				{
-					rs.startLoc.Y += lineSpacing;
-					//line.leftTop.Y += lineSpacing;
-				}
-				else
-				{
-					foreach (var box in line.boxes)
-					{
-						var a = (lineSpacing) * rs.s;
-						var b = (lineSpacing) * rs.c / Math.Tan(rs.d);
+            // if there is last line, plus the line spacing height
+            if (lastLine != null)
+            {
+                RGFloat lineSpacing = lastLine.Height * (this.LineHeight - 1);
 
-						box.leftTop.X -= (float)(a + b);
-					}
-				}
-			}
-			#endregion // Last Line Spacing
+                if (angle == 0)
+                {
+                    rs.startLoc.Y += lineSpacing;
+                    //line.leftTop.Y += lineSpacing;
+                }
+                else
+                {
+                    foreach (var box in line.boxes)
+                    {
+                        var a = (lineSpacing) * rs.s;
+                        var b = (lineSpacing) * rs.c / Math.Tan(rs.d);
 
-			this.lines.Add(line);
+                        box.leftTop.X -= (float) (a + b);
+                    }
+                }
+            }
 
-			#region Horizontal Relayout Boxes
-			var lineWidth = line.Width;
+            #endregion // Last Line Spacing
 
-			RGFloat horAlignOffset = 0;
+            this.lines.Add(line);
 
-			var halign = this.HorizontalAlign;
+            #region Horizontal Relayout Boxes
 
-			if (halign == ReoGridHorAlign.General)
-			{
-				halign = this.rt.DefaultHorizontalAlignment;
-			}
+            var lineWidth = line.Width;
 
-			switch (halign)
-			{
-				default:
-				case ReoGridHorAlign.Left:
-					horAlignOffset = 0;
-					break;
+            RGFloat horAlignOffset = 0;
 
-				case ReoGridHorAlign.Center:
-					horAlignOffset = (rs.bounds.Width - lineWidth) / 2 - 3;
-					break;
+            var halign = this.HorizontalAlign;
 
-				case ReoGridHorAlign.Right:
-					horAlignOffset = (rs.bounds.Width - lineWidth) - 4;
-					break;
-			}
+            if (halign == ReoGridHorAlign.General)
+            {
+                halign = this.rt.DefaultHorizontalAlignment;
+            }
 
-			foreach (var b in line.boxes)
-			{
-				var r = b.Run;
+            switch (halign)
+            {
+                default:
+                case ReoGridHorAlign.Left:
+                    horAlignOffset = 0;
+                    break;
 
-				if (this.rt.RotationAngle == 0)
-				{
-					if ((r.FontStyles & FontStyles.Superscrit) == FontStyles.Superscrit)
-					{
-						b.leftTop.Y = line.Top - b.FontInfo.LineHeight / 2;
-					}
-					else if ((r.FontStyles & FontStyles.Subscript) == FontStyles.Subscript)
-					{
-						b.leftTop.Y = line.Top + line.Height - b.FontInfo.LineHeight / 2;
-					}
-					else
-					{
-						b.leftTop.Y = line.Top - b.FontInfo.LineHeight + line.Ascent;
-					}
-				}
-				else
-				{
-					// TODO
-					//b.leftTop.X = line.leftTop.Y - b.FontInfo.LineHeight + line.Ascent;
-				}
+                case ReoGridHorAlign.Center:
+                    horAlignOffset = (rs.bounds.Width - lineWidth) / 2 - 3;
+                    break;
 
-				b.leftTop.X += horAlignOffset;
-			}
-			#endregion // Horizontal Relayout Boxes
+                case ReoGridHorAlign.Right:
+                    horAlignOffset = (rs.bounds.Width - lineWidth) - 4;
+                    break;
+            }
 
-			var lineHeight = line.Height;
+            foreach (var b in line.boxes)
+            {
+                var r = b.Run;
 
-			if (angle == 0)
-			{
-				rs.startLoc.Y += lineHeight;
+                if (this.rt.RotationAngle == 0)
+                {
+                    if ((r.FontStyles & FontStyles.Superscrit) == FontStyles.Superscrit)
+                    {
+                        b.leftTop.Y = line.Top - b.FontInfo.LineHeight / 2;
+                    }
+                    else if ((r.FontStyles & FontStyles.Subscript) == FontStyles.Subscript)
+                    {
+                        b.leftTop.Y = line.Top + line.Height - b.FontInfo.LineHeight / 2;
+                    }
+                    else
+                    {
+                        b.leftTop.Y = line.Top - b.FontInfo.LineHeight + line.Ascent;
+                    }
+                }
+                else
+                {
+                    // TODO
+                    //b.leftTop.X = line.leftTop.Y - b.FontInfo.LineHeight + line.Ascent;
+                }
 
-				if (rs.measuredSize.Width < line.Width)
-				{
-					rs.measuredSize.Width = line.Width;
-				}
+                b.leftTop.X += horAlignOffset;
+            }
 
-				rs.measuredSize.Height = rs.startLoc.Y;
-			}
-			else
-			{
-				var a = (lineHeight) * rs.s;
-				var b = (lineHeight) * rs.c / Math.Tan(rs.d);
+            #endregion // Horizontal Relayout Boxes
 
-				rs.startLoc.X -= (float)(a + b);
+            var lineHeight = line.Height;
 
-				rs.measuredSize.Width = 200;
-				rs.measuredSize.Height = 200;
+            if (angle == 0)
+            {
+                rs.startLoc.Y += lineHeight;
 
-			}
+                if (rs.measuredSize.Width < line.Width)
+                {
+                    rs.measuredSize.Width = line.Width;
+                }
 
-			rs.currentLoc = rs.startLoc;
+                rs.measuredSize.Height = rs.startLoc.Y;
+            }
+            else
+            {
+                var a = (lineHeight) * rs.s;
+                var b = (lineHeight) * rs.c / Math.Tan(rs.d);
 
-			lastLine = line;
-		}
+                rs.startLoc.X -= (float) (a + b);
 
-		#endregion // Update
-	}
+                rs.measuredSize.Width = 200;
+                rs.measuredSize.Height = 200;
+            }
 
-	class RelayoutSession
-	{
-		public Size bounds;
+            rs.currentLoc = rs.startLoc;
 
-		public RelayoutSession(Size bounds)
-		{
-			this.bounds = bounds;
-		}
+            lastLine = line;
+        }
 
-		public RGFloat maxBaseline;
-		public RGFloat maxHeight;
+        #endregion // Update
+    }
 
-		public Point startLoc;
-		public Point currentLoc;
+    class RelayoutSession
+    {
+        public Size bounds;
 
-		internal void ParagraphReset()
-		{
-			this.currentLoc = this.startLoc;
-			this.maxBaseline = 0;
-			this.maxHeight = 0;
-		}
+        public RelayoutSession(Size bounds)
+        {
+            this.bounds = bounds;
+        }
 
-		public Size measuredSize;
+        public RGFloat maxBaseline;
+        public RGFloat maxHeight;
 
-		public float d, s, c;
+        public Point startLoc;
+        public Point currentLoc;
 
-		#region Cached Boxes
-		public List<Box> cacheBoxes = new List<Box>();
+        internal void ParagraphReset()
+        {
+            this.currentLoc = this.startLoc;
+            this.maxBaseline = 0;
+            this.maxHeight = 0;
+        }
 
-		public RGFloat cacheBoxesWidth;
+        public Size measuredSize;
 
-		public RGFloat cacheBoxesMaxHeight;
+        public float d, s, c;
 
-		public void AddCachedBox(Box box)
-		{
-			this.cacheBoxes.Add(box);
+        #region Cached Boxes
 
-			this.cacheBoxesWidth += box.Width;
+        public List<Box> cacheBoxes = new List<Box>();
 
-			if (this.cacheBoxesMaxHeight < box.Height)
-			{
-				this.cacheBoxesMaxHeight = box.Height;
-			}
-		}
+        public RGFloat cacheBoxesWidth;
 
-		internal void CacheBoxesReset()
-		{
-			this.cacheBoxes.Clear();
+        public RGFloat cacheBoxesMaxHeight;
 
-			this.cacheBoxesWidth = 0;
-			this.cacheBoxesMaxHeight = 0;
-		}
-		#endregion // Cached Boxes
-	}
-	#endregion // Paragraph
+        public void AddCachedBox(Box box)
+        {
+            this.cacheBoxes.Add(box);
 
-	#region Run
-	internal class Run
-	{
-		private RichText rt;
+            this.cacheBoxesWidth += box.Width;
+
+            if (this.cacheBoxesMaxHeight < box.Height)
+            {
+                this.cacheBoxesMaxHeight = box.Height;
+            }
+        }
+
+        internal void CacheBoxesReset()
+        {
+            this.cacheBoxes.Clear();
+
+            this.cacheBoxesWidth = 0;
+            this.cacheBoxesMaxHeight = 0;
+        }
+
+        #endregion // Cached Boxes
+    }
+
+    #endregion // Paragraph
+
+    #region Run
+
+    internal class Run
+    {
+        private RichText rt;
 
 #if WINFORM || ANDROID
 		internal List<RGFloat> TextSizes { get; private set; }
 #elif WPF
-		internal List<double> TextSizes { get; private set; }
-		internal List<ushort> GlyphIndexes { get; private set; }
+        internal List<double> TextSizes { get; private set; }
+        internal List<ushort> GlyphIndexes { get; private set; }
 #endif // WPF
 
-		#region Font Info
-		private BoxFontInfo fontInfo = null;
+        #region Font Info
 
-		internal BoxFontInfo FontInfo
-		{
-			get
-			{
-				if (this.fontInfo == null)
-				{
-					this.fontInfo = new BoxFontInfo();
+        private BoxFontInfo fontInfo = null;
 
-					RGFloat renderFontSize = this.fontSize;
+        internal BoxFontInfo FontInfo
+        {
+            get
+            {
+                if (this.fontInfo == null)
+                {
+                    this.fontInfo = new BoxFontInfo();
 
-					if (renderFontSize < 6) renderFontSize = 6;
+                    RGFloat renderFontSize = this.fontSize;
 
-					if ((this.fontStyles & FontStyles.Superscrit) == FontStyles.Superscrit
-						|| (this.FontStyles & FontStyles.Subscript) == FontStyles.Subscript)
-					{
-						renderFontSize *= 0.6f;
-					}
+                    if (renderFontSize < 6) renderFontSize = 6;
+
+                    if ((this.fontStyles & FontStyles.Superscrit) == FontStyles.Superscrit
+                        || (this.FontStyles & FontStyles.Subscript) == FontStyles.Subscript)
+                    {
+                        renderFontSize *= 0.6f;
+                    }
 
 #if WINFORM
 					var font = new System.Drawing.Font(this.fontName, (float)renderFontSize,
@@ -1101,81 +1141,110 @@ namespace unvell.ReoGrid.Drawing.Text
 					fontInfo.LineHeight = font.Size * lineSpacing / emHeight;
 
 #elif WPF
-					var typeface = new System.Windows.Media.Typeface(
-						new System.Windows.Media.FontFamily(this.fontName),
-						PlatformUtility.ToWPFFontStyle(this.fontStyles),
-						(this.fontStyles & FontStyles.Bold) == FontStyles.Bold ?
-						System.Windows.FontWeights.Bold : System.Windows.FontWeights.Normal,
-						System.Windows.FontStretches.Normal);
+                    var typeface = new System.Windows.Media.Typeface(
+                        new System.Windows.Media.FontFamily(this.fontName),
+                        PlatformUtility.ToWPFFontStyle(this.fontStyles),
+                        (this.fontStyles & FontStyles.Bold) == FontStyles.Bold ? System.Windows.FontWeights.Bold : System.Windows.FontWeights.Normal,
+                        System.Windows.FontStretches.Normal);
 
-					System.Windows.Media.GlyphTypeface glyphTypeface;
-					typeface.TryGetGlyphTypeface(out glyphTypeface);
+                    System.Windows.Media.GlyphTypeface glyphTypeface;
+                    typeface.TryGetGlyphTypeface(out glyphTypeface);
 
-					this.fontInfo.Typeface = typeface;
-					this.fontInfo.GlyphTypeface = glyphTypeface;
+                    this.fontInfo.Typeface = typeface;
+                    this.fontInfo.GlyphTypeface = glyphTypeface;
 
-					fontInfo.Ascent = typeface.FontFamily.Baseline;
-					fontInfo.LineHeight = typeface.CapsHeight;
+                    fontInfo.Ascent = typeface.FontFamily.Baseline;
+                    fontInfo.LineHeight = typeface.CapsHeight;
 #endif // WPF
 
-					//fontInfo.Height = font.Height;
-				}
+                    //fontInfo.Height = font.Height;
+                }
 
-				return this.fontInfo;
-			}
-		}
-		#endregion // Font Info
+                return this.fontInfo;
+            }
+        }
 
-		private string fontName;
-		public string FontName { get { return this.fontName; } set { this.fontName = value; this.fontInfo = null; } }
+        #endregion // Font Info
 
-		private RGFloat fontSize;
-		public RGFloat FontSize { get { return this.fontSize; } set { this.fontSize = value; this.fontInfo = null; } }
+        private string fontName;
 
-		private FontStyles fontStyles;
-		public FontStyles FontStyles { get { return this.fontStyles; } set { this.fontStyles = value; this.fontInfo = null; } }
+        public string FontName
+        {
+            get { return this.fontName; }
+            set
+            {
+                this.fontName = value;
+                this.fontInfo = null;
+            }
+        }
 
-		public SolidColor TextColor { get; private set; }
-		public SolidColor BackColor { get; private set; }
+        private RGFloat fontSize;
 
-		public Run(RichText rt, string fontName, RGFloat fontSize, FontStyles fontStyles,
-			SolidColor textColor, SolidColor backColor)
-		{
-			this.rt = rt;
-			this.text = string.Empty;
+        public RGFloat FontSize
+        {
+            get { return this.fontSize; }
+            set
+            {
+                this.fontSize = value;
+                this.fontInfo = null;
+            }
+        }
 
-			this.FontName = fontName;
-			this.FontSize = fontSize;
-			this.FontStyles = fontStyles;
-			this.TextColor = textColor;
-			this.BackColor = backColor;
+        private FontStyles fontStyles;
+
+        public FontStyles FontStyles
+        {
+            get { return this.fontStyles; }
+            set
+            {
+                this.fontStyles = value;
+                this.fontInfo = null;
+            }
+        }
+
+        public SolidColor TextColor { get; private set; }
+        public SolidColor BackColor { get; private set; }
+
+        public Run(RichText rt, string fontName, RGFloat fontSize, FontStyles fontStyles,
+            SolidColor textColor, SolidColor backColor)
+        {
+            this.rt = rt;
+            this.text = string.Empty;
+
+            this.FontName = fontName;
+            this.FontSize = fontSize;
+            this.FontStyles = fontStyles;
+            this.TextColor = textColor;
+            this.BackColor = backColor;
 
 #if WINFORM
 			this.TextSizes = new List<RGFloat>();
 #elif WPF
-			this.TextSizes = new List<double>();
-			this.GlyphIndexes = new List<ushort>();
+            this.TextSizes = new List<double>();
+            this.GlyphIndexes = new List<ushort>();
 #endif // WPF
-		}
+        }
 
-		#region Text
-		private string text;
-		public string Text
-		{
-			get { return this.text; }
-			set
-			{
-				this.text = string.Empty;
-				this.TextSizes.Clear();
-				this.TextSizes.Capacity = this.text.Length;
+        #region Text
 
-				this.AppendText(value);
-			}
-		}
+        private string text;
 
-		public void AppendText(string text)
-		{
-			this.text += text;
+        public string Text
+        {
+            get { return this.text; }
+            set
+            {
+                this.text = string.Empty;
+                this.TextSizes.Clear();
+                this.TextSizes.Capacity = this.text.Length;
+
+                this.AppendText(value);
+            }
+        }
+
+        public void AppendText(string text)
+        {
+            this.text += text;
 
 #if WINFORM
 			//foreach (var c in text)
@@ -1201,130 +1270,138 @@ namespace unvell.ReoGrid.Drawing.Text
 				}
 			}
 #elif WPF
-			var glyphTypeface = this.FontInfo.GlyphTypeface;
-			var size = this.fontSize * 1.33d;
+            var glyphTypeface = this.FontInfo.GlyphTypeface;
+            var size = this.fontSize * 1.33d;
 
-			if (this.GlyphIndexes.Capacity < text.Length)
-			{
-				this.GlyphIndexes.Capacity = text.Length;
-			}
+            if (this.GlyphIndexes.Capacity < text.Length)
+            {
+                this.GlyphIndexes.Capacity = text.Length;
+            }
 
-			for (int n = 0; n < text.Length; n++)
-			{
-				char ch = text[n];
+            for (int n = 0; n < text.Length; n++)
+            {
+                char ch = text[n];
 
-				if (glyphTypeface.CharacterToGlyphMap.TryGetValue(ch, out var glyphIndex))
-				{
-					GlyphIndexes.Add(glyphIndex);
-				}
-				else
-				{
-					// current typeface doesn't contains the character, try find another
-					var (otherTypeface, otherGlyphTypeface) = PlatformUtility.FindTypefaceContainsCharacter(ch);
-					if (otherGlyphTypeface != null)
-					{
-						glyphTypeface = otherGlyphTypeface;
-						GlyphIndexes.Add(otherGlyphTypeface.CharacterToGlyphMap[ch]);
+                if (glyphTypeface.CharacterToGlyphMap.TryGetValue(ch, out var glyphIndex))
+                {
+                    GlyphIndexes.Add(glyphIndex);
+                }
+                else
+                {
+                    // current typeface doesn't contains the character, try find another
+                    var (otherTypeface, otherGlyphTypeface) = PlatformUtility.FindTypefaceContainsCharacter(ch);
+                    if (otherGlyphTypeface != null)
+                    {
+                        glyphTypeface = otherGlyphTypeface;
+                        GlyphIndexes.Add(otherGlyphTypeface.CharacterToGlyphMap[ch]);
                     }
                 }
 
-				double width = glyphTypeface.AdvanceWidths[glyphIndex] * size;
-				this.TextSizes.Add(width);
-			}
+                double width = glyphTypeface.AdvanceWidths[glyphIndex] * size;
+                this.TextSizes.Add(width);
+            }
 
 #endif // WINFORM
-		}
-		#endregion // Text
+        }
 
-		//internal RunTypes SpanType { get; set; }
-	}
+        #endregion // Text
 
-	enum RunTypes
-	{
-		Normal,
-		Superscript,
-		Subscript,
+        //internal RunTypes SpanType { get; set; }
+    }
 
-		Fraction,
-	}
-	#endregion // Run
+    enum RunTypes
+    {
+        Normal,
+        Superscript,
+        Subscript,
 
-	#region Line & Box
-	internal class Line
-	{
-		internal RGFloat Height { get; set; }
+        Fraction,
+    }
 
-		//internal Point leftTop;
-		//internal Point leftBottom;
-		//internal Point rightTop;
-		//internal Point rightBottom;
+    #endregion // Run
 
-		// only use for angle=0
-		internal RGFloat Top { get; set; }
-		//internal RGFloat Bottom { get { return this.Top + this.Height; } }
+    #region Line & Box
 
-		internal List<Box> boxes = new List<Box>();
-		//public List<Box> Boxes { get { return this.boxes; } }
+    internal class Line
+    {
+        internal RGFloat Height { get; set; }
 
-		public Box LastBox { get { return this.boxes.Count == 0 ? null : this.boxes[this.boxes.Count - 1]; } }
-		//public RGFloat Right { get { var lastBox = this.LastBox; return lastBox == null ? 0 : lastBox.rightTop.X; } }
+        //internal Point leftTop;
+        //internal Point leftBottom;
+        //internal Point rightTop;
+        //internal Point rightBottom;
 
-		internal RGFloat Ascent { get; set; }
+        // only use for angle=0
+        internal RGFloat Top { get; set; }
+        //internal RGFloat Bottom { get { return this.Top + this.Height; } }
 
-		public Line(RGFloat top)
-		{
-			this.Top = top;
-		}
+        internal List<Box> boxes = new List<Box>();
+        //public List<Box> Boxes { get { return this.boxes; } }
 
-		public RGFloat Width
-		{
-			get
-			{
-				var lastBox = boxes.Count <= 0 ? null : boxes[boxes.Count - 1];
-				return lastBox == null ? 0 : lastBox.rightTop.X;
-			}
-		}
-	}
+        public Box LastBox
+        {
+            get { return this.boxes.Count == 0 ? null : this.boxes[this.boxes.Count - 1]; }
+        }
+        //public RGFloat Right { get { var lastBox = this.LastBox; return lastBox == null ? 0 : lastBox.rightTop.X; } }
 
-	internal class BoxFontInfo
-	{
+        internal RGFloat Ascent { get; set; }
+
+        public Line(RGFloat top)
+        {
+            this.Top = top;
+        }
+
+        public RGFloat Width
+        {
+            get
+            {
+                var lastBox = boxes.Count <= 0 ? null : boxes[boxes.Count - 1];
+                return lastBox == null ? 0 : lastBox.rightTop.X;
+            }
+        }
+    }
+
+    internal class BoxFontInfo
+    {
 #if WINFORM
 		public System.Drawing.Font Font { get; set; }
 #elif WPF
-		public System.Windows.Media.Typeface Typeface { get; set; }
-		public System.Windows.Media.GlyphTypeface GlyphTypeface { get; set; }
+        public System.Windows.Media.Typeface Typeface { get; set; }
+        public System.Windows.Media.GlyphTypeface GlyphTypeface { get; set; }
 #endif // WPF
 
-		public RGFloat Ascent { get; set; }
-		//public RGFloat Height { get; set; }
-		public RGFloat LineHeight { get; set; }
-	}
+        public RGFloat Ascent { get; set; }
 
-	internal class Box
-	{
-		public Run Run { get; private set; }
+        //public RGFloat Height { get; set; }
+        public RGFloat LineHeight { get; set; }
+    }
 
-		public string Str { get; private set; }
+    internal class Box
+    {
+        public Run Run { get; private set; }
 
-		//internal RGFloat Left { get; set; }
-		//internal RGFloat Right { get { return this.location.X + this.Width; } }
-		//internal RGFloat Top { get; set; }
+        public string Str { get; private set; }
 
-		internal RGFloat Width { get; private set; }
-		internal RGFloat Height { get; private set; }
+        //internal RGFloat Left { get; set; }
+        //internal RGFloat Right { get { return this.location.X + this.Width; } }
+        //internal RGFloat Top { get; set; }
 
-		internal BoxFontInfo FontInfo { get; private set; }
+        internal RGFloat Width { get; private set; }
+        internal RGFloat Height { get; private set; }
 
-		internal Point leftTop;
-		//internal Point leftBottom;
-		internal Point rightTop;
-		//internal Point rightBottom;
+        internal BoxFontInfo FontInfo { get; private set; }
 
-		private Box(Run run, string str)
-		{
-			this.Run = run;
-			this.Str = str;
-		}
+        internal Point leftTop;
+
+        //internal Point leftBottom;
+        internal Point rightTop;
+        //internal Point rightBottom;
+
+        private Box(Run run, string str)
+        {
+            this.Run = run;
+            this.Str = str;
+        }
 
 #if WINFORM
 		public Box(Run run, string str, BoxFontInfo fontInfo, RGFloat width, RGFloat height)
@@ -1336,132 +1413,135 @@ namespace unvell.ReoGrid.Drawing.Text
 		}
 #elif WPF
 
-		internal ushort GlyphIndex { get; private set; }
+        internal ushort GlyphIndex { get; private set; }
 
-		public Box(Run run, string str, BoxFontInfo fontInfo, ushort glyphIndex, double width)
-			: this(run, str)
-		{
-			this.FontInfo = fontInfo;
-			this.GlyphIndex = glyphIndex;
-			this.Width = width;
-		}
+        public Box(Run run, string str, BoxFontInfo fontInfo, ushort glyphIndex, double width)
+            : this(run, str)
+        {
+            this.FontInfo = fontInfo;
+            this.GlyphIndex = glyphIndex;
+            this.Width = width;
+        }
 #endif // WINFORM
 
-		public override string ToString()
-		{
-			return string.Format("Box[\"{0}\"]", this.Str);
-		}
-	}
-	#endregion // Line & Box
+        public override string ToString()
+        {
+            return string.Format("Box[\"{0}\"]", this.Str);
+        }
+    }
 
-	#region CJKHelper
-	class CJKHelper
-	{
-		private static readonly string left_Symbols = "$（(「【[〔『＜《≪〈<［{｛";
-		private static readonly string rightSymbols = "、。,.，：）)」】]〕』＞》≫〉>］}｝";
+    #endregion // Line & Box
 
-		public static bool IsLeftSymbol(char c)
-		{
-			return left_Symbols.IndexOf(c) >= 0;
-		}
+    #region CJKHelper
 
-		public static bool IsRightSymbol(char c)
-		{
-			return rightSymbols.IndexOf(c) >= 0;
-		}
+    class CJKHelper
+    {
+        private static readonly string left_Symbols = "$（(「【[〔『＜《≪〈<［{｛";
+        private static readonly string rightSymbols = "、。,.，：）)」】]〕』＞》≫〉>］}｝";
 
-		//public static bool IsDigit(char c)
-		//{
-		//	return c >= 48 && c <= 57;
-		//}
+        public static bool IsLeftSymbol(char c)
+        {
+            return left_Symbols.IndexOf(c) >= 0;
+        }
 
-		//public static bool IsAnsiLetter(char c)
-		//{
-		//	return c >= 65 && c <= 90 || c >= 97 && c <= 122;
-		//}
+        public static bool IsRightSymbol(char c)
+        {
+            return rightSymbols.IndexOf(c) >= 0;
+        }
 
-		public static bool IsAnsiLetterOrDigit(char c)
-		{
-			return (c >= 48 && c <= 57)  // 0-9
-				|| (c >= 65 && c <= 90)    // A-Z
-				|| (c >= 97 && c <= 122);  // a-z
-		}
+        //public static bool IsDigit(char c)
+        //{
+        //	return c >= 48 && c <= 57;
+        //}
 
-		public static bool IsWhiteSpace(string str, int index)
-		{
-			char c = str[index];
-			return c == 32 || c == 7;
-		}
+        //public static bool IsAnsiLetter(char c)
+        //{
+        //	return c >= 65 && c <= 90 || c >= 97 && c <= 122;
+        //}
 
-		public static bool IsBreakable(Paragraph p, Run prevRun, Run nextRun, Run r, int index)
-		{
-			string str = r.Text;
-			int strlen = str.Length;
+        public static bool IsAnsiLetterOrDigit(char c)
+        {
+            return (c >= 48 && c <= 57) // 0-9
+                   || (c >= 65 && c <= 90) // A-Z
+                   || (c >= 97 && c <= 122); // a-z
+        }
 
-			if (strlen == 0) return true;
+        public static bool IsWhiteSpace(string str, int index)
+        {
+            char c = str[index];
+            return c == 32 || c == 7;
+        }
 
-			char c = str[index];
-			char prevC = (char)0, nextC = (char)0;
+        public static bool IsBreakable(Paragraph p, Run prevRun, Run nextRun, Run r, int index)
+        {
+            string str = r.Text;
+            int strlen = str.Length;
 
-			if (index >= strlen - 1)
-			{
-				if (nextRun != null && nextRun.Text.Length > 0)
-				{
-					nextC = nextRun.Text[0];
-				}
-			}
-			else
-			{
-				nextC = str[index + 1];
-			}
+            if (strlen == 0) return true;
 
-			if ((c >= 48 && c <= 57)    // 0-9
-				|| (c >= 65 && c <= 90)   // A-Z
-				|| (c >= 97 && c <= 122)  // a-z
-				)
-			{
-				if ((nextC >= 0x4E00 && nextC <= 0x9FFF) // CJK Unified Ideographs
-					)
-				{
-					return !IsRightSymbol(nextC);
-				}
-				else
-				{
-					return false;
-				}
-			}
+            char c = str[index];
+            char prevC = (char) 0, nextC = (char) 0;
 
-			if (c == '-' || c == '.' || c == '\'' || c == '"')
-			{
-				if (index <= 0 && prevRun != null && prevRun.Text.Length > 0)
-				{
-					prevC = prevRun.Text[prevRun.Text.Length - 1];
-				}
+            if (index >= strlen - 1)
+            {
+                if (nextRun != null && nextRun.Text.Length > 0)
+                {
+                    nextC = nextRun.Text[0];
+                }
+            }
+            else
+            {
+                nextC = str[index + 1];
+            }
 
-				if (prevC != 0)
-				{
-					return !IsAnsiLetterOrDigit(prevC);
-				}
-				else if (nextC != 0)
-				{
-					return !IsAnsiLetterOrDigit(nextC);
-				}
-			}
+            if ((c >= 48 && c <= 57) // 0-9
+                || (c >= 65 && c <= 90) // A-Z
+                || (c >= 97 && c <= 122) // a-z
+               )
+            {
+                if ((nextC >= 0x4E00 && nextC <= 0x9FFF) // CJK Unified Ideographs
+                   )
+                {
+                    return !IsRightSymbol(nextC);
+                }
+                else
+                {
+                    return false;
+                }
+            }
 
-			if (IsLeftSymbol(c))
-			{
-				return false;
-			}
+            if (c == '-' || c == '.' || c == '\'' || c == '"')
+            {
+                if (index <= 0 && prevRun != null && prevRun.Text.Length > 0)
+                {
+                    prevC = prevRun.Text[prevRun.Text.Length - 1];
+                }
 
-			if (IsRightSymbol(nextC))
-			{
-				return false;
-			}
+                if (prevC != 0)
+                {
+                    return !IsAnsiLetterOrDigit(prevC);
+                }
+                else if (nextC != 0)
+                {
+                    return !IsAnsiLetterOrDigit(nextC);
+                }
+            }
 
-			return true;
-		}
-	}
-	#endregion // CJKHelper
+            if (IsLeftSymbol(c))
+            {
+                return false;
+            }
+
+            if (IsRightSymbol(nextC))
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    #endregion // CJKHelper
 }
 
 #endif // (WINFORM || WPF)

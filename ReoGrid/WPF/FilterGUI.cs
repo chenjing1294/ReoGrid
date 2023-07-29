@@ -17,7 +17,6 @@
  ****************************************************************************/
 
 #if WPF && WPF_FILTER_GUI
-
 using System;
 
 using System.Drawing;

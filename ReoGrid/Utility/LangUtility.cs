@@ -5,7 +5,7 @@ using System.Text;
 
 namespace unvell.ReoGrid.Utility
 {
-	class LangUtility
-	{
-	}
+    class LangUtility
+    {
+    }
 }

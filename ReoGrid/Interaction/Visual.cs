@@ -17,7 +17,6 @@
  ****************************************************************************/
 
 using System.Collections.Generic;
-
 using unvell.ReoGrid.Graphics;
 
 #if WINFORM || ANDROID
@@ -28,118 +27,117 @@ using RGFloat = System.Double;
 
 namespace unvell.ReoGrid.Interaction
 {
-	/// <summary>
-	/// Represents an user-interactive object in ReoGrid cross-platform views system.
-	/// </summary>
-	public interface IUserVisual
-	{
-		/// <summary>
-		/// Handle mouse down event
-		/// </summary>
-		/// <param name="location">Transformed relative location to this object</param>
-		/// <param name="buttons">Current mouse button pressing status</param>
-		/// <returns>True if event handled; otherwise return false</returns>
-		bool OnMouseDown(Point location, MouseButtons buttons);
+    /// <summary>
+    /// Represents an user-interactive object in ReoGrid cross-platform views system.
+    /// </summary>
+    public interface IUserVisual
+    {
+        /// <summary>
+        /// Handle mouse down event
+        /// </summary>
+        /// <param name="location">Transformed relative location to this object</param>
+        /// <param name="buttons">Current mouse button pressing status</param>
+        /// <returns>True if event handled; otherwise return false</returns>
+        bool OnMouseDown(Point location, MouseButtons buttons);
 
-		/// <summary>
-		/// Handle mouse move event
-		/// </summary>
-		/// <param name="location">Transformed relative location to this object</param>
-		/// <param name="buttons">Current mouse button pressing status</param>
-		/// <returns>True if event handled; otherwise return false</returns>
-		bool OnMouseMove(Point location, MouseButtons buttons);
+        /// <summary>
+        /// Handle mouse move event
+        /// </summary>
+        /// <param name="location">Transformed relative location to this object</param>
+        /// <param name="buttons">Current mouse button pressing status</param>
+        /// <returns>True if event handled; otherwise return false</returns>
+        bool OnMouseMove(Point location, MouseButtons buttons);
 
-		/// <summary>
-		/// Handle mouse up event
-		/// </summary>
-		/// <param name="location">Transformed relative location to this object</param>
-		/// <param name="buttons">Current mouse button pressing status</param>
-		/// <returns>True if event handled; otherwise return false</returns>
-		bool OnMouseUp(Point location, MouseButtons buttons);
+        /// <summary>
+        /// Handle mouse up event
+        /// </summary>
+        /// <param name="location">Transformed relative location to this object</param>
+        /// <param name="buttons">Current mouse button pressing status</param>
+        /// <returns>True if event handled; otherwise return false</returns>
+        bool OnMouseUp(Point location, MouseButtons buttons);
 
-		/// <summary>
-		/// Handle mouse double click event
-		/// </summary>
-		/// <param name="location">Transformed relative location to this object</param>
-		/// <param name="buttons">Current mouse button pressing status</param>
-		/// <returns>True if event handled; otherwise return false</returns>
-		bool OnMouseDoubleClick(Point location, MouseButtons buttons);
+        /// <summary>
+        /// Handle mouse double click event
+        /// </summary>
+        /// <param name="location">Transformed relative location to this object</param>
+        /// <param name="buttons">Current mouse button pressing status</param>
+        /// <returns>True if event handled; otherwise return false</returns>
+        bool OnMouseDoubleClick(Point location, MouseButtons buttons);
 
-		/// <summary>
-		/// Handle key down event
-		/// </summary>
-		/// <param name="keys">ReoGrid virtual keys (equal to System.Windows.Forms.Keys)</param>
-		/// <returns>True if event handled; otherwise return false</returns>
-		bool OnKeyDown(KeyCode keys);
+        /// <summary>
+        /// Handle key down event
+        /// </summary>
+        /// <param name="keys">ReoGrid virtual keys (equal to System.Windows.Forms.Keys)</param>
+        /// <returns>True if event handled; otherwise return false</returns>
+        bool OnKeyDown(KeyCode keys);
 
-		/// <summary>
-		/// Set this object to get user interface focus. Object after get focus can always 
-		/// receive user's mouse and keyboard input.
-		/// </summary>
-		void SetFocus();
+        /// <summary>
+        /// Set this object to get user interface focus. Object after get focus can always 
+        /// receive user's mouse and keyboard input.
+        /// </summary>
+        void SetFocus();
 
-		/// <summary>
-		/// Release user interface focus from this object. This object will no longer be able to 
-		/// receive user's mouse and keyboard input.
-		/// </summary>
-		void FreeFocus();
+        /// <summary>
+        /// Release user interface focus from this object. This object will no longer be able to 
+        /// receive user's mouse and keyboard input.
+        /// </summary>
+        void FreeFocus();
 
-		/// <summary>
-		/// Redraw this object.
-		/// </summary>
-		void Invalidate();
-	}
-	
-	public interface ISelectableVisual
-	{
-		bool IsSelected { get; set; }
+        /// <summary>
+        /// Redraw this object.
+        /// </summary>
+        void Invalidate();
+    }
 
-		void OnSelect();
+    public interface ISelectableVisual
+    {
+        bool IsSelected { get; set; }
 
-		void OnDeselect();
-	}
+        void OnSelect();
 
-	internal interface IThumbVisualObject
-	{
-		IEnumerable<ResizeThumb> ThumbPoints { get; }
-	}
+        void OnDeselect();
+    }
 
-	public struct ResizeThumb
-	{
-		public ResizeThumbPosition Position;
+    internal interface IThumbVisualObject
+    {
+        IEnumerable<ResizeThumb> ThumbPoints { get; }
+    }
 
-		public Point Point;
+    public struct ResizeThumb
+    {
+        public ResizeThumbPosition Position;
 
-		public ResizeThumb(ResizeThumbPosition position, Point point) 
-		{
-			this.Position = position;
-			this.Point = point;
-		}
+        public Point Point;
 
-		public ResizeThumb(ResizeThumbPosition position, RGFloat width, RGFloat height)
-		{
-			this.Position = position;
-			this.Point = new Point(width, height);
-		}
-	}
+        public ResizeThumb(ResizeThumbPosition position, Point point)
+        {
+            this.Position = position;
+            this.Point = point;
+        }
 
-	public enum ResizeThumbPosition
-	{
-		TopLeft,
-		Top,
-		TopRight,
+        public ResizeThumb(ResizeThumbPosition position, RGFloat width, RGFloat height)
+        {
+            this.Position = position;
+            this.Point = new Point(width, height);
+        }
+    }
 
-		Left,
-		Right,
+    public enum ResizeThumbPosition
+    {
+        TopLeft,
+        Top,
+        TopRight,
 
-		BottomLeft,
-		Bottom,
-		BottomRight,
-	}
+        Left,
+        Right,
 
-	public interface IVisualController
-	{
-		IUserVisual FocusVisual { get; }
-	}
+        BottomLeft,
+        Bottom,
+        BottomRight,
+    }
 
+    public interface IVisualController
+    {
+        IUserVisual FocusVisual { get; }
+    }
 }

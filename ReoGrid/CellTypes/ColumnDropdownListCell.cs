@@ -33,7 +33,6 @@ using RGImage = System.Windows.Media.ImageSource;
 namespace unvell.ReoGrid.CellTypes
 {
 #if WINFORM
-
 	/// <summary>
 	/// Represents dropdown list cell for entire column.
 	/// </summary>
@@ -85,5 +84,4 @@ namespace unvell.ReoGrid.CellTypes
 		}
 	}
 #endif // WINFORM
-
 }

@@ -23,15 +23,12 @@ using System.Diagnostics;
 #if WINFORM || ANDROID
 using RGFloat = System.Single;
 using RGIntDouble = System.Int32;
-
 #elif WPF
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 #elif iOS
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 #endif
 
 using unvell.ReoGrid.Graphics;
@@ -41,23 +38,22 @@ using unvell.ReoGrid.Main;
 
 namespace unvell.ReoGrid.Views
 {
+    #region PageLayout ViewportController
 
-	#region PageLayout ViewportController
-	//class PageLayoutViewportController : AbstractViewportController
-	//{
-	//	public PageLayoutViewportController(Worksheet grid, RGRect bounds) : base(grid) { }
+    //class PageLayoutViewportController : AbstractViewportController
+    //{
+    //	public PageLayoutViewportController(Worksheet grid, RGRect bounds) : base(grid) { }
 
-	//	public override void OnBoundsChange()
-	//	{
-	//		throw new NotImplementedException();
-	//	}
+    //	public override void OnBoundsChange()
+    //	{
+    //		throw new NotImplementedException();
+    //	}
 
-	//	public override void ScrollViews(ScrollDirection dir, RGFloat x, RGFloat y)
-	//	{
-	//		throw new NotImplementedException();
-	//	}
-	//}
-	#endregion // PageLayout ViewportController
+    //	public override void ScrollViews(ScrollDirection dir, RGFloat x, RGFloat y)
+    //	{
+    //		throw new NotImplementedException();
+    //	}
+    //}
 
+    #endregion // PageLayout ViewportController
 }
-

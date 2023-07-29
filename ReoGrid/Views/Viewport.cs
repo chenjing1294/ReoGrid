@@ -24,15 +24,12 @@ using System.Diagnostics;
 #if WINFORM || ANDROID
 using RGFloat = System.Single;
 using RGIntDouble = System.Int32;
-
 #elif WPF
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 #elif iOS
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 #endif
 
 using unvell.ReoGrid.Graphics;
@@ -42,143 +39,164 @@ using unvell.ReoGrid.Main;
 
 namespace unvell.ReoGrid.Views
 {
-	internal abstract class Viewport : View, IViewport
-	{
-		protected Worksheet sheet;
+    internal abstract class Viewport : View, IViewport
+    {
+        protected Worksheet sheet;
 
-		internal Worksheet Worksheet { get { return this.sheet; } }
+        internal Worksheet Worksheet
+        {
+            get { return this.sheet; }
+        }
 
-		public Viewport(IViewportController vc)
-			: base(vc)
-		{
-			this.sheet = vc.Worksheet;
-		}
+        public Viewport(IViewportController vc)
+            : base(vc)
+        {
+            this.sheet = vc.Worksheet;
+        }
 
-		#region Visible Region
-		protected GridRegion visibleRegion;
+        #region Visible Region
 
-		/// <summary>
-		/// View window for cell address, decides how many cells are visible for this viewport.
-		/// </summary>
-		public virtual GridRegion VisibleRegion
-		{
-			get { return visibleRegion; }
-			set { visibleRegion = value; }
-		}
-		#endregion
+        protected GridRegion visibleRegion;
 
-		#region View window
-		protected Point viewStart;
+        /// <summary>
+        /// View window for cell address, decides how many cells are visible for this viewport.
+        /// </summary>
+        public virtual GridRegion VisibleRegion
+        {
+            get { return visibleRegion; }
+            set { visibleRegion = value; }
+        }
 
-		/// <summary>
-		/// View window start position. (Scroll position)
-		/// </summary>
-		public virtual Point ViewStart { get { return viewStart; } set { viewStart = value; } }
+        #endregion
 
-		/// <summary>
-		/// Top position of view window. (Vertial scroll position)
-		/// </summary>
-		public virtual RGFloat ViewTop { get { return viewStart.Y; } set { viewStart.Y = value; } }
+        #region View window
 
-		/// <summary>
-		/// Left position of view window. (Horizontal scroll position)
-		/// </summary>
-		public virtual RGFloat ViewLeft { get { return viewStart.X; } set { viewStart.X = value; } }
-		//public virtual RGFloat ViewRight { get { return viewStart.X  + bounds.Width / this.scaleFactor; } }
-		//public virtual RGFloat ViewBottom { get { return viewStart.Y + bounds.Height / this.scaleFactor; } }
+        protected Point viewStart;
 
-		/// <summary>
-		/// The bounds of view window, starts from scroll position, ends at scroll position + window size.
-		/// </summary>
-		public virtual Rectangle ViewBounds
-		{
-			get
-			{
-				return new Rectangle(this.ScrollViewLeft, this.ScrollViewTop, this.bounds.Width / this.scaleFactor, this.bounds.Height / this.scaleFactor);
-			}
-		}
+        /// <summary>
+        /// View window start position. (Scroll position)
+        /// </summary>
+        public virtual Point ViewStart
+        {
+            get { return viewStart; }
+            set { viewStart = value; }
+        }
 
-		public virtual ScrollDirection ScrollableDirections { get; set; } = ScrollDirection.None;
+        /// <summary>
+        /// Top position of view window. (Vertial scroll position)
+        /// </summary>
+        public virtual RGFloat ViewTop
+        {
+            get { return viewStart.Y; }
+            set { viewStart.Y = value; }
+        }
 
-		public RGFloat ScrollX { get; set; }
-		public RGFloat ScrollY { get; set; }
+        /// <summary>
+        /// Left position of view window. (Horizontal scroll position)
+        /// </summary>
+        public virtual RGFloat ViewLeft
+        {
+            get { return viewStart.X; }
+            set { viewStart.X = value; }
+        }
+        //public virtual RGFloat ViewRight { get { return viewStart.X  + bounds.Width / this.scaleFactor; } }
+        //public virtual RGFloat ViewBottom { get { return viewStart.Y + bounds.Height / this.scaleFactor; } }
 
-		public RGFloat ScrollViewLeft { get { return this.viewStart.X + ScrollX; } }
-		public RGFloat ScrollViewTop { get { return this.viewStart.Y + ScrollY; } }
+        /// <summary>
+        /// The bounds of view window, starts from scroll position, ends at scroll position + window size.
+        /// </summary>
+        public virtual Rectangle ViewBounds
+        {
+            get { return new Rectangle(this.ScrollViewLeft, this.ScrollViewTop, this.bounds.Width / this.scaleFactor, this.bounds.Height / this.scaleFactor); }
+        }
 
-		public virtual void Scroll(RGFloat offX, RGFloat offY)
-		{
-			ScrollX += offX;
-			ScrollY += offY;
+        public virtual ScrollDirection ScrollableDirections { get; set; } = ScrollDirection.None;
 
-			if (ScrollX < 0) ScrollX = 0;
-			if (ScrollY < 0) ScrollY = 0;
-		}
+        public RGFloat ScrollX { get; set; }
+        public RGFloat ScrollY { get; set; }
 
-		public virtual void ScrollTo(RGFloat x, RGFloat y)
-		{
-			if (x >= 0 && (this.ScrollableDirections & ScrollDirection.Horizontal) == ScrollDirection.Horizontal) ScrollX = x;
-			if (y >= 0 && (this.ScrollableDirections & ScrollDirection.Vertical) == ScrollDirection.Vertical) ScrollY = y;
+        public RGFloat ScrollViewLeft
+        {
+            get { return this.viewStart.X + ScrollX; }
+        }
 
-			if (ScrollX < 0) ScrollX = 0;
-			if (ScrollY < 0) ScrollY = 0;
-		}
+        public RGFloat ScrollViewTop
+        {
+            get { return this.viewStart.Y + ScrollY; }
+        }
 
+        public virtual void Scroll(RGFloat offX, RGFloat offY)
+        {
+            ScrollX += offX;
+            ScrollY += offY;
 
-		#endregion // View window
+            if (ScrollX < 0) ScrollX = 0;
+            if (ScrollY < 0) ScrollY = 0;
+        }
 
-		#region Point transform
+        public virtual void ScrollTo(RGFloat x, RGFloat y)
+        {
+            if (x >= 0 && (this.ScrollableDirections & ScrollDirection.Horizontal) == ScrollDirection.Horizontal) ScrollX = x;
+            if (y >= 0 && (this.ScrollableDirections & ScrollDirection.Vertical) == ScrollDirection.Vertical) ScrollY = y;
 
-		public override Point PointToView(Point p)
-		{
-			return new Point(
-				(p.X - bounds.Left + ScrollViewLeft * this.scaleFactor) / this.scaleFactor,
-				(p.Y - bounds.Top + ScrollViewTop * this.scaleFactor) / this.scaleFactor);
-		}
+            if (ScrollX < 0) ScrollX = 0;
+            if (ScrollY < 0) ScrollY = 0;
+        }
 
-		public override Point PointToController(Point p)
-		{
-			return new Point(
-				(p.X - ScrollViewLeft) * this.scaleFactor + bounds.Left,
-				(p.Y - ScrollViewTop) * this.scaleFactor + bounds.Top);
-		}
+        #endregion // View window
 
-		#endregion // Point transform
+        #region Point transform
 
-		#region Draw
+        public override Point PointToView(Point p)
+        {
+            return new Point(
+                (p.X - bounds.Left + ScrollViewLeft * this.scaleFactor) / this.scaleFactor,
+                (p.Y - bounds.Top + ScrollViewTop * this.scaleFactor) / this.scaleFactor);
+        }
 
-		public override void Draw(CellDrawingContext dc)
-		{
+        public override Point PointToController(Point p)
+        {
+            return new Point(
+                (p.X - ScrollViewLeft) * this.scaleFactor + bounds.Left,
+                (p.Y - ScrollViewTop) * this.scaleFactor + bounds.Top);
+        }
+
+        #endregion // Point transform
+
+        #region Draw
+
+        public override void Draw(CellDrawingContext dc)
+        {
 #if DEBUG
 			Stopwatch sw = Stopwatch.StartNew();
 #endif
 
-			if (!Visible //|| visibleGridRegion == GridRegion.Empty
-				|| bounds.Width <= 0 || bounds.Height <= 0) return;
+            if (!Visible //|| visibleGridRegion == GridRegion.Empty
+                || bounds.Width <= 0 || bounds.Height <= 0) return;
 
-			//bool needClip = this.Parent == null
-			//	|| this.bounds != this.Parent.Bounds;
+            //bool needClip = this.Parent == null
+            //	|| this.bounds != this.Parent.Bounds;
 
-			//bool needTranslate = this.Parent == null
-			//	|| this.viewStart.X != this.Parent.ViewLeft
-			//	|| this.ViewStart.Y != this.Parent.ViewTop;
+            //bool needTranslate = this.Parent == null
+            //	|| this.viewStart.X != this.Parent.ViewLeft
+            //	|| this.ViewStart.Y != this.Parent.ViewTop;
 
-			var g = dc.Graphics;
+            var g = dc.Graphics;
 
-			if (PerformTransform)
-			{
-				g.PushClip(this.bounds);
-				g.PushTransform();
-				g.TranslateTransform(bounds.Left - ScrollViewLeft * this.scaleFactor, bounds.Top - ScrollViewTop * this.scaleFactor);
-			}
+            if (PerformTransform)
+            {
+                g.PushClip(this.bounds);
+                g.PushTransform();
+                g.TranslateTransform(bounds.Left - ScrollViewLeft * this.scaleFactor, bounds.Top - ScrollViewTop * this.scaleFactor);
+            }
 
-			DrawView(dc);
+            DrawView(dc);
 
-			if (this.PerformTransform)
-			{
-				g.PopTransform();
-				g.PopClip();
-			}
+            if (this.PerformTransform)
+            {
+                g.PopTransform();
+                g.PopClip();
+            }
 
 #if VP_DEBUG
 #if WINFORM
@@ -219,17 +237,13 @@ namespace unvell.ReoGrid.Views
 				Debug.WriteLine("draw viewport takes " + sw.ElapsedMilliseconds + " ms. visible region: rows: " + visibleRegion.Rows + ", cols: " + visibleRegion.Cols);
 			}
 #endif // Debug
+        }
 
-		}
+        public virtual void DrawView(CellDrawingContext dc)
+        {
+            this.DrawChildren(dc);
+        }
 
-		public virtual void DrawView(CellDrawingContext dc)
-		{
-			this.DrawChildren(dc);
-		}
-
-		#endregion // Draw
-	
-	}
-
+        #endregion // Draw
+    }
 }
-

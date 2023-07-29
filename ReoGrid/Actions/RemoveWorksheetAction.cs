@@ -17,55 +17,55 @@
 
 namespace unvell.ReoGrid.Actions
 {
-	/// <summary>
-	/// Action for removing worksheet
-	/// </summary>
-	public class RemoveWorksheetAction : WorkbookAction
-	{
-		/// <summary>
-		/// Number of worksheet
-		/// </summary>
-		public int Index { get; private set; }
+    /// <summary>
+    /// Action for removing worksheet
+    /// </summary>
+    public class RemoveWorksheetAction : WorkbookAction
+    {
+        /// <summary>
+        /// Number of worksheet
+        /// </summary>
+        public int Index { get; private set; }
 
-		/// <summary>
-		/// Worksheet instance
-		/// </summary>
-		public Worksheet Worksheet { get; private set; }
+        /// <summary>
+        /// Worksheet instance
+        /// </summary>
+        public Worksheet Worksheet { get; private set; }
 
-		/// <summary>
-		/// Create this action to insert worksheet
-		/// </summary>
-		/// <param name="index">Number of worksheet</param>
-		/// <param name="worksheet">Worksheet instance</param>
-		public RemoveWorksheetAction(int index, Worksheet worksheet)
-		{
-			this.Index = index;
-			this.Worksheet = worksheet;
-		}
+        /// <summary>
+        /// Create this action to insert worksheet
+        /// </summary>
+        /// <param name="index">Number of worksheet</param>
+        /// <param name="worksheet">Worksheet instance</param>
+        public RemoveWorksheetAction(int index, Worksheet worksheet)
+        {
+            this.Index = index;
+            this.Worksheet = worksheet;
+        }
 
-		/// <summary>
-		/// Do this action to remove worksheet
-		/// </summary>
-		public override void Do()
-		{
-			this.Workbook.RemoveWorksheet(this.Index);
-		}
+        /// <summary>
+        /// Do this action to remove worksheet
+        /// </summary>
+        public override void Do()
+        {
+            this.Workbook.RemoveWorksheet(this.Index);
+        }
 
-		/// <summary>
-		/// Undo this action to restore the removed worksheet
-		/// </summary>
-		public override void Undo()
-		{
-			this.Workbook.InsertWorksheet(this.Index, this.Worksheet);
-		}
+        /// <summary>
+        /// Undo this action to restore the removed worksheet
+        /// </summary>
+        public override void Undo()
+        {
+            this.Workbook.InsertWorksheet(this.Index, this.Worksheet);
+        }
 
-		/// <summary>
-		/// Get friendly name of this action
-		/// </summary>
-		/// <returns></returns>
-		public override string GetName()
-		{
-			return "Remove Worksheet: " + this.Worksheet.Name;
-		}
-	}
+        /// <summary>
+        /// Get friendly name of this action
+        /// </summary>
+        /// <returns></returns>
+        public override string GetName()
+        {
+            return "Remove Worksheet: " + this.Worksheet.Name;
+        }
+    }
 }

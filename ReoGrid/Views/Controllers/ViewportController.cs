@@ -23,15 +23,12 @@ using System.Diagnostics;
 #if WINFORM || ANDROID
 using RGFloat = System.Single;
 using RGIntDouble = System.Int32;
-
 #elif WPF
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 #elif iOS
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 #endif
 
 using unvell.ReoGrid.Graphics;
@@ -41,214 +38,247 @@ using unvell.ReoGrid.Main;
 
 namespace unvell.ReoGrid.Views
 {
-	internal class ViewportController : IViewportController
-	{
-		#region Constructor
+    internal class ViewportController : IViewportController
+    {
+        #region Constructor
 
-		internal Worksheet worksheet;
+        internal Worksheet worksheet;
 
-		public Worksheet Worksheet { get { return this.worksheet; } }
+        public Worksheet Worksheet
+        {
+            get { return this.worksheet; }
+        }
 
-		public ViewportController(Worksheet sheet)
-		{
-			this.worksheet = sheet;
+        public ViewportController(Worksheet sheet)
+        {
+            this.worksheet = sheet;
 
-			this.view = new View(this);
-			this.view.Children = new List<IView>();
-		}
+            this.view = new View(this);
+            this.view.Children = new List<IView>();
+        }
 
-		#endregion // Constructor
+        #endregion // Constructor
 
-		#region Bounds
+        #region Bounds
 
-		//private RGRect bounds;
-		public virtual Rectangle Bounds { get { return this.view.Bounds; } set { this.view.Bounds = value; } }
+        //private RGRect bounds;
+        public virtual Rectangle Bounds
+        {
+            get { return this.view.Bounds; }
+            set { this.view.Bounds = value; }
+        }
 
-		//public virtual RGSize Size { get { return this.Bounds.Size; }  }
-		//public virtual RGIntDouble Left { get { return this.Bounds.X; } }
-		//public virtual RGIntDouble Top { get { return this.Bounds.Y; } }
-		//public virtual RGIntDouble Width { get { return this.Bounds.Width; } }
-		//public virtual RGIntDouble Height { get { return this.Bounds.Height; } }
-		//public virtual RGIntDouble Right { get { return this.Bounds.Right; } }
-		//public virtual RGIntDouble Bottom { get { return this.Bounds.Bottom; } }
+        //public virtual RGSize Size { get { return this.Bounds.Size; }  }
+        //public virtual RGIntDouble Left { get { return this.Bounds.X; } }
+        //public virtual RGIntDouble Top { get { return this.Bounds.Y; } }
+        //public virtual RGIntDouble Width { get { return this.Bounds.Width; } }
+        //public virtual RGIntDouble Height { get { return this.Bounds.Height; } }
+        //public virtual RGIntDouble Right { get { return this.Bounds.Right; } }
+        //public virtual RGIntDouble Bottom { get { return this.Bounds.Bottom; } }
 
-		public virtual RGFloat ScaleFactor
-		{
-			get { return this.View == null ? 1f : this.View.ScaleFactor; }
-			set { if (this.View != null) this.View.ScaleFactor = value; }
-		}
-		#endregion // Bounds
+        public virtual RGFloat ScaleFactor
+        {
+            get { return this.View == null ? 1f : this.View.ScaleFactor; }
+            set
+            {
+                if (this.View != null) this.View.ScaleFactor = value;
+            }
+        }
 
-		#region Viewport Management
-		protected IView view;
+        #endregion // Bounds
 
-		public virtual IView View { get { return this.view; } set { this.view = value; } }
+        #region Viewport Management
 
-		internal virtual void AddView(IView view)
-		{
-			this.view.Children.Add(view);
-			view.ViewportController = this;
-		}
+        protected IView view;
 
-		internal virtual void InsertView(IView before, IView viewport)
-		{
-			IList<IView> views = this.view.Children;
+        public virtual IView View
+        {
+            get { return this.view; }
+            set { this.view = value; }
+        }
 
-			int index = views.IndexOf(before);
-			if (index > 0 && index < views.Count)
-			{
-				views.Insert(index, viewport);
-			}
-			else
-			{
-				views.Add(viewport);
-			}
-		}
+        internal virtual void AddView(IView view)
+        {
+            this.view.Children.Add(view);
+            view.ViewportController = this;
+        }
 
-		internal virtual void InsertView(int index, IView viewport)
-		{
-			this.view.Children.Insert(index, viewport);
-		}
+        internal virtual void InsertView(IView before, IView viewport)
+        {
+            IList<IView> views = this.view.Children;
 
-		internal virtual bool RemoveView(IView view)
-		{
-			if (this.view.Children.Remove(view))
-			{
-				view.ViewportController = null;
-				return true;
-			}
-			else
-				return false;
-		}
+            int index = views.IndexOf(before);
+            if (index > 0 && index < views.Count)
+            {
+                views.Insert(index, viewport);
+            }
+            else
+            {
+                views.Add(viewport);
+            }
+        }
 
-		protected ViewTypes viewsVisible = ViewTypes.LeadHeader;
+        internal virtual void InsertView(int index, IView viewport)
+        {
+            this.view.Children.Insert(index, viewport);
+        }
 
-		internal bool IsViewVisible(ViewTypes head)
-		{
-			return (viewsVisible & head) == head;
-		}
+        internal virtual bool RemoveView(IView view)
+        {
+            if (this.view.Children.Remove(view))
+            {
+                view.ViewportController = null;
+                return true;
+            }
+            else
+                return false;
+        }
 
-		public virtual void SetViewVisible(ViewTypes head, bool visible)
-		{
-			if (visible)
-			{
-				viewsVisible |= head;
-			}
-			else
-			{
-				viewsVisible &= ~head;
-			}
-		}
+        protected ViewTypes viewsVisible = ViewTypes.LeadHeader;
 
-		#endregion // Viewport Management
+        internal bool IsViewVisible(ViewTypes head)
+        {
+            return (viewsVisible & head) == head;
+        }
 
-		#region Update
-		public virtual void UpdateController() { }
+        public virtual void SetViewVisible(ViewTypes head, bool visible)
+        {
+            if (visible)
+            {
+                viewsVisible |= head;
+            }
+            else
+            {
+                viewsVisible &= ~head;
+            }
+        }
 
-		public virtual void Reset() { }
+        #endregion // Viewport Management
 
-		public virtual void Invalidate()
-		{
-			if (this.worksheet != null)
-			{
-				this.worksheet.RequestInvalidate();
-			}
-		}
-		#endregion // Update
+        #region Update
 
-		#region Draw
-		public virtual void Draw(CellDrawingContext dc)
-		{
-			if (this.view.Visible && this.view.Width > 0 && this.view.Height > 0)
-			{
-				view.Draw(dc);
-			}
+        public virtual void UpdateController()
+        {
+        }
 
-			this.worksheet.viewDirty = false;
-		}
-		#endregion // Draw
+        public virtual void Reset()
+        {
+        }
 
-		#region Focus
-		
-		public virtual IView FocusView { get; set; }
+        public virtual void Invalidate()
+        {
+            if (this.worksheet != null)
+            {
+                this.worksheet.RequestInvalidate();
+            }
+        }
 
-		public virtual IUserVisual FocusVisual { get; set; }
+        #endregion // Update
 
-		#endregion // View Point Evalution
+        #region Draw
 
-		#region UI Handle
-		public virtual bool OnMouseDown(Point location, MouseButtons buttons)
-		{
-			bool isProcessed = false;
+        public virtual void Draw(CellDrawingContext dc)
+        {
+            if (this.view.Visible && this.view.Width > 0 && this.view.Height > 0)
+            {
+                view.Draw(dc);
+            }
 
-			if (!isProcessed)
-			{
-				var targetView = this.view.GetViewByPoint(location);
+            this.worksheet.viewDirty = false;
+        }
 
-				if (targetView != null)
-				{
-					isProcessed = targetView.OnMouseDown(targetView.PointToView(location), buttons);
-				}
-			}
+        #endregion // Draw
 
-			return isProcessed;
-		}
+        #region Focus
 
-		public virtual bool OnMouseMove(Point location, MouseButtons buttons)
-		{
-			bool isProcessed = false;
+        public virtual IView FocusView { get; set; }
 
-			if (this.FocusView != null)
-			{
-				this.FocusView.OnMouseMove(this.FocusView.PointToView(location), buttons);
-			}
+        public virtual IUserVisual FocusVisual { get; set; }
 
-			if (!isProcessed)
-			{
-				var targetView = this.view.GetViewByPoint(location);
+        #endregion // View Point Evalution
 
-				if (targetView != null)
-				{
-					isProcessed = targetView.OnMouseMove(targetView.PointToView(location), buttons);
-				}
-			}
+        #region UI Handle
 
-			return isProcessed;
-		}
+        public virtual bool OnMouseDown(Point location, MouseButtons buttons)
+        {
+            bool isProcessed = false;
 
-		public virtual bool OnMouseUp(Point location, MouseButtons buttons)
-		{
-			bool isProcessed = false;
+            if (!isProcessed)
+            {
+                var targetView = this.view.GetViewByPoint(location);
 
-			if (this.FocusView != null)
-			{
-				isProcessed = this.FocusView.OnMouseUp(this.FocusView.PointToView(location), buttons);
-			}
+                if (targetView != null)
+                {
+                    isProcessed = targetView.OnMouseDown(targetView.PointToView(location), buttons);
+                }
+            }
 
-			return isProcessed;
-		}
+            return isProcessed;
+        }
 
-		public virtual bool OnMouseDoubleClick(Point location, MouseButtons buttons)
-		{
-			bool isProcessed = false;
+        public virtual bool OnMouseMove(Point location, MouseButtons buttons)
+        {
+            bool isProcessed = false;
 
-			var targetView = this.FocusView != null ? this.FocusView
-				: this.view.GetViewByPoint(location);
+            if (this.FocusView != null)
+            {
+                this.FocusView.OnMouseMove(this.FocusView.PointToView(location), buttons);
+            }
 
-			if (targetView != null)
-			{
-				isProcessed = targetView.OnMouseDoubleClick(targetView.PointToView(location), buttons);
-			}
+            if (!isProcessed)
+            {
+                var targetView = this.view.GetViewByPoint(location);
 
-			return isProcessed;
-		}
+                if (targetView != null)
+                {
+                    isProcessed = targetView.OnMouseMove(targetView.PointToView(location), buttons);
+                }
+            }
 
-		public virtual bool OnKeyDown(KeyCode key) { return false; }
+            return isProcessed;
+        }
 
-		public virtual void SetFocus() { }
+        public virtual bool OnMouseUp(Point location, MouseButtons buttons)
+        {
+            bool isProcessed = false;
 
-		public virtual void FreeFocus() { }
-		#endregion // Mouse
-	}
+            if (this.FocusView != null)
+            {
+                isProcessed = this.FocusView.OnMouseUp(this.FocusView.PointToView(location), buttons);
+            }
+
+            return isProcessed;
+        }
+
+        public virtual bool OnMouseDoubleClick(Point location, MouseButtons buttons)
+        {
+            bool isProcessed = false;
+
+            var targetView = this.FocusView != null
+                ? this.FocusView
+                : this.view.GetViewByPoint(location);
+
+            if (targetView != null)
+            {
+                isProcessed = targetView.OnMouseDoubleClick(targetView.PointToView(location), buttons);
+            }
+
+            return isProcessed;
+        }
+
+        public virtual bool OnKeyDown(KeyCode key)
+        {
+            return false;
+        }
+
+        public virtual void SetFocus()
+        {
+        }
+
+        public virtual void FreeFocus()
+        {
+        }
+
+        #endregion // Mouse
+    }
 }
-

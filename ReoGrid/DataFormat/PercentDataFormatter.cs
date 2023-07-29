@@ -7,119 +7,120 @@ using unvell.ReoGrid.DataFormat;
 
 namespace unvell.ReoGrid.DataFormat
 {
-	#region Percent
-	/// <summary>
-	/// Percent data formatter
-	/// </summary>
-	public class PercentDataFormatter : IDataFormatter
-	{
-		public string FormatCell(Cell cell)
-		{
-			object data = cell.InnerData;
+    #region Percent
 
-			double percent = 0;
-			bool isFormat = false;
-			short digits = 0;
-			string formattedText = null;
+    /// <summary>
+    /// Percent data formatter
+    /// </summary>
+    public class PercentDataFormatter : IDataFormatter
+    {
+        public string FormatCell(Cell cell)
+        {
+            object data = cell.InnerData;
 
-			if (data is double)
-			{
-				percent = (double)data;
-				isFormat = true;
-				digits = 9;
-			}
-			else if (data is DateTime)
-			{
-				percent = ((DateTime)data - new DateTime(1900, 1, 1)).TotalDays;
-				isFormat = true;
-				digits = 0;
-			}
-			else
-			{
-				string str = Convert.ToString(data);
-				if (str.Length > 1 && str.EndsWith("%"))
-				{
-					// string ends with "%"
-					str = str.Substring(0, str.Length - 1);
+            double percent = 0;
+            bool isFormat = false;
+            short digits = 0;
+            string formattedText = null;
 
-					isFormat = double.TryParse(str, out percent);
+            if (data is double)
+            {
+                percent = (double) data;
+                isFormat = true;
+                digits = 9;
+            }
+            else if (data is DateTime)
+            {
+                percent = ((DateTime) data - new DateTime(1900, 1, 1)).TotalDays;
+                isFormat = true;
+                digits = 0;
+            }
+            else
+            {
+                string str = Convert.ToString(data);
+                if (str.Length > 1 && str.EndsWith("%"))
+                {
+                    // string ends with "%"
+                    str = str.Substring(0, str.Length - 1);
 
-					if (isFormat)
-					{
-						percent /= 100d;
+                    isFormat = double.TryParse(str, out percent);
 
-						int decimalDigits = (short)str.LastIndexOf(Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
-						if (decimalDigits >= 0)
-						{
-							digits = (short)(str.Length - 1 - decimalDigits);
-						}
-					}
-				}
-				else
-				{
-					// string ends without "%"
-					isFormat = double.TryParse(str, out percent);
+                    if (isFormat)
+                    {
+                        percent /= 100d;
 
-					if (isFormat)
-					{
-						int decimalDigits = (short)str.LastIndexOf(Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
-						if (decimalDigits >= 0)
-						{
-							digits = (short)(str.Length - 1 - decimalDigits);
-						}
-					}
-					else
-					{
-						// try convert from datetime
-						DateTime date = new DateTime(1900, 1, 1);
-						if (DateTime.TryParse(str, out date))
-						{
-							percent = (date - new DateTime(1900, 1, 1)).TotalDays;
-							isFormat = true;
-						}
-					}
-				}
+                        int decimalDigits = (short) str.LastIndexOf(Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+                        if (decimalDigits >= 0)
+                        {
+                            digits = (short) (str.Length - 1 - decimalDigits);
+                        }
+                    }
+                }
+                else
+                {
+                    // string ends without "%"
+                    isFormat = double.TryParse(str, out percent);
 
-				if (isFormat) cell.InnerData = percent;
-			}
+                    if (isFormat)
+                    {
+                        int decimalDigits = (short) str.LastIndexOf(Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+                        if (decimalDigits >= 0)
+                        {
+                            digits = (short) (str.Length - 1 - decimalDigits);
+                        }
+                    }
+                    else
+                    {
+                        // try convert from datetime
+                        DateTime date = new DateTime(1900, 1, 1);
+                        if (DateTime.TryParse(str, out date))
+                        {
+                            percent = (date - new DateTime(1900, 1, 1)).TotalDays;
+                            isFormat = true;
+                        }
+                    }
+                }
 
-			if (isFormat)
-			{
-				//if (cell.DataFormatArgs != null && cell.DataFormatArgs is NumberDataFormatter.NumberFormatArgs)
-				//{
-				//	digits = ((NumberDataFormatter.NumberFormatArgs)cell.DataFormatArgs).DecimalPlaces;
-				//}
-				//else
-				//{
-				//	cell.DataFormatArgs = new NumberDataFormatter.NumberFormatArgs { DecimalPlaces = digits };
-				//}
+                if (isFormat) cell.InnerData = percent;
+            }
 
-				//string decimalPlacePart = new string('0', digits);
+            if (isFormat)
+            {
+                //if (cell.DataFormatArgs != null && cell.DataFormatArgs is NumberDataFormatter.NumberFormatArgs)
+                //{
+                //	digits = ((NumberDataFormatter.NumberFormatArgs)cell.DataFormatArgs).DecimalPlaces;
+                //}
+                //else
+                //{
+                //	cell.DataFormatArgs = new NumberDataFormatter.NumberFormatArgs { DecimalPlaces = digits };
+                //}
 
-				//formattedText = (percent * 100).ToString("0." + decimalPlacePart) + "%";
+                //string decimalPlacePart = new string('0', digits);
 
-				//if (cell.InnerStyle.HAlign == ReoGridHorAlign.General)
-				//{
-				//	cell.RenderHorAlign = ReoGridRenderHorAlign.Right;
-				//}
-				var format = NumberDataFormatter.FormatNumberCellAndGetPattern(cell, ref percent,
-					cell.DataFormatArgs as NumberDataFormatter.INumberFormatArgs);
+                //formattedText = (percent * 100).ToString("0." + decimalPlacePart) + "%";
 
-				return percent.ToString(format + "%");
-			}
+                //if (cell.InnerStyle.HAlign == ReoGridHorAlign.General)
+                //{
+                //	cell.RenderHorAlign = ReoGridRenderHorAlign.Right;
+                //}
+                var format = NumberDataFormatter.FormatNumberCellAndGetPattern(cell, ref percent,
+                    cell.DataFormatArgs as NumberDataFormatter.INumberFormatArgs);
 
-			return isFormat ? formattedText : null;
-		}
+                return percent.ToString(format + "%");
+            }
 
-		/// <summary>
-		/// Perform a format check
-		/// </summary>
-		/// <returns>true if the data is in this format</returns>
-		public bool PerformTestFormat()
-		{
-			return true;
-		}
-	}
-	#endregion // Percent
+            return isFormat ? formattedText : null;
+        }
 
+        /// <summary>
+        /// Perform a format check
+        /// </summary>
+        /// <returns>true if the data is in this format</returns>
+        public bool PerformTestFormat()
+        {
+            return true;
+        }
+    }
+
+    #endregion // Percent
 }

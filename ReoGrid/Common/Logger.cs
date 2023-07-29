@@ -30,154 +30,159 @@ using System.Reflection;
 
 namespace unvell.Common
 {
-	/// <summary>
-	/// Log level
-	/// </summary>
+    /// <summary>
+    /// Log level
+    /// </summary>
 #if DEBUG
 	public
 #endif // DEBUG
-	enum LogLevel : byte
-	{
-		/// <summary>
-		/// All logs
-		/// </summary>
-		All = 0,
+    enum LogLevel : byte
+    {
+        /// <summary>
+        /// All logs
+        /// </summary>
+        All = 0,
 
-		/// <summary>
-		/// Trace log
-		/// </summary>
-		Trace = 1,
+        /// <summary>
+        /// Trace log
+        /// </summary>
+        Trace = 1,
 
-		/// <summary>
-		/// Debug log
-		/// </summary>
-		Debug = 2,
+        /// <summary>
+        /// Debug log
+        /// </summary>
+        Debug = 2,
 
-		/// <summary>
-		/// Info log
-		/// </summary>
-		Info = 3,
+        /// <summary>
+        /// Info log
+        /// </summary>
+        Info = 3,
 
-		/// <summary>
-		/// Warning log
-		/// </summary>
-		Warn = 4,
+        /// <summary>
+        /// Warning log
+        /// </summary>
+        Warn = 4,
 
-		/// <summary>
-		/// Error log
-		/// </summary>
-		Error = 5,
+        /// <summary>
+        /// Error log
+        /// </summary>
+        Error = 5,
 
-		/// <summary>
-		/// Fatal error log
-		/// </summary>
-		Fatal = 6,
-	}
+        /// <summary>
+        /// Fatal error log
+        /// </summary>
+        Fatal = 6,
+    }
 
-	/// <summary>
-	/// Log writter
-	/// </summary>
-	public interface ILogWritter
-	{
-		/// <summary>
-		/// Output log message
-		/// </summary>
-		/// <param name="cat">category name</param>
-		/// <param name="msg">message to be output</param>
-		void Log(string cat, string msg);
-	}
-	
-	/// <summary>
-	/// Common logger component
-	/// </summary>
+    /// <summary>
+    /// Log writter
+    /// </summary>
+    public interface ILogWritter
+    {
+        /// <summary>
+        /// Output log message
+        /// </summary>
+        /// <param name="cat">category name</param>
+        /// <param name="msg">message to be output</param>
+        void Log(string cat, string msg);
+    }
+
+    /// <summary>
+    /// Common logger component
+    /// </summary>
 #if DEBUG
 		public
 #endif // DEBUG
-	class Logger
-	{
-		private static readonly Logger instance = new Logger();
-		internal static Logger Instance { get { return instance; } }
+    class Logger
+    {
+        private static readonly Logger instance = new Logger();
 
-		private List<ILogWritter> writters = new List<ILogWritter>();
+        internal static Logger Instance
+        {
+            get { return instance; }
+        }
 
-		private Logger() {
-			writters.Add(new ConsoleLogger());
+        private List<ILogWritter> writters = new List<ILogWritter>();
+
+        private Logger()
+        {
+            writters.Add(new ConsoleLogger());
 #if LOG_TO_FILE
 			writters.Add(new DebugFileLogger());
 #endif
-		}
+        }
 
-		/// <summary>
-		/// Add an output target
-		/// </summary>
-		/// <param name="writter">writer to be registered</param>
-		public static void RegisterWritter(ILogWritter writter)
-		{
-			instance.writters.Add(writter);
-		}
+        /// <summary>
+        /// Add an output target
+        /// </summary>
+        /// <param name="writter">writer to be registered</param>
+        public static void RegisterWritter(ILogWritter writter)
+        {
+            instance.writters.Add(writter);
+        }
 
-		private bool turnSwitch = true;
+        private bool turnSwitch = true;
 
-		/// <summary>
-		/// Turn off log output
-		/// </summary>
-		public static void Off()
-		{
-			instance.turnSwitch = false;
-		}
+        /// <summary>
+        /// Turn off log output
+        /// </summary>
+        public static void Off()
+        {
+            instance.turnSwitch = false;
+        }
 
-		/// <summary>
-		/// Turn on log output
-		/// </summary>
-		public static void On()
-		{
-			instance.turnSwitch = true;
-		}
+        /// <summary>
+        /// Turn on log output
+        /// </summary>
+        public static void On()
+        {
+            instance.turnSwitch = true;
+        }
 
-		/// <summary>
-		/// Output message to log writters
-		/// </summary>
-		/// <param name="cat">category name</param>
-		/// <param name="format">format of log message</param>
-		/// <param name="args">arguments for format</param>
-		public static void Log(string cat, string format, params object[] args)
-		{
-			Log(cat, string.Format(format, args));
-		}
+        /// <summary>
+        /// Output message to log writters
+        /// </summary>
+        /// <param name="cat">category name</param>
+        /// <param name="format">format of log message</param>
+        /// <param name="args">arguments for format</param>
+        public static void Log(string cat, string format, params object[] args)
+        {
+            Log(cat, string.Format(format, args));
+        }
 
-		/// <summary>
-		/// Output message to log writters
-		/// </summary>
-		/// <param name="cat">category name</param>
-		/// <param name="msg">log message to be output</param>
-		public static void Log(string cat, string msg)
-		{
-			instance.WriteLog(cat, msg);
-		}
+        /// <summary>
+        /// Output message to log writters
+        /// </summary>
+        /// <param name="cat">category name</param>
+        /// <param name="msg">log message to be output</param>
+        public static void Log(string cat, string msg)
+        {
+            instance.WriteLog(cat, msg);
+        }
 
-		/// <summary>
-		/// Output message to log writters
-		/// </summary>
-		/// <param name="cat">category name</param>
-		/// <param name="msg">log message to be output</param>
-		public void WriteLog(string cat, string msg)
-		{
-			if(turnSwitch) writters.ForEach(w => w.Log(cat, msg));
-		}
-	}
+        /// <summary>
+        /// Output message to log writters
+        /// </summary>
+        /// <param name="cat">category name</param>
+        /// <param name="msg">log message to be output</param>
+        public void WriteLog(string cat, string msg)
+        {
+            if (turnSwitch) writters.ForEach(w => w.Log(cat, msg));
+        }
+    }
 
-	class ConsoleLogger : ILogWritter
-	{
-		#region ILogWritter Members
+    class ConsoleLogger : ILogWritter
+    {
+        #region ILogWritter Members
 
-		public void Log(string cat, string msg)
-		{
-			Console.WriteLine(string.Format("[{0}] {1}: {2}",
-				DateTime.Now.ToString(), cat, msg));
-		}
+        public void Log(string cat, string msg)
+        {
+            Console.WriteLine(string.Format("[{0}] {1}: {2}",
+                DateTime.Now.ToString(), cat, msg));
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 
 #if DEBUG1
 	class DebugFileLogger : ILogWritter

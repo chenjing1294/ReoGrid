@@ -33,297 +33,307 @@ using unvell.ReoGrid.Drawing;
 
 namespace unvell.ReoGrid.Chart
 {
-	/// <summary>
-	/// Repersents pie chart component.
-	/// </summary>
-	public class PieChart : Chart
-	{
-		internal virtual PieChartDataInfo DataInfo { get; private set; }
-		internal virtual List<RGFloat> PlotPieAngles { get; private set; }
-		internal virtual PiePlotView PiePlotView { get; private set; }
+    /// <summary>
+    /// Repersents pie chart component.
+    /// </summary>
+    public class PieChart : Chart
+    {
+        internal virtual PieChartDataInfo DataInfo { get; private set; }
+        internal virtual List<RGFloat> PlotPieAngles { get; private set; }
+        internal virtual PiePlotView PiePlotView { get; private set; }
 
-		/// <summary>
-		/// Creates pie chart instance.
-		/// </summary>
-		public PieChart()
-		{
-			this.DataInfo = new PieChartDataInfo();
-			this.PlotPieAngles = new List<RGFloat>();
-			
-			this.AddPlotViewLayer(this.PiePlotView = CreatePlotViewInstance());
-		}
+        /// <summary>
+        /// Creates pie chart instance.
+        /// </summary>
+        public PieChart()
+        {
+            this.DataInfo = new PieChartDataInfo();
+            this.PlotPieAngles = new List<RGFloat>();
 
-		#region Legend
-		protected override ChartLegend CreateChartLegend(LegendType type)
-		{
-			var chartLegend = base.CreateChartLegend(type);
+            this.AddPlotViewLayer(this.PiePlotView = CreatePlotViewInstance());
+        }
 
-			if (type == LegendType.PrimaryLegend)
-			{
-				chartLegend.LegendPosition = LegendPosition.Bottom;
-			}
+        #region Legend
 
-			return chartLegend;
-		}
-		#endregion // Legend
+        protected override ChartLegend CreateChartLegend(LegendType type)
+        {
+            var chartLegend = base.CreateChartLegend(type);
 
-		#region Plot view instance
-		/// <summary>
-		/// Creates and returns pie plot view.
-		/// </summary>
-		/// <returns></returns>
-		protected virtual PiePlotView CreatePlotViewInstance()
-		{
-			return new PiePlotView(this);
-		}
-		#endregion // Plot view instance
+            if (type == LegendType.PrimaryLegend)
+            {
+                chartLegend.LegendPosition = LegendPosition.Bottom;
+            }
 
-		#region Layout
-		protected override Rectangle GetPlotViewBounds(Rectangle bodyBounds)
-		{
-			RGFloat minSize = Math.Min(bodyBounds.Width, bodyBounds.Height);
+            return chartLegend;
+        }
 
-			return new Rectangle(bodyBounds.X + (bodyBounds.Width - minSize) / 2, 
-				bodyBounds.Y + (bodyBounds.Height - minSize) / 2,
-				minSize, minSize);
-		}
-		#endregion // Layout
+        #endregion // Legend
 
-		#region Data Serials
-		//public override int GetSerialCount()
-		//{
-		//	return this.DataSource.CategoryCount;
-		//}
-		//public override string GetSerialName(int index)
-		//{
-		//	return this.DataSource == null ? string.Empty : this.DataSource.GetCategoryName(index);
-		//}
-		#endregion // Data Serials
+        #region Plot view instance
 
-		#region Update Draw Points
-		//protected override int GetSerialStyleCount()
-		//{
-		//	var ds = this.DataSource;
-		//	return ds == null ? 0 : ds.CategoryCount;
-		//}
+        /// <summary>
+        /// Creates and returns pie plot view.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual PiePlotView CreatePlotViewInstance()
+        {
+            return new PiePlotView(this);
+        }
 
-		/// <summary>
-		/// Update data serial information.
-		/// </summary>
-		protected override void UpdatePlotData()
-		{
-			var ds = this.DataSource;
+        #endregion // Plot view instance
 
-			if (ds == null) return;
+        #region Layout
 
-			double sum = 0;
+        protected override Rectangle GetPlotViewBounds(Rectangle bodyBounds)
+        {
+            RGFloat minSize = Math.Min(bodyBounds.Width, bodyBounds.Height);
 
-			if (ds != null && ds.SerialCount > 0)
-			{
-				for (int index = 0; index < ds.SerialCount; index++)
-				{
-					double? data = ds[index][0];
+            return new Rectangle(bodyBounds.X + (bodyBounds.Width - minSize) / 2,
+                bodyBounds.Y + (bodyBounds.Height - minSize) / 2,
+                minSize, minSize);
+        }
 
-					if (data != null)
-					{
-						sum += (double)data;
-					}
-				}
-			}
+        #endregion // Layout
 
-			this.DataInfo.Total = sum;
+        #region Data Serials
 
-			this.UpdatePlotPoints();
-		}
+        //public override int GetSerialCount()
+        //{
+        //	return this.DataSource.CategoryCount;
+        //}
+        //public override string GetSerialName(int index)
+        //{
+        //	return this.DataSource == null ? string.Empty : this.DataSource.GetCategoryName(index);
+        //}
 
-		/// <summary>
-		/// Update plot calculation points.
-		/// </summary>
-		protected virtual void UpdatePlotPoints()
-		{
-			var ds = this.DataSource;
+        #endregion // Data Serials
 
-			if (ds != null)
-			{
-				int dataCount = ds.SerialCount;
+        #region Update Draw Points
 
-				var clientRect = this.ClientBounds;
-				RGFloat scale = (RGFloat)(360.0 / this.DataInfo.Total);
+        //protected override int GetSerialStyleCount()
+        //{
+        //	var ds = this.DataSource;
+        //	return ds == null ? 0 : ds.CategoryCount;
+        //}
 
-				for (int i = 0; i < dataCount; i++)
-				{
-					var data = ds[i][0];
+        /// <summary>
+        /// Update data serial information.
+        /// </summary>
+        protected override void UpdatePlotData()
+        {
+            var ds = this.DataSource;
 
-					if (data != null)
-					{
-						RGFloat angle = (RGFloat)(data * scale);
+            if (ds == null) return;
 
-						if (i >= this.PlotPieAngles.Count)
-						{
-							this.PlotPieAngles.Add(angle);
-						}
-						else
-						{
-							this.PlotPieAngles[i] = angle;
-						}
-					}
-				}
-			}
-			else
-			{
-				this.PlotPieAngles.Clear();
-			}
+            double sum = 0;
 
-			if (this.PiePlotView != null)
-			{
-				this.PiePlotView.Invalidate();
-			}
-		}
-		#endregion // Update Draw Points
-	}
-	
-	/// <summary>
-	/// Represents pie chart data information.
-	/// </summary>
-	public class PieChartDataInfo
-	{
-		public double Total { get; set; }
-	}
+            if (ds != null && ds.SerialCount > 0)
+            {
+                for (int index = 0; index < ds.SerialCount; index++)
+                {
+                    double? data = ds[index][0];
 
-	/// <summary>
-	/// Represents pie plot view.
-	/// </summary>
-	public class PiePlotView : ChartPlotView
-	{
-		/// <summary>
-		/// Create plot view object of pie 2d chart.
-		/// </summary>
-		/// <param name="chart">Pie chart instance.</param>
-		public PiePlotView(Chart chart)
-			: base(chart)
-		{
-			this.Chart.DataSourceChanged += Chart_DataSourceChanged;
-			this.Chart.ChartDataChanged += Chart_DataSourceChanged;
-		}
+                    if (data != null)
+                    {
+                        sum += (double) data;
+                    }
+                }
+            }
 
-		~PiePlotView()
-		{
-			this.Chart.DataSourceChanged -= Chart_DataSourceChanged;
-			this.Chart.ChartDataChanged -= Chart_DataSourceChanged;
-		}
+            this.DataInfo.Total = sum;
 
-		void Chart_DataSourceChanged(object sender, EventArgs e)
-		{
-			this.UpdatePieShapes();
-		}
+            this.UpdatePlotPoints();
+        }
 
-		protected List<PieShape> PlotPieShapes = new List<PieShape>();
+        /// <summary>
+        /// Update plot calculation points.
+        /// </summary>
+        protected virtual void UpdatePlotPoints()
+        {
+            var ds = this.DataSource;
 
-		protected virtual void UpdatePieShapes()
-		{
-			var pieChart = this.Chart as PieChart;
-			if (pieChart == null) return;
+            if (ds != null)
+            {
+                int dataCount = ds.SerialCount;
 
-			var ds = this.Chart.DataSource;
-			if (ds != null)
-			{
-				var dataCount = ds.SerialCount;
-				RGFloat currentAngle = 0;
+                var clientRect = this.ClientBounds;
+                RGFloat scale = (RGFloat) (360.0 / this.DataInfo.Total);
 
-				for (int i = 0; i < dataCount && i < pieChart.PlotPieAngles.Count; i++)
-				{
-					RGFloat angle = pieChart.PlotPieAngles[i];
+                for (int i = 0; i < dataCount; i++)
+                {
+                    var data = ds[i][0];
 
-					if (i >= this.PlotPieShapes.Count)
-					{
-						this.PlotPieShapes.Add(CreatePieShape(this.ClientBounds));
-					}
+                    if (data != null)
+                    {
+                        RGFloat angle = (RGFloat) (data * scale);
 
-					var pie = this.PlotPieShapes[i];
-					pie.StartAngle = currentAngle;
-					pie.SweepAngle = angle;
-					pie.FillColor = pieChart.DataSerialStyles[i].FillColor;
+                        if (i >= this.PlotPieAngles.Count)
+                        {
+                            this.PlotPieAngles.Add(angle);
+                        }
+                        else
+                        {
+                            this.PlotPieAngles[i] = angle;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                this.PlotPieAngles.Clear();
+            }
 
-					currentAngle += angle;
-				}
-			}
-		}
+            if (this.PiePlotView != null)
+            {
+                this.PiePlotView.Invalidate();
+            }
+        }
 
-		protected virtual PieShape CreatePieShape(Rectangle bounds)
-		{
-			return new PieShape()
-			{
-				Bounds = bounds,
-				LineColor = SolidColor.Transparent,
-			};
-		}
+        #endregion // Update Draw Points
+    }
 
-		/// <summary>
-		/// Render pie 2d plot view.
-		/// </summary>
-		/// <param name="dc">Platform no-associated drawing context instance.</param>
-		protected override void OnPaint(Rendering.DrawingContext dc)
-		{
-			base.OnPaint(dc);
+    /// <summary>
+    /// Represents pie chart data information.
+    /// </summary>
+    public class PieChartDataInfo
+    {
+        public double Total { get; set; }
+    }
 
-			foreach (var pieShape in this.PlotPieShapes)
-			{
-				pieShape.Draw(dc);
-			}
-		}
-	}
+    /// <summary>
+    /// Represents pie plot view.
+    /// </summary>
+    public class PiePlotView : ChartPlotView
+    {
+        /// <summary>
+        /// Create plot view object of pie 2d chart.
+        /// </summary>
+        /// <param name="chart">Pie chart instance.</param>
+        public PiePlotView(Chart chart)
+            : base(chart)
+        {
+            this.Chart.DataSourceChanged += Chart_DataSourceChanged;
+            this.Chart.ChartDataChanged += Chart_DataSourceChanged;
+        }
 
-	/// <summary>
-	/// Repersents pie 2D chart component.
-	/// </summary>
-	public class Pie2DChart : PieChart
-	{
-	}
+        ~PiePlotView()
+        {
+            this.Chart.DataSourceChanged -= Chart_DataSourceChanged;
+            this.Chart.ChartDataChanged -= Chart_DataSourceChanged;
+        }
 
-	/// <summary>
-	/// Represents pie 2D plot view.
-	/// </summary>
-	public class Pie2DPlotView : PiePlotView
-	{
-		public Pie2DPlotView(Pie2DChart pieChart)
-			: base(pieChart)
-		{
-		}
-	}
+        void Chart_DataSourceChanged(object sender, EventArgs e)
+        {
+            this.UpdatePieShapes();
+        }
 
-	/// <summary>
-	/// Repersents doughnut chart component.
-	/// </summary>
-	public class DoughnutChart : PieChart
-	{
-		/// <summary>
-		/// Creates and returns doughnut plot view.
-		/// </summary>
-		protected override PiePlotView CreatePlotViewInstance()
-		{
-			return new DoughnutPlotView(this);
-		}
-	}
+        protected List<PieShape> PlotPieShapes = new List<PieShape>();
 
-	/// <summary>
-	/// Represents doughnut plot view.
-	/// </summary>
-	public class DoughnutPlotView : PiePlotView
-	{
-		public DoughnutPlotView(DoughnutChart chart)
-			: base(chart)
-		{
-		}
+        protected virtual void UpdatePieShapes()
+        {
+            var pieChart = this.Chart as PieChart;
+            if (pieChart == null) return;
 
-		protected override PieShape CreatePieShape(Rectangle bounds)
-		{
-			return new Drawing.Shapes.SmartShapes.BlockArcShape
-			{
-				Bounds = bounds,
-				LineColor = SolidColor.White,
-			};
-		}
-	}
+            var ds = this.Chart.DataSource;
+            if (ds != null)
+            {
+                var dataCount = ds.SerialCount;
+                RGFloat currentAngle = 0;
+
+                for (int i = 0; i < dataCount && i < pieChart.PlotPieAngles.Count; i++)
+                {
+                    RGFloat angle = pieChart.PlotPieAngles[i];
+
+                    if (i >= this.PlotPieShapes.Count)
+                    {
+                        this.PlotPieShapes.Add(CreatePieShape(this.ClientBounds));
+                    }
+
+                    var pie = this.PlotPieShapes[i];
+                    pie.StartAngle = currentAngle;
+                    pie.SweepAngle = angle;
+                    pie.FillColor = pieChart.DataSerialStyles[i].FillColor;
+
+                    currentAngle += angle;
+                }
+            }
+        }
+
+        protected virtual PieShape CreatePieShape(Rectangle bounds)
+        {
+            return new PieShape()
+            {
+                Bounds = bounds,
+                LineColor = SolidColor.Transparent,
+            };
+        }
+
+        /// <summary>
+        /// Render pie 2d plot view.
+        /// </summary>
+        /// <param name="dc">Platform no-associated drawing context instance.</param>
+        protected override void OnPaint(Rendering.DrawingContext dc)
+        {
+            base.OnPaint(dc);
+
+            foreach (var pieShape in this.PlotPieShapes)
+            {
+                pieShape.Draw(dc);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Repersents pie 2D chart component.
+    /// </summary>
+    public class Pie2DChart : PieChart
+    {
+    }
+
+    /// <summary>
+    /// Represents pie 2D plot view.
+    /// </summary>
+    public class Pie2DPlotView : PiePlotView
+    {
+        public Pie2DPlotView(Pie2DChart pieChart)
+            : base(pieChart)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Repersents doughnut chart component.
+    /// </summary>
+    public class DoughnutChart : PieChart
+    {
+        /// <summary>
+        /// Creates and returns doughnut plot view.
+        /// </summary>
+        protected override PiePlotView CreatePlotViewInstance()
+        {
+            return new DoughnutPlotView(this);
+        }
+    }
+
+    /// <summary>
+    /// Represents doughnut plot view.
+    /// </summary>
+    public class DoughnutPlotView : PiePlotView
+    {
+        public DoughnutPlotView(DoughnutChart chart)
+            : base(chart)
+        {
+        }
+
+        protected override PieShape CreatePieShape(Rectangle bounds)
+        {
+            return new Drawing.Shapes.SmartShapes.BlockArcShape
+            {
+                Bounds = bounds,
+                LineColor = SolidColor.White,
+            };
+        }
+    }
 }
 
 #endif // DRAWING

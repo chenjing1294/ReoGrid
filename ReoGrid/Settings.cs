@@ -23,64 +23,65 @@ using System.Text;
 
 namespace unvell.ReoGrid
 {
-	/// <summary>
-	/// Workbook Control Settings
-	/// </summary>
-	public enum WorkbookSettings : ulong
-	{
-		/// <summary>
-		/// None
-		/// </summary>
-		None = 0x000000000L,
+    /// <summary>
+    /// Workbook Control Settings
+    /// </summary>
+    public enum WorkbookSettings : ulong
+    {
+        /// <summary>
+        /// None
+        /// </summary>
+        None = 0x000000000L,
 
-		/// <summary>
-		/// Default Settings
-		/// </summary>
-		Default = View_Default | Behavior_Default | View_ShowScrolls 
+        /// <summary>
+        /// Default Settings
+        /// </summary>
+        Default = View_Default | Behavior_Default | View_ShowScrolls
 #if EX_SCRIPT
 			| Script_Default
 #endif // EX_SCRIPT
-			,
+        ,
 
-		#region Behavior
+        #region Behavior
 
-		/// <summary>
-		/// Default behavior settings
-		/// </summary>
-		Behavior_Default = 0L,
+        /// <summary>
+        /// Default behavior settings
+        /// </summary>
+        Behavior_Default = 0L,
 
-		#endregion // Behavior
+        #endregion // Behavior
 
-		#region View
+        #region View
 
-		/// <summary>
-		/// Default View Settings 
-		/// </summary>
-		View_Default = View_ShowSheetTabControl,
+        /// <summary>
+        /// Default View Settings 
+        /// </summary>
+        View_Default = View_ShowSheetTabControl,
 
-		/// <summary>
-		/// Determine whether or not to show sheet tab control
-		/// </summary>
-		View_ShowSheetTabControl = 0x00010000L,
+        /// <summary>
+        /// Determine whether or not to show sheet tab control
+        /// </summary>
+        View_ShowSheetTabControl = 0x00010000L,
 
-		/// <summary>
-		/// Determine whether or not to show horizontal and vertical scroll bars
-		/// </summary>
-		View_ShowScrolls = View_ShowHorScroll | View_ShowVerScroll,
+        /// <summary>
+        /// Determine whether or not to show horizontal and vertical scroll bars
+        /// </summary>
+        View_ShowScrolls = View_ShowHorScroll | View_ShowVerScroll,
 
-		/// <summary>
-		/// Determine whether or not to show horizontal scroll bar
-		/// </summary>
-		View_ShowHorScroll = 0x00020000L,
+        /// <summary>
+        /// Determine whether or not to show horizontal scroll bar
+        /// </summary>
+        View_ShowHorScroll = 0x00020000L,
 
-		/// <summary>
-		/// Determine whether or not to show vertical scroll bar
-		/// </summary>
-		View_ShowVerScroll = 0x00040000L,
+        /// <summary>
+        /// Determine whether or not to show vertical scroll bar
+        /// </summary>
+        View_ShowVerScroll = 0x00040000L,
 
-		#endregion // View
+        #endregion // View
 
-		#region Script
+        #region Script
+
 #if EX_SCRIPT
 		/// <summary>
 		/// Default settings of script
@@ -97,6 +98,7 @@ namespace unvell.ReoGrid
 		/// </summary>
 		Script_PromptBeforeAutoRun = 0x20000000L,
 #endif // EX_SCRIPT
-		#endregion // Script
-	}
+
+        #endregion // Script
+    }
 }

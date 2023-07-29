@@ -31,37 +31,38 @@ using unvell.ReoGrid.Graphics;
 
 namespace unvell.ReoGrid.Drawing.Shapes.SmartShapes
 {
-	/// <summary>
-	/// Represents a block arc smart shape object.
-	/// </summary>
-	public class BlockArcShape : PieShape
-	{
-		#region Attributes
-		private RGFloat arcWidth = 50;
+    /// <summary>
+    /// Represents a block arc smart shape object.
+    /// </summary>
+    public class BlockArcShape : PieShape
+    {
+        #region Attributes
 
-		/// <summary>
-		/// Get or set the width of block arc.
-		/// </summary>
-		public virtual RGFloat ArcWidth
-		{
-			get { return this.arcWidth; }
-			set
-			{
-				if (this.arcWidth != value)
-				{
-					this.arcWidth = value;
-					UpdatePath();
-				}
-			}
-		}
+        private RGFloat arcWidth = 50;
 
-		#endregion // Attributes
+        /// <summary>
+        /// Get or set the width of block arc.
+        /// </summary>
+        public virtual RGFloat ArcWidth
+        {
+            get { return this.arcWidth; }
+            set
+            {
+                if (this.arcWidth != value)
+                {
+                    this.arcWidth = value;
+                    UpdatePath();
+                }
+            }
+        }
 
-		protected override void UpdatePath()
-		{
-			var clientRect = this.ClientBounds;
+        #endregion // Attributes
 
-			RGFloat s = Math.Min(this.arcWidth, Math.Min(clientRect.Width - 1, clientRect.Height - 1));
+        protected override void UpdatePath()
+        {
+            var clientRect = this.ClientBounds;
+
+            RGFloat s = Math.Min(this.arcWidth, Math.Min(clientRect.Width - 1, clientRect.Height - 1));
 
 #if WINFORM
 			Path.Reset();
@@ -76,23 +77,23 @@ namespace unvell.ReoGrid.Drawing.Shapes.SmartShapes
 			}
 #elif WPF
 
-			Path.Clear();
+            Path.Clear();
 
-			if (this.SweepAngle > 0)
-			{
-				System.Windows.Media.PathFigure pf = new System.Windows.Media.PathFigure();
-			
-				pf.Segments.Add(new System.Windows.Media.LineSegment(this.OriginPoint, false));
-				pf.Segments.Add(new System.Windows.Media.ArcSegment(new System.Windows.Point(0, 0),
-					new System.Windows.Size(this.Width, this.Height), this.SweepAngle, true, System.Windows.Media.SweepDirection.Clockwise, false));
+            if (this.SweepAngle > 0)
+            {
+                System.Windows.Media.PathFigure pf = new System.Windows.Media.PathFigure();
 
-				Path.Figures.Add(pf);
-			}
+                pf.Segments.Add(new System.Windows.Media.LineSegment(this.OriginPoint, false));
+                pf.Segments.Add(new System.Windows.Media.ArcSegment(new System.Windows.Point(0, 0),
+                    new System.Windows.Size(this.Width, this.Height), this.SweepAngle, true, System.Windows.Media.SweepDirection.Clockwise, false));
+
+                Path.Figures.Add(pf);
+            }
 
 #elif ANDROID
 #endif // WINFORM
-		}
-	}
+        }
+    }
 }
 
 #endif // DRAWING

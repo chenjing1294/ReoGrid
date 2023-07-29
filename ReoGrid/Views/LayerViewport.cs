@@ -23,34 +23,34 @@ using System.Text;
 
 namespace unvell.ReoGrid.Views
 {
-	internal abstract class LayerViewport : Viewport
-	{
-		public LayerViewport(IViewportController vc)
-			: base(vc)
-		{
-		}
+    internal abstract class LayerViewport : Viewport
+    {
+        public LayerViewport(IViewportController vc)
+            : base(vc)
+        {
+        }
 
-		public override void UpdateView()
-		{
-			if (this.children != null)
-			{
-				foreach (var child in this.children)
-				{
-					child.Bounds = this.bounds;
-					child.ScaleFactor = this.scaleFactor;
+        public override void UpdateView()
+        {
+            if (this.children != null)
+            {
+                foreach (var child in this.children)
+                {
+                    child.Bounds = this.bounds;
+                    child.ScaleFactor = this.scaleFactor;
 
-					if (child is IViewport childViewport)
-					{
-						childViewport.ViewStart = this.viewStart;
-						childViewport.ScrollX = this.ScrollX;
-						childViewport.ScrollY = this.ScrollY;
-						childViewport.VisibleRegion = this.visibleRegion;
-						childViewport.ScrollableDirections = this.ScrollableDirections;
-					}
+                    if (child is IViewport childViewport)
+                    {
+                        childViewport.ViewStart = this.viewStart;
+                        childViewport.ScrollX = this.ScrollX;
+                        childViewport.ScrollY = this.ScrollY;
+                        childViewport.VisibleRegion = this.visibleRegion;
+                        childViewport.ScrollableDirections = this.ScrollableDirections;
+                    }
 
-					child.UpdateView();
-				}
-			}
-		}
-	}
+                    child.UpdateView();
+                }
+            }
+        }
+    }
 }

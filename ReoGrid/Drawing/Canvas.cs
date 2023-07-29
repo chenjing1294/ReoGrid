@@ -22,128 +22,125 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using unvell.ReoGrid.Rendering;
 using unvell.ReoGrid.Views;
 
 namespace unvell.ReoGrid.Drawing
 {
-	internal interface IDrawingCanvas : IDrawingContainer
-	{
+    internal interface IDrawingCanvas : IDrawingContainer
+    {
+    }
 
-	}
+    internal class DrawingCanvas : DrawingComponent, IDrawingCanvas
+    {
+        public DrawingCanvas()
+        {
+        }
+    }
 
-	internal class DrawingCanvas : DrawingComponent, IDrawingCanvas
-	{
-		public DrawingCanvas()
-		{
+    internal class WorksheetDrawingCanvas : DrawingCanvas
+    {
+        internal Worksheet Worksheet { get; set; }
 
-		}
-	}
+        public WorksheetDrawingCanvas(Worksheet sheet)
+        {
+            this.Worksheet = sheet;
+        }
 
-	internal class WorksheetDrawingCanvas : DrawingCanvas
-	{
-		internal Worksheet Worksheet { get; set; }
+        public override void Invalidate()
+        {
+            if (this.Worksheet != null)
+            {
+                this.Worksheet.RequestInvalidate();
+            }
+        }
 
-		public WorksheetDrawingCanvas(Worksheet sheet)
-		{
-			this.Worksheet = sheet;
-		}
+        /// <summary>
+        /// Worksheet Drawing Canvas alwayas keep transparent and doesn't draw anything from itself
+        /// </summary>
+        /// <param name="dc">Platform no-associated drawing context instance.</param>
+        protected override void OnPaint(DrawingContext dc)
+        {
+            dc.Graphics.IsAntialias = true;
 
-		public override void Invalidate()
-		{
-			if (this.Worksheet != null)
-			{
-				this.Worksheet.RequestInvalidate();
-			}
-		}
+            base.DrawChildren(dc);
 
-		/// <summary>
-		/// Worksheet Drawing Canvas alwayas keep transparent and doesn't draw anything from itself
-		/// </summary>
-		/// <param name="dc">Platform no-associated drawing context instance.</param>
-		protected override void OnPaint(DrawingContext dc)
-		{
-			dc.Graphics.IsAntialias = true;
+            dc.Graphics.IsAntialias = false;
+        }
 
-			base.DrawChildren(dc);
+        internal WorksheetDrawingObjectCollection worksheetDrawingObjectCollection;
 
-			dc.Graphics.IsAntialias = false;
-		}
+        public override IDrawingObjectCollection Children
+        {
+            get
+            {
+                if (this.worksheetDrawingObjectCollection == null)
+                {
+                    this.worksheetDrawingObjectCollection = new WorksheetDrawingObjectCollection(this);
+                }
 
-		internal WorksheetDrawingObjectCollection worksheetDrawingObjectCollection;
+                return this.worksheetDrawingObjectCollection;
+            }
+        }
 
-		public override IDrawingObjectCollection Children
-		{
-			get
-			{
-				if (this.worksheetDrawingObjectCollection == null)
-				{
-					this.worksheetDrawingObjectCollection = new WorksheetDrawingObjectCollection(this);
-				}
+        internal void Clear()
+        {
+            this.Children.Clear();
+        }
+    }
 
-				return this.worksheetDrawingObjectCollection;
-			}
-		}
+    internal class WorksheetDrawingObjectCollection : DrawingObjectCollection
+    {
+        private WorksheetDrawingCanvas owner;
 
-		internal void Clear()
-		{
-			this.Children.Clear();
-		}
-	}
+        internal WorksheetDrawingObjectCollection(WorksheetDrawingCanvas owner)
+            : base(owner)
+        {
+            this.owner = owner;
+        }
 
-	internal class WorksheetDrawingObjectCollection : DrawingObjectCollection
-	{
-		private WorksheetDrawingCanvas owner;
+        public override void Add(IDrawingObject item)
+        {
+            base.Add(item);
 
-		internal WorksheetDrawingObjectCollection(WorksheetDrawingCanvas owner)
-			: base(owner)
-		{
-			this.owner = owner;
-		}
+            if (this.owner.Worksheet != null) this.owner.Worksheet.RequestInvalidate();
+        }
 
-		public override void Add(IDrawingObject item)
-		{
-			base.Add(item);
+        public override void AddRange(IEnumerable<IDrawingObject> drawingObjects)
+        {
+            base.AddRange(drawingObjects);
 
-			if (this.owner.Worksheet != null) this.owner.Worksheet.RequestInvalidate();
-		}
+            if (this.owner.Worksheet != null) this.owner.Worksheet.RequestInvalidate();
+        }
 
-		public override void AddRange(IEnumerable<IDrawingObject> drawingObjects)
-		{
-			base.AddRange(drawingObjects);
+        public override bool Remove(IDrawingObject item)
+        {
+            bool ret = base.Remove(item);
 
-			if (this.owner.Worksheet != null) this.owner.Worksheet.RequestInvalidate();
-		}
+            if (ret && this.owner.Worksheet != null) this.owner.Worksheet.RequestInvalidate();
 
-		public override bool Remove(IDrawingObject item)
-		{
-			bool ret = base.Remove(item);
+            return ret;
+        }
 
-			if (ret && this.owner.Worksheet != null) this.owner.Worksheet.RequestInvalidate();
+        public override void Clear()
+        {
+            base.Clear();
 
-			return ret;
-		}
+            if (this.owner.Worksheet != null) this.owner.Worksheet.RequestInvalidate();
+        }
 
-		public override void Clear()
-		{
-			base.Clear();
+        public override IDrawingObject this[int index]
+        {
+            get
+            {
+                var ret = base[index];
 
-			if (this.owner.Worksheet != null) this.owner.Worksheet.RequestInvalidate();
-		}
+                if (this.owner.Worksheet != null) this.owner.Worksheet.RequestInvalidate();
 
-		public override IDrawingObject this[int index]
-		{
-			get
-			{
-				var ret = base[index];
-
-				if (this.owner.Worksheet != null) this.owner.Worksheet.RequestInvalidate();
-
-				return ret;
-			}
-		}
-	}
+                return ret;
+            }
+        }
+    }
 }
 
 #endif // DRAWING

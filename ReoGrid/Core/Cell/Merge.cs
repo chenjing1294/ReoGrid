@@ -24,30 +24,30 @@ using System.Text;
 
 namespace unvell.ReoGrid
 {
-	partial class Cell
-	{
-		private CellPosition mergeStartPos = CellPosition.Empty;
+    partial class Cell
+    {
+        private CellPosition mergeStartPos = CellPosition.Empty;
 
-		internal CellPosition MergeStartPos
-		{
-			get { return mergeStartPos; }
-			set
-			{
+        internal CellPosition MergeStartPos
+        {
+            get { return mergeStartPos; }
+            set
+            {
 #if DEBUG
 				Debug.Assert(value.Row >= -1 && value.Col >= -1);
 #endif
 
-				mergeStartPos = value;
-			}
-		}
+                mergeStartPos = value;
+            }
+        }
 
-		private CellPosition mergeEndPos = CellPosition.Empty;
+        private CellPosition mergeEndPos = CellPosition.Empty;
 
-		internal CellPosition MergeEndPos
-		{
-			get { return mergeEndPos; }
-			set
-			{
+        internal CellPosition MergeEndPos
+        {
+            get { return mergeEndPos; }
+            set
+            {
 #if DEBUG
 				if (value.Row > -1 && value.Col <= -1
 					|| value.Row <= -1 && value.Col > -1)
@@ -55,43 +55,43 @@ namespace unvell.ReoGrid
 
 				Debug.Assert(value.Row >= -1 && value.Col >= -1);
 #endif
-				mergeEndPos = value;
-			}
-		}
+                mergeEndPos = value;
+            }
+        }
 
-		internal bool IsStartMergedCell
-		{
-			get { return this.InternalPos.Equals(MergeStartPos); }
-		}
+        internal bool IsStartMergedCell
+        {
+            get { return this.InternalPos.Equals(MergeStartPos); }
+        }
 
-		internal bool IsEndMergedCell
-		{
-			get { return this.InternalPos.Row == mergeEndPos.Row && this.InternalPos.Col == mergeEndPos.Col; }
-		}
+        internal bool IsEndMergedCell
+        {
+            get { return this.InternalPos.Row == mergeEndPos.Row && this.InternalPos.Col == mergeEndPos.Col; }
+        }
 
-		/// <summary>
-		/// Check whether this cell is merged cell
-		/// </summary>
-		public bool IsMergedCell
-		{
-			get { return IsStartMergedCell; }
-		}
+        /// <summary>
+        /// Check whether this cell is merged cell
+        /// </summary>
+        public bool IsMergedCell
+        {
+            get { return IsStartMergedCell; }
+        }
 
-		/// <summary>
-		/// Check whether or not this cell is an valid cell, only valid cells can be set data and styles.
-		/// Cells merged by another cell will become invalid.
-		/// </summary>
-		public bool IsValidCell
-		{
-			get { return rowspan >= 1 && colspan >= 1; }
-		}
+        /// <summary>
+        /// Check whether or not this cell is an valid cell, only valid cells can be set data and styles.
+        /// Cells merged by another cell will become invalid.
+        /// </summary>
+        public bool IsValidCell
+        {
+            get { return rowspan >= 1 && colspan >= 1; }
+        }
 
-		/// <summary>
-		/// Check whether or not this cell is inside a merged range
-		/// </summary>
-		public bool InsideMergedRange
-		{
-			get { return IsStartMergedCell || (rowspan == 0 && colspan == 0); }
-		}
-	}
+        /// <summary>
+        /// Check whether or not this cell is inside a merged range
+        /// </summary>
+        public bool InsideMergedRange
+        {
+            get { return IsStartMergedCell || (rowspan == 0 && colspan == 0); }
+        }
+    }
 }

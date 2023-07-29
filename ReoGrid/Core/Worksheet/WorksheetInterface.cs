@@ -25,10 +25,10 @@ using System.Text;
 
 namespace unvell.ReoGrid.Print
 {
-	public interface IPrintableContainer
-	{
-		PrintSession CreatePrintSession();
-	}
+    public interface IPrintableContainer
+    {
+        PrintSession CreatePrintSession();
+    }
 }
 
 #endif // PRINT

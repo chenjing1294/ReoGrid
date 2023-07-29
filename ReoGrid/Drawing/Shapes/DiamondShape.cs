@@ -31,56 +31,57 @@ using unvell.ReoGrid.Graphics;
 
 namespace unvell.ReoGrid.Drawing.Shapes
 {
-	#region Diamond
-	/// <summary>
-	/// Represents diamond shape object.
-	/// </summary>
-	public class DiamondShape : ShapeObject
-	{
-		private Point[] points = new Point[4];
+    #region Diamond
 
-		/// <summary>
-		/// Render diamond shape to graphics context.
-		/// </summary>
-		/// <param name="dc">Platform no-associated drawing context.</param>
-		protected override void OnPaint(DrawingContext dc)
-		{
-			var g = dc.Graphics;
+    /// <summary>
+    /// Represents diamond shape object.
+    /// </summary>
+    public class DiamondShape : ShapeObject
+    {
+        private Point[] points = new Point[4];
 
-			var clientRect = this.ClientBounds;
+        /// <summary>
+        /// Render diamond shape to graphics context.
+        /// </summary>
+        /// <param name="dc">Platform no-associated drawing context.</param>
+        protected override void OnPaint(DrawingContext dc)
+        {
+            var g = dc.Graphics;
 
-			if (clientRect.Width > 0 && clientRect.Height > 0)
-			{
-				var w = this.Bounds.Width;
-				var h = this.Bounds.Height;
-				var hw = w / 2f;
-				var hh = h / 2f;
+            var clientRect = this.ClientBounds;
 
-				points[0] = new Point(hw, 0);
-				points[1] = new Point(w, hh);
-				points[2] = new Point(hw, h);
-				points[3] = new Point(0, hh);
+            if (clientRect.Width > 0 && clientRect.Height > 0)
+            {
+                var w = this.Bounds.Width;
+                var h = this.Bounds.Height;
+                var hw = w / 2f;
+                var hh = h / 2f;
 
-				if (!this.FillColor.IsTransparent)
-				{
-					g.FillPolygon(this.FillColor, points);
-				}
+                points[0] = new Point(hw, 0);
+                points[1] = new Point(w, hh);
+                points[2] = new Point(hw, h);
+                points[3] = new Point(0, hh);
 
-				if (!this.LineColor.IsTransparent)
-				{
-					g.IsAntialias = true;
+                if (!this.FillColor.IsTransparent)
+                {
+                    g.FillPolygon(this.FillColor, points);
+                }
 
-					g.DrawPolygon(this.LineColor, this.LineWidth, this.LineStyle, points);
+                if (!this.LineColor.IsTransparent)
+                {
+                    g.IsAntialias = true;
 
-					g.IsAntialias = false;
-				}
-			}
+                    g.DrawPolygon(this.LineColor, this.LineWidth, this.LineStyle, points);
 
-			base.OnPaintText(dc);
-		}
-	}
-	#endregion // Diamond
+                    g.IsAntialias = false;
+                }
+            }
 
+            base.OnPaintText(dc);
+        }
+    }
+
+    #endregion // Diamond
 }
 
 #endif // DRAWING

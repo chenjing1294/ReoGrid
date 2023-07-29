@@ -17,7 +17,6 @@
  ****************************************************************************/
 
 #if COMMENT
-
 using unvell.ReoGrid.Rendering;
 
 namespace unvell.ReoGrid.Views

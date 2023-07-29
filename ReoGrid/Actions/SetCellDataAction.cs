@@ -20,166 +20,176 @@ using unvell.ReoGrid.DataFormat;
 
 namespace unvell.ReoGrid.Actions
 {
-	/// <summary>
-	/// Set data of cell action.
-	/// </summary>
-	public class SetCellDataAction : BaseWorksheetAction
-	{
-		private int row;
+    /// <summary>
+    /// Set data of cell action.
+    /// </summary>
+    public class SetCellDataAction : BaseWorksheetAction
+    {
+        private int row;
 
-		/// <summary>
-		/// Index of row to set data.
-		/// </summary>
-		public int Row { get { return row; } set { row = value; } }
+        /// <summary>
+        /// Index of row to set data.
+        /// </summary>
+        public int Row
+        {
+            get { return row; }
+            set { row = value; }
+        }
 
-		private int col;
+        private int col;
 
-		/// <summary>
-		/// Index of column to set data.
-		/// </summary>
-		public int Col { get { return col; } set { col = value; } }
+        /// <summary>
+        /// Index of column to set data.
+        /// </summary>
+        public int Col
+        {
+            get { return col; }
+            set { col = value; }
+        }
 
-		//private bool isCellNull;
+        //private bool isCellNull;
 
-		private object data;
+        private object data;
 
-		/// <summary>
-		/// Data of cell.
-		/// </summary>
-		public object Data
-		{
-			get { return data; }
-			set { data = value; }
-		}
+        /// <summary>
+        /// Data of cell.
+        /// </summary>
+        public object Data
+        {
+            get { return data; }
+            set { data = value; }
+        }
 
-		private object backupData;
-		//private string backupFormula;
-		//private string displayBackup;
-		private CellDataFormatFlag backupDataFormat;
-		private object backupDataFormatArgs;
-		//private Core.ReoGridRenderHorAlign backupRenderAlign;
-		//private bool autoUpdateReferenceCells = false;
-		private ushort? backupRowHeight = 0;
+        private object backupData;
 
-		/// <summary>
-		/// Create SetCellValueAction with specified index of row and column.
-		/// </summary>
-		/// <param name="row">index of row to set data.</param>
-		/// <param name="col">index of column to set data.</param>
-		/// <param name="data">data to be set.</param>
-		public SetCellDataAction(int row, int col, object data)
-		{
-			this.row = row;
-			this.col = col;
-			this.data = data;
-		}
+        //private string backupFormula;
+        //private string displayBackup;
+        private CellDataFormatFlag backupDataFormat;
 
-		/// <summary>
-		/// Create SetCellValueAction with specified index of row and column.
-		/// </summary>
-		/// <param name="pos">position to locate the cell to be set.</param>
-		/// <param name="data">data to be set.</param>
-		public SetCellDataAction(CellPosition pos, object data)
-			: this(pos.Row, pos.Col, data)
-		{
-		}
+        private object backupDataFormatArgs;
 
-		/// <summary>
-		/// Create action to set cell data.
-		/// </summary>
-		/// <param name="address">address to locate specified cell.</param>
-		/// <param name="data">data to be set.</param>
-		public SetCellDataAction(string address, object data)
-		{
-			CellPosition pos = new CellPosition(address);
-			this.row = pos.Row;
-			this.col = pos.Col;
-			this.data = data;
-		}
+        //private Core.ReoGridRenderHorAlign backupRenderAlign;
+        //private bool autoUpdateReferenceCells = false;
+        private ushort? backupRowHeight = 0;
 
-		/// <summary>
-		/// Do this operation.
-		/// </summary>
-		public override void Do()
-		{
-			Cell cell = Worksheet.CreateAndGetCell(row, col);
+        /// <summary>
+        /// Create SetCellValueAction with specified index of row and column.
+        /// </summary>
+        /// <param name="row">index of row to set data.</param>
+        /// <param name="col">index of column to set data.</param>
+        /// <param name="data">data to be set.</param>
+        public SetCellDataAction(int row, int col, object data)
+        {
+            this.row = row;
+            this.col = col;
+            this.data = data;
+        }
 
-			this.backupData = cell.HasFormula ? ("=" + cell.InnerFormula) : cell.InnerData;
+        /// <summary>
+        /// Create SetCellValueAction with specified index of row and column.
+        /// </summary>
+        /// <param name="pos">position to locate the cell to be set.</param>
+        /// <param name="data">data to be set.</param>
+        public SetCellDataAction(CellPosition pos, object data)
+            : this(pos.Row, pos.Col, data)
+        {
+        }
 
-			this.backupDataFormat = cell.DataFormat;
-			this.backupDataFormatArgs = cell.DataFormatArgs;
+        /// <summary>
+        /// Create action to set cell data.
+        /// </summary>
+        /// <param name="address">address to locate specified cell.</param>
+        /// <param name="data">data to be set.</param>
+        public SetCellDataAction(string address, object data)
+        {
+            CellPosition pos = new CellPosition(address);
+            this.row = pos.Row;
+            this.col = pos.Col;
+            this.data = data;
+        }
 
-			try
-			{
-				Worksheet.SetSingleCellData(cell, data);
+        /// <summary>
+        /// Do this operation.
+        /// </summary>
+        public override void Do()
+        {
+            Cell cell = Worksheet.CreateAndGetCell(row, col);
 
-				var rowHeightSettings = WorksheetSettings.Edit_AutoExpandRowHeight
-					| WorksheetSettings.Edit_AllowAdjustRowHeight;
+            this.backupData = cell.HasFormula ? ("=" + cell.InnerFormula) : cell.InnerData;
 
-				RowHeader rowHeader = this.Worksheet.GetRowHeader(cell.InternalRow);
+            this.backupDataFormat = cell.DataFormat;
+            this.backupDataFormatArgs = cell.DataFormatArgs;
 
-				this.backupRowHeight = rowHeader.InnerHeight;
+            try
+            {
+                Worksheet.SetSingleCellData(cell, data);
 
-				if ((this.Worksheet.settings & rowHeightSettings) == rowHeightSettings
-					&& rowHeader.IsAutoHeight)
-				{
-					cell.ExpandRowHeight();
-				}
-			}
-			catch (Exception ex)
-			{
-				this.Worksheet.NotifyExceptionHappen(ex);
-			}
+                var rowHeightSettings = WorksheetSettings.Edit_AutoExpandRowHeight
+                                        | WorksheetSettings.Edit_AllowAdjustRowHeight;
 
-		}
+                RowHeader rowHeader = this.Worksheet.GetRowHeader(cell.InternalRow);
 
-		public override void Redo()
-		{
-			this.Do();
+                this.backupRowHeight = rowHeader.InnerHeight;
 
-			Cell cell = Worksheet.GetCell(row, col);
+                if ((this.Worksheet.settings & rowHeightSettings) == rowHeightSettings
+                    && rowHeader.IsAutoHeight)
+                {
+                    cell.ExpandRowHeight();
+                }
+            }
+            catch (Exception ex)
+            {
+                this.Worksheet.NotifyExceptionHappen(ex);
+            }
+        }
 
-			if (cell != null)
-			{
-				Worksheet.SelectRange(new RangePosition(cell.InternalRow, cell.InternalCol, cell.Rowspan, cell.Colspan));
-			}
-		}
+        public override void Redo()
+        {
+            this.Do();
 
-		/// <summary>
-		/// Undo this operation.
-		/// </summary>
-		public override void Undo()
-		{
-			if (this.backupRowHeight != null)
-			{
-				var rowHeader = this.Worksheet.GetRowHeader(this.row);
+            Cell cell = Worksheet.GetCell(row, col);
 
-				if (rowHeader.InnerHeight != this.backupRowHeight)
-				{
-					this.Worksheet.SetRowsHeight(this.row, 1, (ushort)this.backupRowHeight);
-				}
-			}
+            if (cell != null)
+            {
+                Worksheet.SelectRange(new RangePosition(cell.InternalRow, cell.InternalCol, cell.Rowspan, cell.Colspan));
+            }
+        }
 
-			Cell cell = Worksheet.GetCell(row, col);
-			if (cell != null)
-			{
-				cell.DataFormat = this.backupDataFormat;
-				cell.DataFormatArgs = this.backupDataFormatArgs;
+        /// <summary>
+        /// Undo this operation.
+        /// </summary>
+        public override void Undo()
+        {
+            if (this.backupRowHeight != null)
+            {
+                var rowHeader = this.Worksheet.GetRowHeader(this.row);
 
-				this.Worksheet.SetSingleCellData(cell, this.backupData);
+                if (rowHeader.InnerHeight != this.backupRowHeight)
+                {
+                    this.Worksheet.SetRowsHeight(this.row, 1, (ushort) this.backupRowHeight);
+                }
+            }
 
-				Worksheet.SelectRange(new RangePosition(cell.InternalRow, cell.InternalCol, cell.Rowspan, cell.Colspan));
-			}
-		}
+            Cell cell = Worksheet.GetCell(row, col);
+            if (cell != null)
+            {
+                cell.DataFormat = this.backupDataFormat;
+                cell.DataFormatArgs = this.backupDataFormatArgs;
 
-		/// <summary>
-		/// Get friendly name of this action
-		/// </summary>
-		/// <returns></returns>
-		public override string GetName()
-		{
-			string str = data == null ? "null" : data.ToString();
-			return "Set Cell Value: " + (str.Length > 10 ? (str.Substring(0, 7) + "...") : str);
-		}
-	}
+                this.Worksheet.SetSingleCellData(cell, this.backupData);
+
+                Worksheet.SelectRange(new RangePosition(cell.InternalRow, cell.InternalCol, cell.Rowspan, cell.Colspan));
+            }
+        }
+
+        /// <summary>
+        /// Get friendly name of this action
+        /// </summary>
+        /// <returns></returns>
+        public override string GetName()
+        {
+            string str = data == null ? "null" : data.ToString();
+            return "Set Cell Value: " + (str.Length > 10 ? (str.Substring(0, 7) + "...") : str);
+        }
+    }
 }

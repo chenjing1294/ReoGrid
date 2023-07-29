@@ -19,53 +19,53 @@
 
 namespace unvell.ReoGrid.Actions
 {
-	/// <summary>
-	/// Action to collapse outline
-	/// </summary>
-	public class CollapseOutlineAction : OutlineAction
-	{
-		/// <summary>
-		/// Create action to collapse outline
-		/// </summary>
-		/// <param name="rowOrColumn">Row or column to find specified outline</param>
-		/// <param name="start">Number of line of specified outline</param>
-		/// <param name="count">Number of lines of specified outline</param>
-		public CollapseOutlineAction(RowOrColumn rowOrColumn, int start, int count)
-			: base(rowOrColumn, start, count)
-		{
-		}
+    /// <summary>
+    /// Action to collapse outline
+    /// </summary>
+    public class CollapseOutlineAction : OutlineAction
+    {
+        /// <summary>
+        /// Create action to collapse outline
+        /// </summary>
+        /// <param name="rowOrColumn">Row or column to find specified outline</param>
+        /// <param name="start">Number of line of specified outline</param>
+        /// <param name="count">Number of lines of specified outline</param>
+        public CollapseOutlineAction(RowOrColumn rowOrColumn, int start, int count)
+            : base(rowOrColumn, start, count)
+        {
+        }
 
-		/// <summary>
-		/// Do this action
-		/// </summary>
-		public override void Do()
-		{
-			if (this.Worksheet != null)
-			{
-				this.Worksheet.CollapseOutline(this.rowOrColumn, this.start, this.count);
-			}
-		}
+        /// <summary>
+        /// Do this action
+        /// </summary>
+        public override void Do()
+        {
+            if (this.Worksheet != null)
+            {
+                this.Worksheet.CollapseOutline(this.rowOrColumn, this.start, this.count);
+            }
+        }
 
-		/// <summary>
-		/// Undo this action
-		/// </summary>
-		public override void Undo()
-		{
-			if (this.Worksheet != null)
-			{
-				this.Worksheet.ExpandOutline(this.rowOrColumn, this.start, this.count);
-			}
-		}
+        /// <summary>
+        /// Undo this action
+        /// </summary>
+        public override void Undo()
+        {
+            if (this.Worksheet != null)
+            {
+                this.Worksheet.ExpandOutline(this.rowOrColumn, this.start, this.count);
+            }
+        }
 
-		/// <summary>
-		/// Get friendly name of this action
-		/// </summary>
-		/// <returns>Name of action</returns>
-		public override string GetName()
-		{
-			return string.Format("Collapse {0} Outline, Start at {1}, Count: {2}",
-				base.GetRowOrColumnDesc(), this.start, this.count);
-		}
-	}
+        /// <summary>
+        /// Get friendly name of this action
+        /// </summary>
+        /// <returns>Name of action</returns>
+        public override string GetName()
+        {
+            return string.Format("Collapse {0} Outline, Start at {1}, Count: {2}",
+                base.GetRowOrColumnDesc(), this.start, this.count);
+        }
+    }
 }
 #endif // OUTLINE

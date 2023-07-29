@@ -23,15 +23,12 @@ using System.Diagnostics;
 #if WINFORM || ANDROID
 using RGFloat = System.Single;
 using RGIntDouble = System.Int32;
-
 #elif WPF
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 #elif iOS
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 #endif
 
 using unvell.ReoGrid.Graphics;
@@ -41,19 +38,18 @@ using unvell.ReoGrid.Main;
 
 namespace unvell.ReoGrid.Views
 {
-	internal interface IScrollableViewportController
-	{
-		void HorizontalScroll(RGIntDouble value);
+    internal interface IScrollableViewportController
+    {
+        void HorizontalScroll(RGIntDouble value);
 
-		void VerticalScroll(RGIntDouble value);
+        void VerticalScroll(RGIntDouble value);
 
-		void ScrollViews(ScrollDirection dir, RGFloat x, RGFloat y);
+        void ScrollViews(ScrollDirection dir, RGFloat x, RGFloat y);
 
-		void ScrollOffsetViews(ScrollDirection dir, RGFloat x, RGFloat y);
+        void ScrollOffsetViews(ScrollDirection dir, RGFloat x, RGFloat y);
 
-		void ScrollToRange(RangePosition range, CellPosition pos);
+        void ScrollToRange(RangePosition range, CellPosition pos);
 
-		void SynchronizeScrollBar();
-	}
+        void SynchronizeScrollBar();
+    }
 }
-

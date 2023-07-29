@@ -37,6 +37,7 @@ namespace unvell.ReoGrid
             RangePosition fromRange, toRange;
 
             #region fromRange
+
             if (this.TryGetNamedRange(fromAddressOrName, out var fromNRange))
             {
                 fromRange = fromNRange.Position;
@@ -49,9 +50,11 @@ namespace unvell.ReoGrid
             {
                 throw new InvalidAddressException(fromAddressOrName);
             }
+
             #endregion // fromRange
 
             #region toRange
+
             if (this.TryGetNamedRange(toAddressOrName, out var toNRange))
             {
                 toRange = toNRange.Position;
@@ -64,6 +67,7 @@ namespace unvell.ReoGrid
             {
                 throw new InvalidAddressException(toAddressOrName);
             }
+
             #endregion // toRange
 
             this.AutoFillSerial(fromRange, toRange);
@@ -80,6 +84,7 @@ namespace unvell.ReoGrid
             toRange = this.FixRange(toRange);
 
             #region Arguments Check
+
             if (fromRange.IntersectWith(toRange))
             {
                 throw new ArgumentException("fromRange and toRange cannot being intersected.");
@@ -89,6 +94,7 @@ namespace unvell.ReoGrid
             {
                 throw new ArgumentException("cannot change a part of merged range.");
             }
+
             #endregion // Arguments Check
 
             List<CellPosition> fromCells, toCells;

@@ -22,64 +22,64 @@ using unvell.ReoGrid.Rendering;
 
 namespace unvell.ReoGrid.Chart
 {
-	/// <summary>
-	/// Represents line chart component.
-	/// </summary>
-	public class AreaChart : AxisChart
-	{
-		private AreaLineChartPlotView areaLineChartPlotView;
+    /// <summary>
+    /// Represents line chart component.
+    /// </summary>
+    public class AreaChart : AxisChart
+    {
+        private AreaLineChartPlotView areaLineChartPlotView;
 
-		/// <summary>
-		/// Get plot view object of line chart component.
-		/// </summary>
-		public AreaLineChartPlotView AreaLineChartPlotView
-		{
-			get { return this.areaLineChartPlotView; }
-			protected set { this.areaLineChartPlotView = value; }
-		}
+        /// <summary>
+        /// Get plot view object of line chart component.
+        /// </summary>
+        public AreaLineChartPlotView AreaLineChartPlotView
+        {
+            get { return this.areaLineChartPlotView; }
+            protected set { this.areaLineChartPlotView = value; }
+        }
 
-		/// <summary>
-		/// Create line chart component instance.
-		/// </summary>
-		public AreaChart()
-		{
-			base.AddPlotViewLayer(this.areaLineChartPlotView = new AreaLineChartPlotView(this));
-		}
+        /// <summary>
+        /// Create line chart component instance.
+        /// </summary>
+        public AreaChart()
+        {
+            base.AddPlotViewLayer(this.areaLineChartPlotView = new AreaLineChartPlotView(this));
+        }
 
-		/// <summary>
-		/// Creates and returns line chart legend instance.
-		/// </summary>
-		/// <returns>Instance of line chart legend.</returns>
-		protected override ChartLegend CreateChartLegend(LegendType type)
-		{
-			return new LineChartLegend(this);
-		}
-	}
+        /// <summary>
+        /// Creates and returns line chart legend instance.
+        /// </summary>
+        /// <returns>Instance of line chart legend.</returns>
+        protected override ChartLegend CreateChartLegend(LegendType type)
+        {
+            return new LineChartLegend(this);
+        }
+    }
 
-	public class AreaLineChartPlotView : LineChartPlotView
-	{
-		/// <summary>
-		/// Create line chart plot view object.
-		/// </summary>
-		/// <param name="chart">Parent chart component instance.</param>
-		public AreaLineChartPlotView(AxisChart chart)
-			: base(chart)
-		{
-		}
+    public class AreaLineChartPlotView : LineChartPlotView
+    {
+        /// <summary>
+        /// Create line chart plot view object.
+        /// </summary>
+        /// <param name="chart">Parent chart component instance.</param>
+        public AreaLineChartPlotView(AxisChart chart)
+            : base(chart)
+        {
+        }
 
-		/// <summary>
-		/// Render plot view region of line chart component.
-		/// </summary>
-		/// <param name="dc">Platform no-associated drawing context.</param>
-		protected override void OnPaint(DrawingContext dc)
-		{
-			var axisChart = base.Chart as AxisChart;
-			if (axisChart == null) return;
+        /// <summary>
+        /// Render plot view region of line chart component.
+        /// </summary>
+        /// <param name="dc">Platform no-associated drawing context.</param>
+        protected override void OnPaint(DrawingContext dc)
+        {
+            var axisChart = base.Chart as AxisChart;
+            if (axisChart == null) return;
 
-			var ds = Chart.DataSource;
+            var ds = Chart.DataSource;
 
-			var g = dc.Graphics;
-			var clientRect = this.ClientBounds;
+            var g = dc.Graphics;
+            var clientRect = this.ClientBounds;
 
 
 #if WINFORM
@@ -127,46 +127,45 @@ namespace unvell.ReoGrid.Chart
 #elif WPF
 
 
-			for (int r = 0; r < ds.SerialCount; r++)
-			{
-				var style = axisChart.DataSerialStyles[r];
+            for (int r = 0; r < ds.SerialCount; r++)
+            {
+                var style = axisChart.DataSerialStyles[r];
 
-				var seg = new System.Windows.Media.PathFigure();
+                var seg = new System.Windows.Media.PathFigure();
 
-				seg.StartPoint = new System.Windows.Point(axisChart.PlotColumnPoints[0], axisChart.ZeroHeight);
+                seg.StartPoint = new System.Windows.Point(axisChart.PlotColumnPoints[0], axisChart.ZeroHeight);
 
-				for (int c = 0; c < ds.CategoryCount; c++)
-				{
-					var pt = axisChart.PlotDataPoints[r][c];
+                for (int c = 0; c < ds.CategoryCount; c++)
+                {
+                    var pt = axisChart.PlotDataPoints[r][c];
 
-					System.Windows.Point point;
+                    System.Windows.Point point;
 
-					if (pt.hasValue)
-					{
-						point = new System.Windows.Point(axisChart.PlotColumnPoints[c], axisChart.ZeroHeight - pt.value);
-					}
-					else
-					{
-						point = new System.Windows.Point(axisChart.PlotColumnPoints[c], axisChart.ZeroHeight);
-					}
+                    if (pt.hasValue)
+                    {
+                        point = new System.Windows.Point(axisChart.PlotColumnPoints[c], axisChart.ZeroHeight - pt.value);
+                    }
+                    else
+                    {
+                        point = new System.Windows.Point(axisChart.PlotColumnPoints[c], axisChart.ZeroHeight);
+                    }
 
-					seg.Segments.Add(new System.Windows.Media.LineSegment(point, true));
-				}
+                    seg.Segments.Add(new System.Windows.Media.LineSegment(point, true));
+                }
 
-				var endPoint = new System.Windows.Point(axisChart.PlotColumnPoints[ds.CategoryCount - 1], axisChart.ZeroHeight);
-				seg.Segments.Add(new System.Windows.Media.LineSegment(endPoint, true));
+                var endPoint = new System.Windows.Point(axisChart.PlotColumnPoints[ds.CategoryCount - 1], axisChart.ZeroHeight);
+                seg.Segments.Add(new System.Windows.Media.LineSegment(endPoint, true));
 
-				seg.IsClosed = true;
+                seg.IsClosed = true;
 
-				var path = new System.Windows.Media.PathGeometry();
-				path.Figures.Add(seg);
-				g.FillPath(style.LineColor, path);
-			}
+                var path = new System.Windows.Media.PathGeometry();
+                path.Figures.Add(seg);
+                g.FillPath(style.LineColor, path);
+            }
 
 #endif // WPF
-		}
-
-	}
+        }
+    }
 }
 
 #endif // DRAWING

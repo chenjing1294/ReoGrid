@@ -24,7 +24,6 @@ using RGFloat = System.Double;
 #endif
 
 using unvell.Common;
-
 using unvell.ReoGrid.Actions;
 using unvell.ReoGrid.Events;
 using unvell.ReoGrid.Graphics;
@@ -34,65 +33,68 @@ using unvell.ReoGrid.Main;
 
 namespace unvell.ReoGrid.Views
 {
-	class LeadHeaderView : View
-	{
-		protected Worksheet sheet;
+    class LeadHeaderView : View
+    {
+        protected Worksheet sheet;
 
-		public LeadHeaderView(ViewportController vc)
-			: base(vc)
-		{
-			this.sheet = vc.worksheet;
-		}
+        public LeadHeaderView(ViewportController vc)
+            : base(vc)
+        {
+            this.sheet = vc.worksheet;
+        }
 
-		#region Draw
-		public override void Draw(CellDrawingContext dc)
-		{
-			if (bounds.Width <= 0 || bounds.Height <= 0 || sheet.controlAdapter == null) return;
+        #region Draw
 
-			var g = dc.Graphics;
-			var controlStyle = sheet.workbook.controlAdapter.ControlStyle;
+        public override void Draw(CellDrawingContext dc)
+        {
+            if (bounds.Width <= 0 || bounds.Height <= 0 || sheet.controlAdapter == null) return;
 
-			g.FillRectangle(bounds, controlStyle.Colors[ControlAppearanceColors.LeadHeadNormal]);
+            var g = dc.Graphics;
+            var controlStyle = sheet.workbook.controlAdapter.ControlStyle;
 
-			var startColor = sheet.isLeadHeadSelected ?
-					controlStyle.Colors[ControlAppearanceColors.LeadHeadIndicatorStart]
-					: controlStyle.Colors[ControlAppearanceColors.LeadHeadSelected];
+            g.FillRectangle(bounds, controlStyle.Colors[ControlAppearanceColors.LeadHeadNormal]);
 
-			var endColor = controlStyle.Colors[ControlAppearanceColors.LeadHeadIndicatorEnd];
+            var startColor = sheet.isLeadHeadSelected
+                ? controlStyle.Colors[ControlAppearanceColors.LeadHeadIndicatorStart]
+                : controlStyle.Colors[ControlAppearanceColors.LeadHeadSelected];
 
-			dc.Renderer.DrawLeadHeadArrow(bounds, startColor, endColor);
-		}
-		#endregion // Draw
+            var endColor = controlStyle.Colors[ControlAppearanceColors.LeadHeadIndicatorEnd];
 
-		public override bool OnMouseDown(Point location, MouseButtons buttons)
-		{
-			// mouse down in LeadHead?
-			switch (this.sheet.operationStatus)
-			{
-				case OperationStatus.Default:
-					if (this.sheet.selectionMode != WorksheetSelectionMode.None)
-					{
-						this.sheet.SelectRange(RangePosition.EntireRange);
+            dc.Renderer.DrawLeadHeadArrow(bounds, startColor, endColor);
+        }
 
-						// show context menu
-						if (buttons == MouseButtons.Right)
-						{
-							this.sheet.controlAdapter.ShowContextMenuStrip(ViewTypes.LeadHeader, location);
-						}
+        #endregion // Draw
 
-						return true;
-					}
-					break;
-			}
+        public override bool OnMouseDown(Point location, MouseButtons buttons)
+        {
+            // mouse down in LeadHead?
+            switch (this.sheet.operationStatus)
+            {
+                case OperationStatus.Default:
+                    if (this.sheet.selectionMode != WorksheetSelectionMode.None)
+                    {
+                        this.sheet.SelectRange(RangePosition.EntireRange);
 
-			return false;
-		}
+                        // show context menu
+                        if (buttons == MouseButtons.Right)
+                        {
+                            this.sheet.controlAdapter.ShowContextMenuStrip(ViewTypes.LeadHeader, location);
+                        }
 
-		public override bool OnMouseMove(Point location, MouseButtons buttons)
-		{
-			this.sheet.controlAdapter.ChangeCursor(CursorStyle.Selection);
+                        return true;
+                    }
 
-			return false;
-		}
-	}
+                    break;
+            }
+
+            return false;
+        }
+
+        public override bool OnMouseMove(Point location, MouseButtons buttons)
+        {
+            this.sheet.controlAdapter.ChangeCursor(CursorStyle.Selection);
+
+            return false;
+        }
+    }
 }

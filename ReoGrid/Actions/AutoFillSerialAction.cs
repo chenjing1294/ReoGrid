@@ -21,68 +21,67 @@ using System;
 
 namespace unvell.ReoGrid.Actions
 {
-	/// <summary>
-	/// Action that performs serial range fill according to given source and target ranges.
-	/// </summary>
-	public class AutoFillSerialAction : BaseWorksheetAction
-	{
-		/// <summary>
-		/// Source range to be rerferenced.
-		/// </summary>
-		public RangePosition SourceRange { get; set; }
+    /// <summary>
+    /// Action that performs serial range fill according to given source and target ranges.
+    /// </summary>
+    public class AutoFillSerialAction : BaseWorksheetAction
+    {
+        /// <summary>
+        /// Source range to be rerferenced.
+        /// </summary>
+        public RangePosition SourceRange { get; set; }
 
-		/// <summary>
-		/// Target range to be filled.
-		/// </summary>
-		public RangePosition TargetRange { get; set; }
+        /// <summary>
+        /// Target range to be filled.
+        /// </summary>
+        public RangePosition TargetRange { get; set; }
 
-		public AutoFillSerialAction(RangePosition sourceRange, RangePosition targetRange)
-		{
-			this.SourceRange = sourceRange;
-			this.TargetRange = targetRange;
-		}
+        public AutoFillSerialAction(RangePosition sourceRange, RangePosition targetRange)
+        {
+            this.SourceRange = sourceRange;
+            this.TargetRange = targetRange;
+        }
 
-		/// <summary>
-		/// Backuped cells content used to recover the target range.
-		/// </summary>
-		PartialGrid backupedGrid;
+        /// <summary>
+        /// Backuped cells content used to recover the target range.
+        /// </summary>
+        PartialGrid backupedGrid;
 
-		public override void Do()
-		{
-			// Get a backup of target range that will be overwritten
-			backupedGrid = Worksheet.GetPartialGrid(TargetRange, PartialGridCopyFlag.CellData, ExPartialGridCopyFlag.None);
+        public override void Do()
+        {
+            // Get a backup of target range that will be overwritten
+            backupedGrid = Worksheet.GetPartialGrid(TargetRange, PartialGridCopyFlag.CellData, ExPartialGridCopyFlag.None);
 
-			try
-			{
-				Worksheet.AutoFillSerial(SourceRange, TargetRange);
-				Worksheet.SelectionRange = RangePosition.Union(SourceRange, TargetRange);
-			}
-			catch (Exception ex)
-			{
-				Worksheet.NotifyExceptionHappen(ex);
-			}
-		}
+            try
+            {
+                Worksheet.AutoFillSerial(SourceRange, TargetRange);
+                Worksheet.SelectionRange = RangePosition.Union(SourceRange, TargetRange);
+            }
+            catch (Exception ex)
+            {
+                Worksheet.NotifyExceptionHappen(ex);
+            }
+        }
 
-		public override void Undo()
-		{
-			try
-			{
-				// Restore the range filled by this action
-				Worksheet.SetPartialGrid(TargetRange, backupedGrid);
-				Worksheet.SelectionRange = SourceRange;
-			}
-			catch (Exception ex)
-			{
-				Worksheet.NotifyExceptionHappen(ex);
-			}
-		}
+        public override void Undo()
+        {
+            try
+            {
+                // Restore the range filled by this action
+                Worksheet.SetPartialGrid(TargetRange, backupedGrid);
+                Worksheet.SelectionRange = SourceRange;
+            }
+            catch (Exception ex)
+            {
+                Worksheet.NotifyExceptionHappen(ex);
+            }
+        }
 
-		public override string GetName()
-		{
-			return "Fill Serial Action";
-		}
-	}
+        public override string GetName()
+        {
+            return "Fill Serial Action";
+        }
+    }
 }
 
 #endif // FORMULA
-

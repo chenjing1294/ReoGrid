@@ -23,15 +23,12 @@ using System.Diagnostics;
 #if WINFORM || ANDROID
 using RGFloat = System.Single;
 using RGIntDouble = System.Int32;
-
 #elif WPF
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 #elif iOS
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 #endif
 
 using unvell.ReoGrid.Graphics;
@@ -41,25 +38,25 @@ using unvell.ReoGrid.Main;
 
 namespace unvell.ReoGrid.Views
 {
-	interface IViewport : IView
-	{
-		Point ViewStart { get; set; }
-		RGFloat ViewTop { get; }
-		RGFloat ViewLeft { get; }
-		//RGFloat ViewRight { get; }
-		//RGFloat ViewBottom { get; }
+    interface IViewport : IView
+    {
+        Point ViewStart { get; set; }
+        RGFloat ViewTop { get; }
 
-		RGFloat ScrollX { get; set; }
-		RGFloat ScrollY { get; set; }
-		RGFloat ScrollViewTop { get; }
-		RGFloat ScrollViewLeft { get; }
+        RGFloat ViewLeft { get; }
+        //RGFloat ViewRight { get; }
+        //RGFloat ViewBottom { get; }
 
-		ScrollDirection ScrollableDirections { get; set; }
-		void Scroll(RGFloat offX, RGFloat offY);
+        RGFloat ScrollX { get; set; }
+        RGFloat ScrollY { get; set; }
+        RGFloat ScrollViewTop { get; }
+        RGFloat ScrollViewLeft { get; }
 
-		void ScrollTo(RGFloat x, RGFloat y);
+        ScrollDirection ScrollableDirections { get; set; }
+        void Scroll(RGFloat offX, RGFloat offY);
 
-		GridRegion VisibleRegion { get; set; }
-	}
+        void ScrollTo(RGFloat x, RGFloat y);
+
+        GridRegion VisibleRegion { get; set; }
+    }
 }
-

@@ -23,15 +23,12 @@ using System.Diagnostics;
 #if WINFORM || ANDROID
 using RGFloat = System.Single;
 using RGIntDouble = System.Int32;
-
 #elif WPF
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 #elif iOS
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 #endif
 
 using unvell.ReoGrid.Graphics;
@@ -41,17 +38,16 @@ using unvell.ReoGrid.Main;
 
 namespace unvell.ReoGrid.Views
 {
-	/// <summary>
-	/// Interface for freezable ViewportController
-	/// </summary>
-	internal interface IFreezableViewportController
-	{
-		/// <summary>
-		/// Freeze to specified cell and position.
-		/// </summary>
-		/// <param name="pos">Position of cell to start freeze.</param>
-		/// <param name="area">Decides the frozen view area.</param>
-		void Freeze(CellPosition pos, FreezeArea area = ReoGrid.FreezeArea.LeftTop);
-	}
+    /// <summary>
+    /// Interface for freezable ViewportController
+    /// </summary>
+    internal interface IFreezableViewportController
+    {
+        /// <summary>
+        /// Freeze to specified cell and position.
+        /// </summary>
+        /// <param name="pos">Position of cell to start freeze.</param>
+        /// <param name="area">Decides the frozen view area.</param>
+        void Freeze(CellPosition pos, FreezeArea area = ReoGrid.FreezeArea.LeftTop);
+    }
 }
-

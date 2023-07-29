@@ -49,7 +49,7 @@ using unvell.ReoGrid.Interaction;
 
 namespace unvell.ReoGrid.Views
 {
-	interface IRangeSelectableView : IViewport
-	{
-	}
+    interface IRangeSelectableView : IViewport
+    {
+    }
 }

@@ -24,7 +24,6 @@ using RGFloat = System.Double;
 #endif
 
 using unvell.Common;
-
 using unvell.ReoGrid.Actions;
 using unvell.ReoGrid.Events;
 using unvell.ReoGrid.Graphics;
@@ -34,13 +33,15 @@ using unvell.ReoGrid.Main;
 
 namespace unvell.ReoGrid.Views
 {
-	class SpaceView : View
-	{
-		public SpaceView() : base() { }
+    class SpaceView : View
+    {
+        public SpaceView() : base()
+        {
+        }
 
-		public override void Draw(CellDrawingContext dc)
-		{
-			dc.Graphics.FillRectangle(bounds, Rendering.StaticResources.SystemColor_Control);
-		}
-	}
+        public override void Draw(CellDrawingContext dc)
+        {
+            dc.Graphics.FillRectangle(bounds, Rendering.StaticResources.SystemColor_Control);
+        }
+    }
 }

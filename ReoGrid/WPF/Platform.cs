@@ -22,231 +22,233 @@ using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
-
 using unvell.Common;
 using unvell.ReoGrid.Graphics;
 using unvell.ReoGrid.Interaction;
 
 namespace unvell.ReoGrid
 {
-	partial class Cell
-	{
-		[NonSerialized]
-		internal FormattedText formattedText;
-	}
+    partial class Cell
+    {
+        [NonSerialized] internal FormattedText formattedText;
+    }
 }
 
 namespace unvell.ReoGrid.Rendering
 {
-	#region PlatformUtility
-	partial class PlatformUtility
-	{
-		internal static bool IsKeyDown(KeyCode key)
-		{
-			return Toolkit.IsKeyDown((Common.Win32Lib.Win32.VKey)key);
-		}
+    #region PlatformUtility
 
-		private static double lastGetDPI = 0;
+    partial class PlatformUtility
+    {
+        internal static bool IsKeyDown(KeyCode key)
+        {
+            return Toolkit.IsKeyDown((Common.Win32Lib.Win32.VKey) key);
+        }
 
-		public static double GetDPI()
-		{
-			if (lastGetDPI == 0)
-			{
-				Window win = new Window();
-				PresentationSource source = PresentationSource.FromVisual(win);
+        private static double lastGetDPI = 0;
 
-				if (source != null)
-				{
-					lastGetDPI = 96.0 * source.CompositionTarget.TransformToDevice.M11;
-				}
+        public static double GetDPI()
+        {
+            if (lastGetDPI == 0)
+            {
+                Window win = new Window();
+                PresentationSource source = PresentationSource.FromVisual(win);
 
-				win.Close();
+                if (source != null)
+                {
+                    lastGetDPI = 96.0 * source.CompositionTarget.TransformToDevice.M11;
+                }
 
-				if (lastGetDPI == 0) lastGetDPI = 96;
-			}
+                win.Close();
 
-			return lastGetDPI;
-		}
+                if (lastGetDPI == 0) lastGetDPI = 96;
+            }
 
-		public static Typeface GetFontDefaultTypeface(FontFamily ff)
-		{
-			var typefaces = ff.GetTypefaces();
-			if (typefaces.Count > 0)
-			{
-				var iterator = typefaces.GetEnumerator();
-				if (iterator.MoveNext())
-				{
-					return iterator.Current;
-				}
-			}
+            return lastGetDPI;
+        }
 
-			return null;
-		}
+        public static Typeface GetFontDefaultTypeface(FontFamily ff)
+        {
+            var typefaces = ff.GetTypefaces();
+            if (typefaces.Count > 0)
+            {
+                var iterator = typefaces.GetEnumerator();
+                if (iterator.MoveNext())
+                {
+                    return iterator.Current;
+                }
+            }
 
-		public static (Typeface, GlyphTypeface) FindTypefaceContainsCharacter(char ch, CultureInfo ci = null)
-		{
-			if (ci == null)
-			{
-				ci = CultureInfo.CurrentCulture;
-			}
+            return null;
+        }
 
-			foreach (var font in Fonts.SystemFontFamilies)
-			{
-				foreach (var typeface in font.GetTypefaces())
-				{
-					if (typeface.TryGetGlyphTypeface(out var glyphTypeface))
-					{
-						if (glyphTypeface.FaceNames.ContainsKey(ci))
-						{
-							if (glyphTypeface.CharacterToGlyphMap.ContainsKey(ch))
-							{
-								return (typeface, glyphTypeface);
-							}
-						}
-					}
-				}
-			}
+        public static (Typeface, GlyphTypeface) FindTypefaceContainsCharacter(char ch, CultureInfo ci = null)
+        {
+            if (ci == null)
+            {
+                ci = CultureInfo.CurrentCulture;
+            }
 
-			return (null, null);
-		}
+            foreach (var font in Fonts.SystemFontFamilies)
+            {
+                foreach (var typeface in font.GetTypefaces())
+                {
+                    if (typeface.TryGetGlyphTypeface(out var glyphTypeface))
+                    {
+                        if (glyphTypeface.FaceNames.ContainsKey(ci))
+                        {
+                            if (glyphTypeface.CharacterToGlyphMap.ContainsKey(ch))
+                            {
+                                return (typeface, glyphTypeface);
+                            }
+                        }
+                    }
+                }
+            }
 
-        private static ResourcePoolManager resourcePoolManager;// = new ResourcePoolManager();
+            return (null, null);
+        }
 
-		internal static Graphics.Size MeasureText(IRenderer r, string text, string fontName, double fontSize, Drawing.Text.FontStyles style)
-		{
-			ResourcePoolManager resManager;
-			Typeface typeface = null;
+        private static ResourcePoolManager resourcePoolManager; // = new ResourcePoolManager();
 
-			if (r == null)
-			{
-				if (resourcePoolManager == null) resourcePoolManager = new ResourcePoolManager();
+        internal static Graphics.Size MeasureText(IRenderer r, string text, string fontName, double fontSize, Drawing.Text.FontStyles style)
+        {
+            ResourcePoolManager resManager;
+            Typeface typeface = null;
 
-				resManager = resourcePoolManager;
-			}
-			else
-			{
-				resManager = r.ResourcePoolManager;
-			}
+            if (r == null)
+            {
+                if (resourcePoolManager == null) resourcePoolManager = new ResourcePoolManager();
 
-			typeface = resManager.GetTypeface(fontName, FontWeights.Regular, ToWPFFontStyle(style), FontStretches.Normal);
+                resManager = resourcePoolManager;
+            }
+            else
+            {
+                resManager = r.ResourcePoolManager;
+            }
 
-			if (typeface == null)
-			{
-				return Graphics.Size.Zero;
-			}
+            typeface = resManager.GetTypeface(fontName, FontWeights.Regular, ToWPFFontStyle(style), FontStretches.Normal);
 
-			//var typeface = new System.Windows.Media.Typeface(
-			//			new System.Windows.Media.FontFamily(fontName),
-			//			PlatformUtility.ToWPFFontStyle(this.fontStyles),
-			//			(this.fontStyles & FontStyles.Bold) == FontStyles.Bold ?
-			//			System.Windows.FontWeights.Bold : System.Windows.FontWeights.Normal,
-			//			System.Windows.FontStretches.Normal);
+            if (typeface == null)
+            {
+                return Graphics.Size.Zero;
+            }
 
-			System.Windows.Media.GlyphTypeface glyphTypeface;
+            //var typeface = new System.Windows.Media.Typeface(
+            //			new System.Windows.Media.FontFamily(fontName),
+            //			PlatformUtility.ToWPFFontStyle(this.fontStyles),
+            //			(this.fontStyles & FontStyles.Bold) == FontStyles.Bold ?
+            //			System.Windows.FontWeights.Bold : System.Windows.FontWeights.Normal,
+            //			System.Windows.FontStretches.Normal);
 
-			double totalWidth = 0;
+            System.Windows.Media.GlyphTypeface glyphTypeface;
 
-			if (typeface.TryGetGlyphTypeface(out glyphTypeface))
-			{
-				//fontInfo.Ascent = typeface.FontFamily.Baseline;
-				//fontInfo.LineHeight = typeface.CapsHeight;
+            double totalWidth = 0;
 
-				var size = fontSize * 1.33d;
+            if (typeface.TryGetGlyphTypeface(out glyphTypeface))
+            {
+                //fontInfo.Ascent = typeface.FontFamily.Baseline;
+                //fontInfo.LineHeight = typeface.CapsHeight;
 
-				//this.GlyphIndexes.Capacity = text.Length;
+                var size = fontSize * 1.33d;
 
-				for (int n = 0; n < text.Length; n++)
-				{
-					ushort glyphIndex = glyphTypeface.CharacterToGlyphMap[text[n]];
-					//GlyphIndexes.Add(glyphIndex);
+                //this.GlyphIndexes.Capacity = text.Length;
 
-					double width = glyphTypeface.AdvanceWidths[glyphIndex] * size;
-					//this.TextSizes.Add(width);
+                for (int n = 0; n < text.Length; n++)
+                {
+                    ushort glyphIndex = glyphTypeface.CharacterToGlyphMap[text[n]];
+                    //GlyphIndexes.Add(glyphIndex);
 
-					totalWidth += width;
-				}
-			}
+                    double width = glyphTypeface.AdvanceWidths[glyphIndex] * size;
+                    //this.TextSizes.Add(width);
 
-			return new Graphics.Size(totalWidth, typeface.CapsHeight);
-		}
+                    totalWidth += width;
+                }
+            }
 
-		public static System.Windows.FontStyle ToWPFFontStyle(unvell.ReoGrid.Drawing.Text.FontStyles textStyle)
-		{
-			if ((textStyle & Drawing.Text.FontStyles.Italic) == Drawing.Text.FontStyles.Italic)
-			{
-				return System.Windows.FontStyles.Italic;
-			}
-			else
-				return System.Windows.FontStyles.Normal;
-		}
+            return new Graphics.Size(totalWidth, typeface.CapsHeight);
+        }
 
-		public static TextDecorationCollection ToWPFFontDecorations(unvell.ReoGrid.Drawing.Text.FontStyles textStyle)
-		{
-			var decorations = new TextDecorationCollection();
+        public static System.Windows.FontStyle ToWPFFontStyle(unvell.ReoGrid.Drawing.Text.FontStyles textStyle)
+        {
+            if ((textStyle & Drawing.Text.FontStyles.Italic) == Drawing.Text.FontStyles.Italic)
+            {
+                return System.Windows.FontStyles.Italic;
+            }
+            else
+                return System.Windows.FontStyles.Normal;
+        }
 
-			if ((textStyle & Drawing.Text.FontStyles.Underline) == Drawing.Text.FontStyles.Underline)
-			{
-				decorations.Add(TextDecorations.Underline);
-			}
+        public static TextDecorationCollection ToWPFFontDecorations(unvell.ReoGrid.Drawing.Text.FontStyles textStyle)
+        {
+            var decorations = new TextDecorationCollection();
 
-			if ((textStyle & Drawing.Text.FontStyles.Strikethrough) == Drawing.Text.FontStyles.Strikethrough)
-			{
-				decorations.Add(TextDecorations.Strikethrough);
-			}
+            if ((textStyle & Drawing.Text.FontStyles.Underline) == Drawing.Text.FontStyles.Underline)
+            {
+                decorations.Add(TextDecorations.Underline);
+            }
 
-			return decorations;
-		}
+            if ((textStyle & Drawing.Text.FontStyles.Strikethrough) == Drawing.Text.FontStyles.Strikethrough)
+            {
+                decorations.Add(TextDecorations.Strikethrough);
+            }
 
-		public static System.Windows.Media.PenLineCap ToWPFLineCap(unvell.ReoGrid.Graphics.LineCapStyles capStyle)
-		{
-			switch (capStyle)
-			{
-				default:
-				case LineCapStyles.None:
-					return PenLineCap.Flat;
+            return decorations;
+        }
 
-				case LineCapStyles.Arrow:
-					return PenLineCap.Triangle;
+        public static System.Windows.Media.PenLineCap ToWPFLineCap(unvell.ReoGrid.Graphics.LineCapStyles capStyle)
+        {
+            switch (capStyle)
+            {
+                default:
+                case LineCapStyles.None:
+                    return PenLineCap.Flat;
 
-				case LineCapStyles.Round:
-				case LineCapStyles.Ellipse:
-					return PenLineCap.Round;
-			}
-		}
-	}
-	#endregion // PlatformUtility
+                case LineCapStyles.Arrow:
+                    return PenLineCap.Triangle;
 
-	#region StaticResources
-	partial class StaticResources
-	{
-		//private static string systemDefaultFontName = null;
-		//internal static string SystemDefaultFontName
-		//{
-		//	get
-		//	{
-		//		if (systemDefaultFontName == null)
-		//		{
-		//			var names = System.Windows.SystemFonts.MessageFontFamily.FamilyNames;
+                case LineCapStyles.Round:
+                case LineCapStyles.Ellipse:
+                    return PenLineCap.Round;
+            }
+        }
+    }
 
-		//			systemDefaultFontName = names.Count > 0 ? names[System.Windows.Markup.XmlLanguage.GetLanguage(string.Empty)] : string.Empty;
-		//			//var typeface = ResourcePoolManager.Instance.GetTypeface(
-		//		}
+    #endregion // PlatformUtility
 
-		//		return systemDefaultFontName;
-		//	}
-		//}
-		//internal static double SystemDefaultFontSize = System.Drawing.SystemFonts.DefaultFont.Size * 72.0 / PlatformUtility.GetDPI();
+    #region StaticResources
 
-		internal static readonly SolidColor SystemColor_Highlight = System.Windows.SystemColors.HighlightColor;
-		internal static readonly SolidColor SystemColor_Window = System.Windows.SystemColors.WindowColor;
-		internal static readonly SolidColor SystemColor_WindowText = System.Windows.SystemColors.WindowTextColor;
-		internal static readonly SolidColor SystemColor_Control = System.Windows.SystemColors.ControlColor;
-		internal static readonly SolidColor SystemColor_ControlLight = System.Windows.SystemColors.ControlLightColor;
-		internal static readonly SolidColor SystemColor_ControlDark = System.Windows.SystemColors.ControlDarkColor;
+    partial class StaticResources
+    {
+        //private static string systemDefaultFontName = null;
+        //internal static string SystemDefaultFontName
+        //{
+        //	get
+        //	{
+        //		if (systemDefaultFontName == null)
+        //		{
+        //			var names = System.Windows.SystemFonts.MessageFontFamily.FamilyNames;
 
-		internal static readonly Pen Gray = new Pen(new SolidColorBrush(Colors.Gray), 1f);
-	}
-	#endregion // StaticResources
+        //			systemDefaultFontName = names.Count > 0 ? names[System.Windows.Markup.XmlLanguage.GetLanguage(string.Empty)] : string.Empty;
+        //			//var typeface = ResourcePoolManager.Instance.GetTypeface(
+        //		}
+
+        //		return systemDefaultFontName;
+        //	}
+        //}
+        //internal static double SystemDefaultFontSize = System.Drawing.SystemFonts.DefaultFont.Size * 72.0 / PlatformUtility.GetDPI();
+
+        internal static readonly SolidColor SystemColor_Highlight = System.Windows.SystemColors.HighlightColor;
+        internal static readonly SolidColor SystemColor_Window = System.Windows.SystemColors.WindowColor;
+        internal static readonly SolidColor SystemColor_WindowText = System.Windows.SystemColors.WindowTextColor;
+        internal static readonly SolidColor SystemColor_Control = System.Windows.SystemColors.ControlColor;
+        internal static readonly SolidColor SystemColor_ControlLight = System.Windows.SystemColors.ControlLightColor;
+        internal static readonly SolidColor SystemColor_ControlDark = System.Windows.SystemColors.ControlDarkColor;
+
+        internal static readonly Pen Gray = new Pen(new SolidColorBrush(Colors.Gray), 1f);
+    }
+
+    #endregion // StaticResources
 }
 
 #endif

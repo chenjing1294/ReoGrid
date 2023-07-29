@@ -25,7 +25,6 @@ using System.Text;
 
 namespace unvell.ReoGrid.Print
 {
-	
 }
 
 #endif // PRINT

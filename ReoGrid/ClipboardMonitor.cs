@@ -17,7 +17,6 @@
  ****************************************************************************/
 
 #if WINFORM
-
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;

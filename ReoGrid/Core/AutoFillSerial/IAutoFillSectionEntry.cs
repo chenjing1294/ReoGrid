@@ -17,14 +17,14 @@
 
 namespace unvell.ReoGrid
 {
-  public interface IAutoFillSectionEntry
-  {
-    object Value { get; }
+    public interface IAutoFillSectionEntry
+    {
+        object Value { get; }
 
-    bool IsSequenceOf(IAutoFillSectionEntry otherEntry);
+        bool IsSequenceOf(IAutoFillSectionEntry otherEntry);
 
-    object GetIterationValue(object baseValue, object incrementPerIteration, int iteration);
+        object GetIterationValue(object baseValue, object incrementPerIteration, int iteration);
 
-    object GetIncrementPerIteration(object baseValue, int numberOfEntries);
-  }
+        object GetIncrementPerIteration(object baseValue, int numberOfEntries);
+    }
 }

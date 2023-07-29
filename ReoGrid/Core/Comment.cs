@@ -16,9 +16,8 @@
  * 
  ****************************************************************************/
 
-#if DRAWING 
+#if DRAWING
 #if COMMENT
-
 using System;
 using System.Collections.Generic;
 using System.Linq;

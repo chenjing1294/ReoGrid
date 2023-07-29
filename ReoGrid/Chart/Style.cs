@@ -25,10 +25,8 @@ using System.Text;
 
 #if WINFORM || ANDROID
 using RGFloat = System.Single;
-
 #elif WPF
 using RGFloat = System.Double;
-
 #endif // WPF
 
 using unvell.ReoGrid.Drawing;
@@ -37,253 +35,232 @@ using System.Collections;
 
 namespace unvell.ReoGrid.Chart
 {
-	/// <summary>
-	/// Data point styles for line plot view.
-	/// </summary>
-	public enum DataPointStyles
-	{
-		/// <summary>
-		/// None (Default style)
-		/// </summary>
-		None,
+    /// <summary>
+    /// Data point styles for line plot view.
+    /// </summary>
+    public enum DataPointStyles
+    {
+        /// <summary>
+        /// None (Default style)
+        /// </summary>
+        None,
 
-		/// <summary>
-		/// Triangle
-		/// </summary>
-		Triangle,
+        /// <summary>
+        /// Triangle
+        /// </summary>
+        Triangle,
 
-		/// <summary>
-		/// Square
-		/// </summary>
-		Square,
+        /// <summary>
+        /// Square
+        /// </summary>
+        Square,
 
-		/// <summary>
-		/// Ellipse Outline
-		/// </summary>
-		EllipseOutline,
-		
-		/// <summary>
-		/// Ellipse Filled
-		/// </summary>
-		EllipseFilled,
-	}
+        /// <summary>
+        /// Ellipse Outline
+        /// </summary>
+        EllipseOutline,
 
-	/// <summary>
-	/// Represents the interface of data serial style.
-	/// </summary>
-	public interface IDataSerialStyle : IDrawingLineObjectStyle
-	{
-		//DataPointStyles DataPointStyle { get; set; }
-	}
+        /// <summary>
+        /// Ellipse Filled
+        /// </summary>
+        EllipseFilled,
+    }
 
-	//internal class BaseDataSerialStyle : IDataSerialStyle
-	//{
-	//	public IColor FillColor { get; set; }
-	//	public SolidColor LineColor { get; set; }
-	//	public RGFloat LineWidth { get; set; }
-	//	public LineStyles LineStyle { get; set; }
-	//	public LineCapStyles StartCap { get; set; }
-	//	public LineCapStyles EndCap { get; set; }
-	//	public SolidColor TextColor { get; set; }
-	//}
+    /// <summary>
+    /// Represents the interface of data serial style.
+    /// </summary>
+    public interface IDataSerialStyle : IDrawingLineObjectStyle
+    {
+        //DataPointStyles DataPointStyle { get; set; }
+    }
 
-	internal class DataSerialStyle : IDataSerialStyle
-	{
-		internal Chart Chart { get; private set; }
+    //internal class BaseDataSerialStyle : IDataSerialStyle
+    //{
+    //	public IColor FillColor { get; set; }
+    //	public SolidColor LineColor { get; set; }
+    //	public RGFloat LineWidth { get; set; }
+    //	public LineStyles LineStyle { get; set; }
+    //	public LineCapStyles StartCap { get; set; }
+    //	public LineCapStyles EndCap { get; set; }
+    //	public SolidColor TextColor { get; set; }
+    //}
 
-		public DataSerialStyle(Chart chart)
-		{
-			this.Chart = chart;
-		}
+    internal class DataSerialStyle : IDataSerialStyle
+    {
+        internal Chart Chart { get; private set; }
 
-		private IColor fillColor;
+        public DataSerialStyle(Chart chart)
+        {
+            this.Chart = chart;
+        }
 
-		public IColor FillColor
-		{
-			get
-			{
-				return this.fillColor;
-			}
-			set
-			{
-				if (this.fillColor != value || !this.fillColor.Equals(value))
-				{
-					this.fillColor = value;
+        private IColor fillColor;
 
-					if (this.Chart != null) this.Chart.Invalidate();
-				}
-			}
-		}
+        public IColor FillColor
+        {
+            get { return this.fillColor; }
+            set
+            {
+                if (this.fillColor != value || !this.fillColor.Equals(value))
+                {
+                    this.fillColor = value;
 
-		private SolidColor lineColor;
+                    if (this.Chart != null) this.Chart.Invalidate();
+                }
+            }
+        }
 
-		public SolidColor LineColor
-		{
-			get
-			{
-				return lineColor;
-			}
-			set
-			{
-				if (lineColor != value)
-				{
-					this.lineColor = value;
+        private SolidColor lineColor;
 
-					if (this.Chart != null) this.Chart.Invalidate();
-				}
-			}
-		}
+        public SolidColor LineColor
+        {
+            get { return lineColor; }
+            set
+            {
+                if (lineColor != value)
+                {
+                    this.lineColor = value;
 
-		private RGFloat lineWeight = 2f;
+                    if (this.Chart != null) this.Chart.Invalidate();
+                }
+            }
+        }
 
-		public RGFloat LineWidth
-		{
-			get
-			{
-				return lineWeight;
-			}
-			set
-			{
-				if (lineWeight != value)
-				{
-					lineWeight = value;
+        private RGFloat lineWeight = 2f;
 
-					if (this.Chart != null) this.Chart.Invalidate();
-				}
-			}
-		}
+        public RGFloat LineWidth
+        {
+            get { return lineWeight; }
+            set
+            {
+                if (lineWeight != value)
+                {
+                    lineWeight = value;
 
-		private LineStyles lineStyle = LineStyles.Solid;
+                    if (this.Chart != null) this.Chart.Invalidate();
+                }
+            }
+        }
 
-		public LineStyles LineStyle
-		{
-			get
-			{
-				return this.lineStyle;
-			}
-			set
-			{
-				if (this.lineStyle != value)
-				{
-					this.lineStyle = value;
+        private LineStyles lineStyle = LineStyles.Solid;
 
-					if (this.Chart != null) this.Chart.Invalidate();
-				}
-			}
-		}
+        public LineStyles LineStyle
+        {
+            get { return this.lineStyle; }
+            set
+            {
+                if (this.lineStyle != value)
+                {
+                    this.lineStyle = value;
 
-		private LineCapStyles startCap = LineCapStyles.None;
+                    if (this.Chart != null) this.Chart.Invalidate();
+                }
+            }
+        }
 
-		public LineCapStyles StartCap
-		{
-			get
-			{
-				return this.startCap;
-			}
-			set
-			{
-				if (this.startCap != value)
-				{
-					this.startCap = value;
+        private LineCapStyles startCap = LineCapStyles.None;
 
-					if (this.Chart != null) this.Chart.Invalidate();
-				}
-			}
-		}
+        public LineCapStyles StartCap
+        {
+            get { return this.startCap; }
+            set
+            {
+                if (this.startCap != value)
+                {
+                    this.startCap = value;
 
-		public LineCapStyles endCap = LineCapStyles.None;
+                    if (this.Chart != null) this.Chart.Invalidate();
+                }
+            }
+        }
 
-		public LineCapStyles EndCap
-		{
-			get
-			{
-				return this.endCap;
-			}
-			set
-			{
-				if (this.endCap != value)
-				{
-					this.endCap = value;
+        public LineCapStyles endCap = LineCapStyles.None;
 
-					if (this.Chart != null) this.Chart.Invalidate();
-				}
-			}
-		}
+        public LineCapStyles EndCap
+        {
+            get { return this.endCap; }
+            set
+            {
+                if (this.endCap != value)
+                {
+                    this.endCap = value;
 
-		//private SolidColor textColor;
+                    if (this.Chart != null) this.Chart.Invalidate();
+                }
+            }
+        }
 
-		//public SolidColor TextColor
-		//{
-		//	get
-		//	{
-		//		return this.textColor;
-		//	}
-		//	set
-		//	{
-		//		if (this.textColor != value)
-		//		{
-		//			this.textColor = value;
+        //private SolidColor textColor;
 
-		//			if (this.Chart != null) this.Chart.Invalidate();
-		//		}
-		//	}
-		//}
-	}
+        //public SolidColor TextColor
+        //{
+        //	get
+        //	{
+        //		return this.textColor;
+        //	}
+        //	set
+        //	{
+        //		if (this.textColor != value)
+        //		{
+        //			this.textColor = value;
 
-	/// <summary>
-	/// Represents a collection of data serial styles.
-	/// </summary>
-	public sealed class DataSerialStyleCollection : IEnumerable<IDataSerialStyle>
-	{
-		internal Chart Chart { get; set; }
+        //			if (this.Chart != null) this.Chart.Invalidate();
+        //		}
+        //	}
+        //}
+    }
 
-		internal DataSerialStyle defaultDataSerialStyle;
+    /// <summary>
+    /// Represents a collection of data serial styles.
+    /// </summary>
+    public sealed class DataSerialStyleCollection : IEnumerable<IDataSerialStyle>
+    {
+        internal Chart Chart { get; set; }
 
-		internal DataSerialStyleCollection(Chart chart)
-		{
-			this.Chart = chart;
+        internal DataSerialStyle defaultDataSerialStyle;
 
-			this.defaultDataSerialStyle = new DataSerialStyle(this.Chart)
-			{
-				FillColor = SolidColor.Transparent,
-				LineColor = SolidColor.Black,
-				LineWidth = 1f,
-				StartCap = LineCapStyles.None,
-				EndCap = LineCapStyles.None,
-			};
-		}
+        internal DataSerialStyleCollection(Chart chart)
+        {
+            this.Chart = chart;
 
-		/// <summary>
-		/// Get or set the seiral style for data specified by zero-based index.
-		/// </summary>
-		/// <param name="index">Zero-based index of data to get style.</param>
-		/// <returns>Data serial style object of data.</returns>
-		public IDataSerialStyle this[int index]
-		{
-			get
-			{
-				return this.Chart.serialStyles[index];
-			}
-		}
+            this.defaultDataSerialStyle = new DataSerialStyle(this.Chart)
+            {
+                FillColor = SolidColor.Transparent,
+                LineColor = SolidColor.Black,
+                LineWidth = 1f,
+                StartCap = LineCapStyles.None,
+                EndCap = LineCapStyles.None,
+            };
+        }
 
-		internal IEnumerator<IDataSerialStyle> GetEnum()
-		{
-			foreach (var style in this.Chart.serialStyles)
-			{
-				yield return style;
-			}
-		}
+        /// <summary>
+        /// Get or set the seiral style for data specified by zero-based index.
+        /// </summary>
+        /// <param name="index">Zero-based index of data to get style.</param>
+        /// <returns>Data serial style object of data.</returns>
+        public IDataSerialStyle this[int index]
+        {
+            get { return this.Chart.serialStyles[index]; }
+        }
 
-		public IEnumerator<IDataSerialStyle> GetEnumerator()
-		{
-			return this.GetEnum();
-		}
+        internal IEnumerator<IDataSerialStyle> GetEnum()
+        {
+            foreach (var style in this.Chart.serialStyles)
+            {
+                yield return style;
+            }
+        }
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return this.GetEnum();
-		}
-	}
+        public IEnumerator<IDataSerialStyle> GetEnumerator()
+        {
+            return this.GetEnum();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnum();
+        }
+    }
 }
 
 #endif // DRAWING

@@ -24,7 +24,6 @@ using RGFloat = System.Double;
 #endif
 
 using unvell.Common;
-
 using unvell.ReoGrid.Actions;
 using unvell.ReoGrid.Events;
 using unvell.ReoGrid.Graphics;
@@ -34,13 +33,13 @@ using unvell.ReoGrid.Main;
 
 namespace unvell.ReoGrid.Views
 {
-	class HeaderView : Viewport, IRangeSelectableView
-	{
-		protected RGFloat headerAdjustBackup = 0;
+    class HeaderView : Viewport, IRangeSelectableView
+    {
+        protected RGFloat headerAdjustBackup = 0;
 
-		public HeaderView(IViewportController vc)
-			: base(vc)
-		{
-		}
-	}
+        public HeaderView(IViewportController vc)
+            : base(vc)
+        {
+        }
+    }
 }

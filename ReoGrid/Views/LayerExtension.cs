@@ -22,13 +22,13 @@ using System.Text;
 
 namespace unvell.ReoGrid
 {
-	using unvell.ReoGrid.Views;
+    using unvell.ReoGrid.Views;
 
-	partial class Worksheet
-	{
-		internal void InitViewportController()
-		{
-			this.viewportController = new NormalViewportController(this);
-		}
-	}
+    partial class Worksheet
+    {
+        internal void InitViewportController()
+        {
+            this.viewportController = new NormalViewportController(this);
+        }
+    }
 }

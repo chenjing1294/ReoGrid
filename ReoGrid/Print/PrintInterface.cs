@@ -25,17 +25,17 @@ using System.Text;
 
 namespace unvell.ReoGrid.Print
 {
-	internal interface IPrintSession
+    internal interface IPrintSession
 #if WINFORM
 		: IDisposable
 #endif // WINFORM
-	{
-		IList<Worksheet> Worksheets { get; }
+    {
+        IList<Worksheet> Worksheets { get; }
 
 #if WINFORM
 		System.Drawing.Printing.PrintDocument PrintDocument { get; }
 #endif // WINFORM
-	}
+    }
 }
 
 #endif // PRINT

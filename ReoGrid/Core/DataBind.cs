@@ -23,8 +23,7 @@ using System.Text;
 
 namespace unvell.ReoGrid.DataBind
 {
-	partial class Worksheet
-	{
-		
-	}
+    partial class Worksheet
+    {
+    }
 }

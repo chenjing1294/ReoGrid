@@ -22,40 +22,39 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using unvell.ReoGrid.Drawing;
 using unvell.ReoGrid.Graphics;
 using unvell.ReoGrid.Rendering;
 
 namespace unvell.ReoGrid.Chart
 {
-	internal class ChartTitle : DrawingObject
-	{
-		public IChart Chart { get; set; }
+    internal class ChartTitle : DrawingObject
+    {
+        public IChart Chart { get; set; }
 
-		public ChartTitle(IChart chart)
-		{
-			this.Chart = chart;
+        public ChartTitle(IChart chart)
+        {
+            this.Chart = chart;
 
-			//this.ForeColor = SolidColor.Transparent;
-			this.FontSize += 5.0F;
-		}
+            //this.ForeColor = SolidColor.Transparent;
+            this.FontSize += 5.0F;
+        }
 
-		/// <summary>
-		/// Render chart title view.
-		/// </summary>
-		/// <param name="dc">Platform no-associated drawing context instance.</param>
-		protected override void OnPaint(DrawingContext dc)
-		{
-			//base.OnPaint(dc);
+        /// <summary>
+        /// Render chart title view.
+        /// </summary>
+        /// <param name="dc">Platform no-associated drawing context instance.</param>
+        protected override void OnPaint(DrawingContext dc)
+        {
+            //base.OnPaint(dc);
 
-			var g = dc.Graphics;
+            var g = dc.Graphics;
 
-			g.DrawText(Chart.Title, this.FontName, this.FontSize,
-				unvell.ReoGrid.Rendering.StaticResources.SystemColor_WindowText, this.ClientBounds,
-				ReoGridHorAlign.Center, ReoGridVerAlign.Middle);
-		}
-	}
+            g.DrawText(Chart.Title, this.FontName, this.FontSize,
+                unvell.ReoGrid.Rendering.StaticResources.SystemColor_WindowText, this.ClientBounds,
+                ReoGridHorAlign.Center, ReoGridVerAlign.Middle);
+        }
+    }
 }
 
 #endif // DRAWING

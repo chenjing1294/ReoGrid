@@ -5,8 +5,7 @@ using System.Text;
 
 namespace unvell.ReoGrid.Graphics
 {
-	internal interface IBrush
-	{
-
-	}
+    internal interface IBrush
+    {
+    }
 }

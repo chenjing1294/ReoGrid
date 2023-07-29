@@ -19,21 +19,21 @@ using unvell.ReoGrid.Utility;
 
 namespace unvell.ReoGrid
 {
-  public static class AutoFillSectionEntryFactory
-  {
-    public static IAutoFillSectionEntry Create(object value)
+    public static class AutoFillSectionEntryFactory
     {
-      if (value == null)
-      {
-        return new NullAutoFillSectionEntry();
-      }
+        public static IAutoFillSectionEntry Create(object value)
+        {
+            if (value == null)
+            {
+                return new NullAutoFillSectionEntry();
+            }
 
-      if (CellUtility.TryGetNumberData(value, out var number))
-      {
-        return new NumericalAutoFillSectionEntry(number);
-      }
+            if (CellUtility.TryGetNumberData(value, out var number))
+            {
+                return new NumericalAutoFillSectionEntry(number);
+            }
 
-      return new TextAutoFillSectionEntry(value.ToString());
+            return new TextAutoFillSectionEntry(value.ToString());
+        }
     }
-  }
 }

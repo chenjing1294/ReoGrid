@@ -17,7 +17,6 @@
  ****************************************************************************/
 
 using System;
-
 using unvell.ReoGrid.IO;
 using unvell.ReoGrid.Actions;
 using unvell.ReoGrid.Events;
@@ -33,28 +32,22 @@ using RGSize = System.Drawing.Size;
 using RGSizeF = System.Drawing.SizeF;
 using RGRect = System.Drawing.Rectangle;
 using RGRectF = System.Drawing.RectangleF;
-
 #elif WPF
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 using IStringFormat = System.Object;
-
 using RGPoint = System.Windows.Point;
 using RGPointF = System.Windows.Point;
 using RGRect = System.Windows.Rect;
-
 #elif ANDROID
 using RGFloat = System.Single;
 using RGIntDouble = System.Int32;
 using RGRect = Android.Graphics.Rect;
 using RGPoint = Android.Graphics.Point;
 using RGPointF = Android.Graphics.PointF;
-
 #elif iOS
 using RGFloat = System.Double;
 using RGIntDouble = System.Double;
-
 #endif
 
 using unvell.ReoGrid.Views;
@@ -62,38 +55,35 @@ using unvell.ReoGrid.Rendering;
 
 namespace unvell.ReoGrid.Main
 {
+    internal enum ScrollDirection : byte
+    {
+        None = 0,
+        Horizontal = 1,
+        Vertical = 2,
+        Both = Horizontal | Vertical,
+    }
 
+    internal interface IRangePickableControl
+    {
+        void PickRange(Func<Worksheet, RangePosition, bool> handler);
+        void EndPickRange();
+        void StartPickRangeAndCopyStyle();
+    }
 
-	internal enum ScrollDirection : byte
-	{
-		None = 0,
-		Horizontal = 1,
-		Vertical = 2,
-		Both = Horizontal | Vertical,
-	}
-
-	internal interface IRangePickableControl
-	{
-		void PickRange(Func<Worksheet, RangePosition, bool> handler);
-		void EndPickRange();
-		void StartPickRangeAndCopyStyle();
-	}
-
-	internal interface IContextMenuControl
-	{
-
+    internal interface IContextMenuControl
+    {
 #if WINFORM
 		System.Windows.Forms.ContextMenuStrip ContextMenuStrip { get; }
 		System.Windows.Forms.ContextMenuStrip RowHeaderContextMenuStrip { get; }
 		System.Windows.Forms.ContextMenuStrip ColumnHeaderContextMenuStrip { get; }
 		System.Windows.Forms.ContextMenuStrip LeadHeaderContextMenuStrip { get; }
 #elif WPF
-		System.Windows.Controls.ContextMenu CellsContextMenu { get; }
-		System.Windows.Controls.ContextMenu RowHeaderContextMenu { get; }
-		System.Windows.Controls.ContextMenu ColumnHeaderContextMenu { get; }
-		System.Windows.Controls.ContextMenu LeadHeaderContextMenu { get; }
+        System.Windows.Controls.ContextMenu CellsContextMenu { get; }
+        System.Windows.Controls.ContextMenu RowHeaderContextMenu { get; }
+        System.Windows.Controls.ContextMenu ColumnHeaderContextMenu { get; }
+        System.Windows.Controls.ContextMenu LeadHeaderContextMenu { get; }
 #endif
-	}
+    }
 
 #if EX_SCRIPT
 	internal interface IScriptExecutableControl
@@ -106,127 +96,131 @@ namespace unvell.ReoGrid.Main
 	}
 #endif // EX_SCRIPT
 
-	internal interface IPersistenceWorkbook
-	{
-		void Save(string path, FileFormat format = FileFormat._Auto, System.Text.Encoding encoding = null);
-		void Save(System.IO.Stream stream, FileFormat format = FileFormat._Auto, System.Text.Encoding encoding = null);
+    internal interface IPersistenceWorkbook
+    {
+        void Save(string path, FileFormat format = FileFormat._Auto, System.Text.Encoding encoding = null);
+        void Save(System.IO.Stream stream, FileFormat format = FileFormat._Auto, System.Text.Encoding encoding = null);
 
-		void Load(string path, FileFormat format = FileFormat._Auto, System.Text.Encoding encoding = null);
-		void Load(System.IO.Stream stream, FileFormat format = FileFormat._Auto, System.Text.Encoding encoding = null);
-	}
+        void Load(string path, FileFormat format = FileFormat._Auto, System.Text.Encoding encoding = null);
+        void Load(System.IO.Stream stream, FileFormat format = FileFormat._Auto, System.Text.Encoding encoding = null);
+    }
 
-	internal interface IActionControl
-	{
-		//unvell.Common.ActionManager ActionManager { get; }
-		void DoAction(Worksheet sheet, BaseWorksheetAction action);
-		void Undo();
-		void Redo();
-		void RepeatLastAction(RangePosition range);
-		//bool CanUndo();
-		//bool CanRedo();
-		event EventHandler<WorkbookActionEventArgs> ActionPerformed;
-		event EventHandler<WorkbookActionEventArgs> Undid;
-		event EventHandler<WorkbookActionEventArgs> Redid;
-		//event EventHandler Repeated;
-		void ClearActionHistory();
-		void ClearActionHistoryForWorksheet(Worksheet sheet);
-	}
+    internal interface IActionControl
+    {
+        //unvell.Common.ActionManager ActionManager { get; }
+        void DoAction(Worksheet sheet, BaseWorksheetAction action);
+        void Undo();
+        void Redo();
 
-	internal interface IVisualWorkbook : IScrollableWorksheetContainer
-	{
-		Worksheet CurrentWorksheet { get; set; }
-	}
+        void RepeatLastAction(RangePosition range);
 
-	internal interface IScrollableWorksheetContainer
-	{
-		void RaiseWorksheetScrolledEvent(Worksheet worksheet, RGFloat x, RGFloat y);
+        //bool CanUndo();
+        //bool CanRedo();
+        event EventHandler<WorkbookActionEventArgs> ActionPerformed;
+        event EventHandler<WorkbookActionEventArgs> Undid;
 
-		// FIXME: not implemented
-		bool ShowScrollEndSpacing { get; }
-	}
+        event EventHandler<WorkbookActionEventArgs> Redid;
 
-	internal interface IEditableControlAdapter
-	{
-		void ShowEditControl(Graphics.Rectangle bounds, Cell cell);
-		void HideEditControl();
+        //event EventHandler Repeated;
+        void ClearActionHistory();
+        void ClearActionHistoryForWorksheet(Worksheet sheet);
+    }
 
-		void SetEditControlText(string text);
-		string GetEditControlText();
+    internal interface IVisualWorkbook : IScrollableWorksheetContainer
+    {
+        Worksheet CurrentWorksheet { get; set; }
+    }
 
-		void EditControlSelectAll();
-		void SetEditControlCaretPos(int pos);
-		int GetEditControlCaretPos();
-		int GetEditControlCaretLine();
-		void SetEditControlAlignment(ReoGridHorAlign align);
+    internal interface IScrollableWorksheetContainer
+    {
+        void RaiseWorksheetScrolledEvent(Worksheet worksheet, RGFloat x, RGFloat y);
 
-		void EditControlApplySystemMouseDown();
+        // FIXME: not implemented
+        bool ShowScrollEndSpacing { get; }
+    }
 
-		void EditControlCopy();
-		void EditControlPaste();
-		void EditControlCut();
+    internal interface IEditableControlAdapter
+    {
+        void ShowEditControl(Graphics.Rectangle bounds, Cell cell);
+        void HideEditControl();
 
-		void EditControlUndo();
-	}
+        void SetEditControlText(string text);
+        string GetEditControlText();
 
-	internal interface IScrollableControlAdapter
-	{
-		//bool ScrollBarHorizontalVisible { get; set; }
-		//bool ScrollBarVerticalVisible { get; set; }
+        void EditControlSelectAll();
+        void SetEditControlCaretPos(int pos);
+        int GetEditControlCaretPos();
+        int GetEditControlCaretLine();
+        void SetEditControlAlignment(ReoGridHorAlign align);
 
-		RGIntDouble ScrollBarHorizontalMaximum { get; set; }
-		RGIntDouble ScrollBarHorizontalMinimum { get; set; }
-		RGIntDouble ScrollBarHorizontalValue { get; set; }
-		RGIntDouble ScrollBarHorizontalLargeChange { get; set; }
+        void EditControlApplySystemMouseDown();
 
-		RGIntDouble ScrollBarVerticalMaximum { get; set; }
-		RGIntDouble ScrollBarVerticalMinimum { get; set; }
-		RGIntDouble ScrollBarVerticalValue { get; set; }
-		RGIntDouble ScrollBarVerticalLargeChange { get; set; }
-	}
+        void EditControlCopy();
+        void EditControlPaste();
+        void EditControlCut();
 
-	internal interface ITimerSupportedAdapter
-	{
-		void StartTimer();
-		void StopTimer();
-	}
+        void EditControlUndo();
+    }
 
-	internal interface IShowContextMenuAdapter
-	{
-		void ShowContextMenuStrip(ViewTypes viewType, Point containerLocation);
-	}
+    internal interface IScrollableControlAdapter
+    {
+        //bool ScrollBarHorizontalVisible { get; set; }
+        //bool ScrollBarVerticalVisible { get; set; }
 
-	internal interface IMultisheetAdapter
-	{
-		ISheetTabControl SheetTabControl { get; }
-	}
+        RGIntDouble ScrollBarHorizontalMaximum { get; set; }
+        RGIntDouble ScrollBarHorizontalMinimum { get; set; }
+        RGIntDouble ScrollBarHorizontalValue { get; set; }
+        RGIntDouble ScrollBarHorizontalLargeChange { get; set; }
 
-	internal interface ICompViewAdapter : IMultisheetAdapter
-	{
-		IVisualWorkbook ControlInstance { get; }
-		IRenderer Renderer { get; }
-		ControlAppearanceStyle ControlStyle { get; }
+        RGIntDouble ScrollBarVerticalMaximum { get; set; }
+        RGIntDouble ScrollBarVerticalMinimum { get; set; }
+        RGIntDouble ScrollBarVerticalValue { get; set; }
+        RGIntDouble ScrollBarVerticalLargeChange { get; set; }
+    }
 
-		RGFloat BaseScale { get; }
-		RGFloat MinScale { get; }
-		RGFloat MaxScale { get; }
+    internal interface ITimerSupportedAdapter
+    {
+        void StartTimer();
+        void StopTimer();
+    }
 
-		void ChangeCursor(Interaction.CursorStyle cursor);
-		void RestoreCursor();
-		void ChangeSelectionCursor(Interaction.CursorStyle cursor);
+    internal interface IShowContextMenuAdapter
+    {
+        void ShowContextMenuStrip(ViewTypes viewType, Point containerLocation);
+    }
 
-		Rectangle GetContainerBounds();
-		void Focus();
-		void Invalidate();
+    internal interface IMultisheetAdapter
+    {
+        ISheetTabControl SheetTabControl { get; }
+    }
 
-		void ChangeBackgroundColor(SolidColor color);
-		bool IsVisible { get; }
-		Point PointToScreen(Point point);
-		void ShowTooltip(Point point, string content);
-	}
+    internal interface ICompViewAdapter : IMultisheetAdapter
+    {
+        IVisualWorkbook ControlInstance { get; }
+        IRenderer Renderer { get; }
+        ControlAppearanceStyle ControlStyle { get; }
 
-	internal interface IControlAdapter : ICompViewAdapter, 
-		IEditableControlAdapter, IScrollableControlAdapter, ITimerSupportedAdapter,
-		IShowContextMenuAdapter
-	{
-	}
+        RGFloat BaseScale { get; }
+        RGFloat MinScale { get; }
+        RGFloat MaxScale { get; }
+
+        void ChangeCursor(Interaction.CursorStyle cursor);
+        void RestoreCursor();
+        void ChangeSelectionCursor(Interaction.CursorStyle cursor);
+
+        Rectangle GetContainerBounds();
+        void Focus();
+        void Invalidate();
+
+        void ChangeBackgroundColor(SolidColor color);
+        bool IsVisible { get; }
+        Point PointToScreen(Point point);
+        void ShowTooltip(Point point, string content);
+    }
+
+    internal interface IControlAdapter : ICompViewAdapter,
+        IEditableControlAdapter, IScrollableControlAdapter, ITimerSupportedAdapter,
+        IShowContextMenuAdapter
+    {
+    }
 }

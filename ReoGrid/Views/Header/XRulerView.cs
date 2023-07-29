@@ -24,7 +24,6 @@ using RGFloat = System.Double;
 #endif
 
 using unvell.Common;
-
 using unvell.ReoGrid.Actions;
 using unvell.ReoGrid.Events;
 using unvell.ReoGrid.Graphics;
@@ -34,13 +33,15 @@ using unvell.ReoGrid.Main;
 
 namespace unvell.ReoGrid.Views
 {
-	class XRulerView : View
-	{
-		public XRulerView(IViewportController vc) : base(vc) { }
+    class XRulerView : View
+    {
+        public XRulerView(IViewportController vc) : base(vc)
+        {
+        }
 
-		public override void Draw(CellDrawingContext dc)
-		{
-			throw new NotImplementedException();
-		}
-	}
+        public override void Draw(CellDrawingContext dc)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

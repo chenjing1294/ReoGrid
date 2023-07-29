@@ -25,16 +25,16 @@ using System.Text;
 
 namespace unvell.ReoGrid.Drawing
 {
-	/*
-	public enum DockingPosition
-	{
-		Left,
-		Right,
-		Top,
-		Bottom,
-		Fill,
-	}
-	 */
+    /*
+    public enum DockingPosition
+    {
+        Left,
+        Right,
+        Top,
+        Bottom,
+        Fill,
+    }
+     */
 }
 
 #endif // DRAWING

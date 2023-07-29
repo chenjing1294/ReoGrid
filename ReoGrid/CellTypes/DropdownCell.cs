@@ -38,7 +38,6 @@ using unvell.ReoGrid.Interaction;
 namespace unvell.ReoGrid.CellTypes
 {
 #if WINFORM
-
 	/// <summary>
 	/// Represents an abstract base class for custom drop-down cell.
 	/// </summary>

@@ -32,45 +32,47 @@ using RGImage = System.Windows.Media.ImageSource;
 
 namespace unvell.ReoGrid.CellTypes
 {
-	/// <summary>
-	/// Manage the collection of available cell types 
-	/// </summary>
-	public static class CellTypesManager
-	{
-		private static Dictionary<string, Type> cellTypes;
+    /// <summary>
+    /// Manage the collection of available cell types 
+    /// </summary>
+    public static class CellTypesManager
+    {
+        private static Dictionary<string, Type> cellTypes;
 
-		/// <summary>
-		/// Get the available collection of cell types
-		/// </summary>
-		public static Dictionary<string, Type> CellTypes
-		{
-			get
-			{
-				if (cellTypes == null)
-				{
-					cellTypes = new Dictionary<string, Type>();
+        /// <summary>
+        /// Get the available collection of cell types
+        /// </summary>
+        public static Dictionary<string, Type> CellTypes
+        {
+            get
+            {
+                if (cellTypes == null)
+                {
+                    cellTypes = new Dictionary<string, Type>();
 
-					try
-					{
-						var types = Assembly.GetAssembly(typeof(Worksheet)).GetTypes();
+                    try
+                    {
+                        var types = Assembly.GetAssembly(typeof(Worksheet)).GetTypes();
 
-						foreach (var type in types.OrderBy(t => t.Name))
-						{
-							if (type != typeof(ICellBody) && type != typeof(CellBody)
-								&& (type.IsSubclassOf(typeof(ICellBody))
-								|| type.IsSubclassOf(typeof(CellBody)))
-								&& type.IsPublic
-								&& !type.IsAbstract)
-							{
-								cellTypes[type.Name] = type;
-							}
-						}
-					}
-					catch { }
-				}
+                        foreach (var type in types.OrderBy(t => t.Name))
+                        {
+                            if (type != typeof(ICellBody) && type != typeof(CellBody)
+                                                          && (type.IsSubclassOf(typeof(ICellBody))
+                                                              || type.IsSubclassOf(typeof(CellBody)))
+                                                          && type.IsPublic
+                                                          && !type.IsAbstract)
+                            {
+                                cellTypes[type.Name] = type;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
 
-				return cellTypes;
-			}
-		}
-	}
+                return cellTypes;
+            }
+        }
+    }
 }

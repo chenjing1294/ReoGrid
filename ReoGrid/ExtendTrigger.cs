@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using unvell.ReoGrid.Events;
 
 namespace unvell.ReoGrid
@@ -90,4 +89,3 @@ namespace unvell.ReoGrid
 	}
 #endif // EX_DATA_TRIGGER
 }
-

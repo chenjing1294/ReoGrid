@@ -41,14 +41,18 @@ using unvell.ReoGrid.Properties;
 
 namespace unvell.ReoGrid
 {
-	partial class Workbook
-	{
-		private string script;
+    partial class Workbook
+    {
+        private string script;
 
-		/// <summary>
-		/// Script content for this control
-		/// </summary>
-		public string Script { get { return script; } set { script = value; } }
+        /// <summary>
+        /// Script content for this control
+        /// </summary>
+        public string Script
+        {
+            get { return script; }
+            set { script = value; }
+        }
 
 #if EX_SCRIPT
 		/// <summary>
@@ -160,7 +164,7 @@ namespace unvell.ReoGrid
 
 		internal event EventHandler SRMInitialized;
 #endif // EX_SCRIPT
-	}
+    }
 
 #if EX_SCRIPT
 	partial class Worksheet

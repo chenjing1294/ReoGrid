@@ -38,7 +38,6 @@ using unvell.ReoGrid.Rendering;
 namespace unvell.ReoGrid.CellTypes
 {
 #if WINFORM
-
 	#region NumberInputCell
 	internal class NumberInputCell : CellBody
 	{
@@ -300,5 +299,4 @@ namespace unvell.ReoGrid.CellTypes
 	#endregion // NumberInputCell
 
 #endif // WINFORM
-
 }
